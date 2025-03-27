@@ -1,1 +1,8 @@
 /target
+*.blend?
+out
+bin
+build
+target
+obj
+
