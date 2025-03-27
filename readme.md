@@ -29,4 +29,8 @@ We use Macroquad because it is a simple framework that supports PC + web
  - https://macroquad.rs/
 
 
+# License
+
+The code in this repository is under the GPLv2 license, see `LICENSE.txt` for details.
+The auto-upgrade clause has been removed because your legal rights shouldn't have that sort of volatility.
 
