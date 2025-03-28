@@ -210,6 +210,10 @@ a.noapp {
 
     sys.exit(1)
 
+  # We also need to tell Microsoft some bookkeeping
+  with open(os.path.join(f'{td}', 'CNAME'), 'w') as fd:
+    fd.write('full-crisis.jmcateer.com')
+
   subprocess.run([
     'git', 'add', '-A', '.'
   ], check=True, cwd=f'{td}')
