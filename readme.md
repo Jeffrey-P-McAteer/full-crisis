@@ -22,6 +22,19 @@ Join historic disasters as emergency response personnel and hone your crisis-sol
     - [ ] Is it worth researching building a `.app` bundle w/o Apple's toolchain? Probably not worth it.
     - Linux folks are capable of running `cargo run --release`
 
+# Vocabulary
+
+ - Player
+    - The actual player playing the game
+ - Player Character / Character
+    - The character in the game being controlled by the Player
+ - Playable Crisis
+    - I'm sure we'll end up calling a folder containing plot, characters, and decision data a "Chrisis" but to avoid overloading the word too much we'll stick the adjective "Playable" before it to make clear this is a definition of a game scenario.
+    - A Playable Crisis starts with a folder whose specific definition is still being designed, but it will hold graphics, audio, text, and relationships to drive a game plot forward (or backward, or circles; it'll be a graph of some sort).
+    - As a reminder the plural of Crisis is Crises (chris-IS / chris-EZ). Let's make sure the right one is used, especially for structure names,
+
+ - TODO rest of things so we don't end up w/ 3 different words describing "the map"/"globe"/"scene" like other projects
+
 
 # Research and References
 

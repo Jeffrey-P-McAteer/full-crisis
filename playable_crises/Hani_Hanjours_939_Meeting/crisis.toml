@@ -1,0 +1,11 @@
+
+# This is a Crisis Definition; it contains details
+# to show on the Crisis Card in the Game as well as configuration
+# to show the high-level plot.
+# We use ISO-639 3-letter language codes, which may be found at https://www.ethnologue.com/browse/names/
+[name]
+eng = "Hani Hanjour's 9:39 Meeting"
+spa = "Reunión de Hani Hanjour a las 9:39"
+
+
+
