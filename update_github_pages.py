@@ -193,7 +193,10 @@ a.noapp {
 
 @media only screen and (max-width: 620pt) {
   main {
-    width: 96vw !important;
+    width: 94vw !important;
+    top: 0pt !important;
+    border-radius: 0pt !important;
+    padding-top: 260pt !important;
   }
 }
 '''.strip())
