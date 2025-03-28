@@ -26,7 +26,15 @@ use macroquad::{
 // TODO move beyond hello world
 #[macroquad::main(window_conf)]
 async fn main() {
+
+    // TODO read+report folder where game files will be searched from
+    if let Some(proj_dir_obj) = directories::ProjectDirs::from("com.jmcateer", "FullCrisis",  "FullCrisis") {
+        eprintln!("proj_dir_obj.config_local_dir() = {:?}", proj_dir_obj.config_local_dir());
+        eprintln!("proj_dir_obj.data_dir() = {:?}", proj_dir_obj.data_dir());
+    }
+
     let mut user_text_input = String::new();
+
     loop {
         clear_background(RED);
 
