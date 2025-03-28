@@ -1,3 +1,4 @@
+#![allow(unused_imports)]
 /**
  *  full-crisis - An emergency-response simulator videogame
  *  Copyright (C) 2025  Jeffrey McAteer <jeffrey@jmcateer.com>
@@ -16,11 +17,16 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-use macroquad::prelude::*;
+use macroquad::{
+    prelude::*,
+    ui::{hash, root_ui, widgets::InputText},
+    window::request_new_screen_size,
+};
 
 // TODO move beyond hello world
-#[macroquad::main("MyGame")]
+#[macroquad::main(window_conf)]
 async fn main() {
+    let mut user_text_input = String::new();
     loop {
         clear_background(RED);
 
@@ -29,8 +35,30 @@ async fn main() {
 
         draw_text("Hello, Macroquad!", 20.0, 20.0, 30.0, DARKGRAY);
 
+        let window_id = hash!();
+        root_ui().window(
+            window_id,
+            vec2(12.0, 40.0),
+            vec2(screen_width() * 0.75, 48.0),
+            |ui| {
+                let input_text_id = hash!();
+                InputText::new(input_text_id)
+                    .label("")
+                    .size(vec2(screen_width() - 4.0, 48.0 - 4.0))
+                    .ui(ui, &mut user_text_input);
+            },
+        );
+
+
         next_frame().await
     }
 }
 
 
+fn window_conf() -> Conf {
+    Conf {
+        window_title: "Full-Crisis".to_owned(),
+        fullscreen: false,
+        ..Default::default()
+    }
+}
