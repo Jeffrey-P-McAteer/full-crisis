@@ -23,6 +23,21 @@ Join historic disasters as emergency response personnel and hone your crisis-sol
     - [ ] Is it worth researching building a `.app` bundle w/o Apple's toolchain? Probably not worth it.
     - Linux folks are capable of running `cargo run --release`
 
+# Development Dependencies
+
+The following programs must be installed and available on your system's `PATH`
+
+ - `python` (3.10+ or so, anything modern)
+ - `git`
+ - `cargo`
+    - See https://rustup.rs/
+
+For cross-compilation, install `systemd-nspawn`.
+
+The script `run_docker_from_container.py` will download + run an Arch Linux container (rootfs located under `target/docker-on-arch`) with
+this folder mounted under `/full-crisis` within the nspawn container. We will then use https://github.com/cross-rs/cross to perform final cross-compilation.
+
+
 # Vocabulary
 
  - Player
