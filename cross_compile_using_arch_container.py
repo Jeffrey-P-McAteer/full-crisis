@@ -113,6 +113,9 @@ print(f'CONTAINER_ROOT={CONTAINER_ROOT}')
 if (not 'CONTAINER_ROOT' in os.environ or os.path.exists(os.path.dirname(CONTAINER_ROOT)) ) and not os.path.exists(CONTAINER_ROOT):
   # Something is mounted but no child folder exists
   os.makedirs(CONTAINER_ROOT, exist_ok=True)
+  subprocess.run([
+    'sudo', 'chown', '1000:1000', os.path.join(os.path.dirname(__file__), 'target')
+  ])
 
 # Step 1: Has the install completed?
 download_extract_os_complete_flag = os.path.join(CONTAINER_ROOT, 'install-complete.txt')
