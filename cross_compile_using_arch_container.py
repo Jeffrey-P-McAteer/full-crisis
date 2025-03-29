@@ -252,9 +252,11 @@ def setup_container_async():
     di0(run_in_container('pacman-key', '--populate', 'archlinux'))
     di0(run_in_container('pacman', '-Syu', '--noconfirm')) # Sync & upgrade all
     pass_flag('pacman-key-setup')
-  elif random.choice([True, False, False, False, False, False, False, False]):
+  elif random.choice([True, False, False, False, False, False, False, False, False]):
+    time.sleep(1.25)
     print(f'Running regular maitenence package sync + upgrade')
-    di0(run_in_container('pacman', '-Syu', '--noconfirm')) # Sync & upgrade all
+    time.sleep(1.25)
+    run_in_container('pacman', '-Syu', '--noconfirm') # Sync & upgrade all
 
   if not flag_passed('pacman-install-base-packages'):
     di0(run_in_container('pacman', '-S', '--noconfirm', 'base-devel', 'git', 'vim', 'sudo'))
@@ -310,9 +312,12 @@ Defaults:nobody !tty_tickets
   print(f'Container is running, about to cross-compile for all targets')
   di0(run_nobody_shell('ls -alh /full-crisis'))
   di0(run_nobody_shell('sudo chmod a+rw /var/run/docker.sock')) # Yeah yeah docker group this, docker group that. Our security boundary is the host.
-  di0(run_nobody_shell('cd /full-crisis && cross build --target x86_64-pc-windows-gnu'))
-  di0(run_nobody_shell('cd /full-crisis && cross build --target x86_64-unknown-linux-gnu'))
-  di0(run_nobody_shell('cd /full-crisis && cross build --target aarch64-apple-darwin'))
+  di0(run_nobody_shell('cd /full-crisis && cross build --release --target x86_64-pc-windows-gnu'))
+  di0(run_nobody_shell('cd /full-crisis && cross build --release --target x86_64-unknown-linux-gnu'))
+  di0(run_nobody_shell('cd /full-crisis && cross build --release --target aarch64-apple-darwin'))
+
+  time.sleep(1)
+  run_in_container('shutdown', 'now')
 
 
 
@@ -322,16 +327,19 @@ bg_t.start()
 nspawn_env = dict(os.environ)
 nspawn_env['SYSTEMD_SECCOMP'] = '0'
 
-subprocess.run([
+r = subprocess.run([
   'systemd-nspawn',
     '--boot',
     '--machine', 'docker-on-arch',
     '--bind', f'{os.path.abspath(os.path.dirname(__file__))}:/full-crisis',
     '--capability=all',
+    '--network-veth',
     '--system-call-filter=@keyring bpf',
     '--system-call-filter=add_key bpf keyctl',
     '--directory', CONTAINER_ROOT,
 ], env=nspawn_env)
+
+sys.exit(r.returncode)
 
 # Untracked change notes
 '''
