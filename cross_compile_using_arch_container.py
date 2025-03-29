@@ -325,9 +325,9 @@ Defaults:nobody !tty_tickets
   print(f'Container is running, about to cross-compile for all targets')
   di0(run_nobody_shell('ls -alh /full-crisis'))
   di0(run_nobody_shell('sudo chmod a+rw /var/run/docker.sock')) # Yeah yeah docker group this, docker group that. Our security boundary is the host.
-  di0(run_nobody_shell('cd /full-crisis && cross build --release --target x86_64-pc-windows-gnu'))
-  di0(run_nobody_shell('cd /full-crisis && cross build --release --target x86_64-unknown-linux-gnu'))
-  di0(run_nobody_shell('cd /full-crisis && cross build --release --target aarch64-apple-darwin'))
+  di0(run_nobody_shell('cd /full-crisis && /home/nobody/.cargo/bin/cross build --release --target x86_64-pc-windows-gnu'))
+  di0(run_nobody_shell('cd /full-crisis && /home/nobody/.cargo/bin/cross build --release --target x86_64-unknown-linux-gnu'))
+  di0(run_nobody_shell('cd /full-crisis && /home/nobody/.cargo/bin/cross build --release --target aarch64-apple-darwin'))
 
   time.sleep(1)
   run_in_container('shutdown', 'now')
