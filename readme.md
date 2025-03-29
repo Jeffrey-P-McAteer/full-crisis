@@ -57,6 +57,9 @@ this folder mounted under `/full-crisis` within the nspawn container. We will th
 We use Macroquad because it is a simple framework that supports PC + web
  - https://macroquad.rs/
 
+ - https://github.com/cross-rs/cross
+ - https://mwalkowski.com/post/container-inception-docker-in-nspawn-container/
+
 
 # License
 
