@@ -266,6 +266,8 @@ def setup_container_async():
   if not flag_passed('setup-nobody-user'):
     di0(run_in_container('usermod', '--shell', '/usr/bin/bash', 'nobody'))
     di0(run_in_container('usermod', '--expiredate=', 'nobody'))
+    di0(run_in_container('sed', '-i', 's/nobody::65534:65534/nobody::1000:1000/g', '/etc/passwd'))
+    di0(run_in_container('sed', '-i', 's/nobody:x:65534:/nobody:x:1000:/g', '/etc/group'))
     os.makedirs(os.path.join(CONTAINER_ROOT, 'home', 'nobody'), exist_ok=True)
     di0(run_in_container('chown', '-R', 'nobody:nobody', '/home/nobody'))
     di0(run_in_container('usermod', '-d', '/home/nobody', 'nobody'))
