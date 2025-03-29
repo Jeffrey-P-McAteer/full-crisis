@@ -247,6 +247,17 @@ def setup_container_async():
     time.sleep(0.25)
   print()
 
+  # Also ask if network is available
+  while run_in_container_silent('ping', '-c', '1', '1.1.1.1')[1] != 0:
+    print('*', end='', flush=True)
+    time.sleep(0.25)
+  print()
+
+  di0(run_in_container('sysctl', '-w', 'net.ipv6.conf.all.disable_ipv6=1'))
+  di0(run_in_container('sysctl', '-w', 'net.ipv6.conf.default.disable_ipv6=1'))
+  di0(run_in_container('sysctl', '-w', 'net.ipv6.conf.lo.disable_ipv6=1'))
+  run_in_container('bash', '-c', 'rm /etc/resolv.conf ; ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf')
+
   if not flag_passed('pacman-key-setup'):
     di0(run_in_container('pacman-key', '--init'))
     di0(run_in_container('pacman-key', '--populate', 'archlinux'))
