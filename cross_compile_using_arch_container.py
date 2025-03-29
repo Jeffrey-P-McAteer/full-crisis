@@ -281,7 +281,7 @@ Defaults:nobody !tty_tickets
   def run_nobody_shell(shellcode):
     if isinstance(shellcode, list):
       shellcode = ' '.join(x for x in shellcode if not (x is None))
-    return run_in_container('sudo', '-i', '-u', 'nobody', 'sh', '-c', shellcode)
+    return run_in_container('sudo', '-i', '-u', 'nobody', 'bash', '-c', shellcode)
 
 
   if not os.path.exists(os.path.join(CONTAINER_ROOT, 'opt', 'yay')):
@@ -296,6 +296,8 @@ Defaults:nobody !tty_tickets
   if not flag_passed('install-docker'):
     di0(run_nobody_shell('yay -S --noconfirm docker'))
     di0(run_in_container('systemctl', 'enable', '--now', 'docker.service'))
+    di0(run_nobody_shell('sudo mkdir /etc/docker'))
+    di0(run_nobody_shell('''echo '{"bridge": "none","no-new-privileges": true}' | sudo tee /etc/docker/daemon.json'''))
     pass_flag('install-docker')
 
   if not flag_passed('install-rust'):
@@ -307,6 +309,7 @@ Defaults:nobody !tty_tickets
   time.sleep(1)
   print(f'Container is running, about to cross-compile for all targets')
   di0(run_nobody_shell('ls -alh /full-crisis'))
+  di0(run_nobody_shell('sudo chmod a+rw /var/run/docker.sock')) # Yeah yeah docker group this, docker group that. Our security boundary is the host.
   di0(run_nobody_shell('cd /full-crisis && cross build --target x86_64-pc-windows-gnu'))
   di0(run_nobody_shell('cd /full-crisis && cross build --target x86_64-unknown-linux-gnu'))
   di0(run_nobody_shell('cd /full-crisis && cross build --target aarch64-apple-darwin'))
@@ -316,12 +319,26 @@ Defaults:nobody !tty_tickets
 bg_t = threading.Thread(target=setup_container_async, args=())
 bg_t.start()
 
+nspawn_env = dict(os.environ)
+nspawn_env['SYSTEMD_SECCOMP'] = '0'
+
 subprocess.run([
   'systemd-nspawn',
     '--boot',
     '--machine', 'docker-on-arch',
     '--bind', f'{os.path.abspath(os.path.dirname(__file__))}:/full-crisis',
     '--capability=all',
+    '--system-call-filter=@keyring bpf',
+    '--system-call-filter=add_key bpf keyctl',
     '--directory', CONTAINER_ROOT,
-])
+], env=nspawn_env)
+
+# Untracked change notes
+'''
+
+We manually flipped the `nobody` user to ID 1000 to make file-mapping in/out of the host easier.
+After doing this make sure to sudo chown -R nobody:nobody /home/nobody so rustup can install toolchains.
+
+'''
+
 
