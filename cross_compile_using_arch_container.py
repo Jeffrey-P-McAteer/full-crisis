@@ -354,12 +354,3 @@ r = subprocess.run([
 
 sys.exit(r.returncode)
 
-# Untracked change notes
-'''
-
-We manually flipped the `nobody` user to ID 1000 to make file-mapping in/out of the host easier.
-After doing this make sure to sudo chown -R nobody:nobody /home/nobody so rustup can install toolchains.
-
-'''
-
-
