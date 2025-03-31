@@ -68,6 +68,16 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
     os.path.join(f'{td}', 'web_globe_icon.png')
   )
 
+  # Built artifacts
+  shutil.copy(
+    os.path.join(git_repo, 'target', 'x86_64-pc-windows-gnu', 'release', 'full-crisis.exe'),
+    os.path.join(f'{td}', 'full-crisis.x86_64-pc-windows-gnu.exe')
+  )
+  shutil.copy(
+    os.path.join(git_repo, 'target', 'x86_64-unknown-linux-gnu', 'release', 'full-crisis'),
+    os.path.join(f'{td}', 'full-crisis.x86_64-unknown-linux-gnu')
+  )
+
   with open(os.path.join(f'{td}', 'index.html'), 'w') as fd:
     fd.write(f'''
 <!DOCTYPE html>
@@ -92,11 +102,11 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
       <br/>
 
       <header>Download <img src="full-crisis-icon.transparent.128.png" style="border-radius:6pt;"/> </header>
-      <a class="dl win" href="about:blank">Windows x64</a>
-      <a class="dl mac" href="about:blank">MacOS x64 (todo)</a>
-      <a class="dl mac" href="about:blank">MacOS ARM (todo)</a>
-      <a class="dl linux" href="about:blank">Linux x64</a>
-      <a class="dl noapp" href="about:blank">Play on the Web</a>
+      <a class="dl win" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64</a>
+      <a class="dl mac" href="javascript:alert('todo cross-compile MacOS x64')">MacOS x64 (todo)</a>
+      <a class="dl mac" href="javascript:alert('todo cross-compile MacOS ARM')">MacOS ARM (todo)</a>
+      <a class="dl linux" href="full-crisis.x86_64-unknown-linux-gnu">Linux x64</a>
+      <a class="dl noapp" href="javascript:alert('todo compile for WASM')">Play on the Web</a>
 
       <header>Code</header>
       <p>
