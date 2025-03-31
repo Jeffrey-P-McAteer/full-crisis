@@ -75,6 +75,18 @@ fn window_conf() -> Conf {
     Conf {
         window_title: "Full-Crisis".to_owned(),
         fullscreen: false,
+        high_dpi: true,
+        sample_count: 8,
+        window_resizable: true,
+        icon: Some(miniquad::conf::Icon{
+            // uv run build_embedded_icon_assets.py
+            small:   include_bytes!("../icon/full-crisis-icon.16x16.rgba.bin").clone(),
+            medium:  include_bytes!("../icon/full-crisis-icon.32x32.rgba.bin").clone(),
+            big:     include_bytes!("../icon/full-crisis-icon.64x64.rgba.bin").clone(),
+
+        }),
         ..Default::default()
     }
 }
+
+
