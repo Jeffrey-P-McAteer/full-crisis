@@ -6,6 +6,7 @@ import tempfile
 import shutil
 import webbrowser
 import time
+import datetime
 
 git_repo = os.path.dirname(__file__)
 os.chdir(git_repo)
@@ -13,6 +14,8 @@ os.chdir(git_repo)
 git_remote_origin_url = subprocess.check_output(['git', 'remote', 'get-url', 'origin']).decode('utf-8').strip()
 
 open_preview = any('preview' in arg for arg in sys.argv)
+
+build_timestamp = 'Built at '+datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 
 with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
   print(f'Building pages for {git_repo} at {td}')
@@ -102,6 +105,7 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
       <br/>
 
       <header>Download <img src="full-crisis-icon.transparent.128.png" style="border-radius:6pt;"/> </header>
+      <pre>{build_timestamp}</pre>
       <a class="dl win" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64</a>
       <a class="dl mac" href="javascript:alert('todo cross-compile MacOS x64')">MacOS x64 (todo)</a>
       <a class="dl mac" href="javascript:alert('todo cross-compile MacOS ARM')">MacOS ARM (todo)</a>
