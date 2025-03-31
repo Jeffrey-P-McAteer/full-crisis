@@ -85,6 +85,10 @@ fn window_conf() -> Conf {
             big:     include_bytes!("../icon/full-crisis-icon.64x64.rgba.bin").clone(),
 
         }),
+        platform: miniquad::conf::Platform {
+            webgl_version: miniquad::conf::WebGLVersion::WebGL2,
+            ..Default::default()
+        },
         ..Default::default()
     }
 }

@@ -37,6 +37,11 @@ For cross-compilation, install `systemd-nspawn`.
 The script `run_docker_from_container.py` will download + run an Arch Linux container (rootfs located under `target/docker-on-arch`) with
 this folder mounted under `/full-crisis` within the nspawn container. We will then use https://github.com/cross-rs/cross to perform final cross-compilation.
 
+# Runtime Dependencies
+
+If you do NOT have hardware-accelerated OpenGL rendering available (typically my testing VMs), install Mesa which has software-rendering fallback options - https://github.com/pal1000/mesa-dist-win?tab=readme-ov-file#downloads
+
+
 
 # Vocabulary
 
