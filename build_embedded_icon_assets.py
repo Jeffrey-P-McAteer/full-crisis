@@ -40,3 +40,10 @@ for s in [16,32,64]:
   print(f'Wrote {len(output_bytes)} bytes to {output_bin}')
 
 
+# Also write out a .ico asset for windows embedding into the .exe format
+icon_img = PIL.Image.open(full_size_icon)
+icon_ico_file = os.path.join(os.path.dirname(__file__), 'icon', f'full-crisis-icon.ico')
+icon_sizes = [(16,16), (32, 32), (48, 48), (64,64), (96,96)]
+icon_img.save(icon_ico_file, sizes=icon_sizes)
+print(f'Saved {icon_ico_file}')
+

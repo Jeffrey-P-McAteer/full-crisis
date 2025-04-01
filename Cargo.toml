@@ -12,3 +12,8 @@ rust_iso639 = "0.0.3"
 version = "0.4"
 
 
+[target.x86_64-pc-windows-gnu.dependencies]
+winapi = {version = "0.3", features = ["wincon", "winuser"]}
+
+[build-dependencies]
+winres = "0.1"

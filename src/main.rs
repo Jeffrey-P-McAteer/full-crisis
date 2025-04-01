@@ -26,6 +26,7 @@ use macroquad::{
 // TODO move beyond hello world
 #[macroquad::main(window_conf)]
 async fn main() {
+    hide_console_iff_windows();
 
     // TODO read+report folder where game files will be searched from
     if let Some(proj_dir_obj) = directories::ProjectDirs::from("com.jmcateer", "FullCrisis",  "FullCrisis") {
@@ -92,5 +93,29 @@ fn window_conf() -> Conf {
         ..Default::default()
     }
 }
+
+
+fn hide_console_iff_windows() {
+    #[cfg(target_os = "windows")]
+    {
+        if let Ok(val) = env::var("NO_CONSOLE_DETATCH") {
+            if val.contains("y") || val.contains("Y") || val.contains("1") {
+                return;
+            }
+        }
+        // Check if we are run from the console or just launched with explorer.exe
+        let mut console_proc_list_buff: Vec<u32> = vec![0; 16];
+        let num_procs = unsafe {
+            winapi::um::wincon::GetConsoleProcessList(console_proc_list_buff.as_mut_ptr(), 16)
+        };
+        //eprintln!("num_procs={:?}", num_procs);
+        if num_procs == 1 || num_procs == 2 {
+            // We were launched from explorer.exe, detatch the console
+            unsafe { winapi::um::wincon::FreeConsole() };
+        }
+        // Otherwise do nothing, we want console messages when run from the console.
+    }
+}
+
 
 
