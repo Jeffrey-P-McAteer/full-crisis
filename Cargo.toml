@@ -2,6 +2,7 @@
 name = "full-crisis"
 version = "0.1.0"
 edition = "2024"
+build = "build.rs"
 
 [dependencies]
 directories = "6.0"
