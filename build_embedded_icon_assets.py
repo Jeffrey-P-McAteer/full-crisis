@@ -43,7 +43,8 @@ for s in [16,32,64]:
 # Also write out a .ico asset for windows embedding into the .exe format
 icon_img = PIL.Image.open(full_size_icon)
 icon_ico_file = os.path.join(os.path.dirname(__file__), 'icon', f'full-crisis-icon.ico')
-icon_sizes = [(16,16), (32, 32), (48, 48), (64,64), (96,96)]
+# See https://learn.microsoft.com/en-us/windows/apps/design/style/iconography/app-icon-construction
+icon_sizes = [(16,16), (24, 24), (32,32), (48, 48), (64,64), (96,96), (256,256)]
 icon_img.save(icon_ico_file, sizes=icon_sizes)
 print(f'Saved {icon_ico_file}')
 
