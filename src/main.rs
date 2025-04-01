@@ -98,7 +98,7 @@ fn window_conf() -> Conf {
 fn hide_console_iff_windows() {
     #[cfg(target_os = "windows")]
     {
-        if let Ok(val) = env::var("NO_CONSOLE_DETATCH") {
+        if let Ok(val) = std::env::var("NO_CONSOLE_DETATCH") {
             if val.contains("y") || val.contains("Y") || val.contains("1") {
                 return;
             }
