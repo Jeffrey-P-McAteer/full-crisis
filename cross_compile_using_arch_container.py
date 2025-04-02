@@ -324,14 +324,28 @@ Defaults:nobody !tty_tickets
     di0(run_nobody_shell('cargo install cross --git https://github.com/cross-rs/cross'))
     pass_flag('install-rust')
 
-  time.sleep(1)
-  print(f'Container is running, about to cross-compile for all targets')
   di0(run_nobody_shell('ls -alh /full-crisis'))
   di0(run_nobody_shell('sudo chmod a+rw /var/run/docker.sock')) # Yeah yeah docker group this, docker group that. Our security boundary is the host.
+
+  # # # # #
+  #
+  #    Compilation
+  #
+  # # # # #
+
+  time.sleep(1)
+  print(f'Container is running, about to cross-compile for all targets')
 
   for host_triple in ['x86_64-pc-windows-gnu', 'x86_64-unknown-linux-gnu', 'aarch64-apple-darwin']:
     di0(run_nobody_shell(f'cd /full-crisis && /home/nobody/.cargo/bin/cross build --target {host_triple}'))
     di0(run_nobody_shell(f'cd /full-crisis && /home/nobody/.cargo/bin/cross build --release --target {host_triple}'))
+
+
+  # # # # #
+  #
+  #    Compilation
+  #
+  # # # # #
 
   time.sleep(1)
   run_in_container('shutdown', 'now')

@@ -4,6 +4,8 @@ use winres;
 use std::path::{Path, PathBuf};
 
 fn main() {
+  println!("cargo::rerun-if-changed=icon/full-crisis-icon.ico");
+  println!("cargo::rerun-if-changed=build.rs");
   embed_icon();
 }
 
@@ -53,7 +55,7 @@ fn embed_icon() {
   // println!("res={:#?}", res);
 
   if let Err(e) = res.compile() {
-    println!("Error embedding icon in PE32+ exe file: {:?}", e);
+    println!("cargo::error=Error embedding icon in PE32+ exe file: {:?}", e);
   }
 
 }
