@@ -324,6 +324,10 @@ Defaults:nobody !tty_tickets
     di0(run_nobody_shell('cargo install cross --git https://github.com/cross-rs/cross'))
     pass_flag('install-rust')
 
+  if not flag_passed('install-mingw-w64-binutils'):
+    di0(run_nobody_shell('yay -S --noconfirm mingw-w64-binutils'))
+    pass_flag('install-mingw-w64-binutils')
+
   di0(run_nobody_shell('ls -alh /full-crisis'))
   di0(run_nobody_shell('sudo chmod a+rw /var/run/docker.sock')) # Yeah yeah docker group this, docker group that. Our security boundary is the host.
 

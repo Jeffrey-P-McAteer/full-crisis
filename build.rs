@@ -26,25 +26,29 @@ fn embed_icon() {
   // Add icon
   let mut res = winres::WindowsResource::new();
 
-  res.set_toolkit_path(".");
 
-  let windres_paths = vec![
-    "/usr/bin/x86_64-w64-mingw32-windres" // TODO tool violation, must be under ./build/
-  ];
-  for p in windres_paths {
-    if Path::new(p).exists() {
-      res.set_windres_path(p);
-      break;
+  if cfg!(unix) {
+
+    res.set_toolkit_path("/usr/bin");
+
+    let windres_paths = vec![
+      "/usr/bin/x86_64-w64-mingw32-windres" // TODO tool violation, must be under ./build/
+    ];
+    for p in windres_paths {
+      if Path::new(p).exists() {
+        res.set_windres_path(p);
+        break;
+      }
     }
-  }
 
-  let ar_paths = vec![
-    "/usr/bin/x86_64-w64-mingw32-ar" // TODO tool violation, must be under ./build/
-  ];
-  for p in ar_paths {
-    if Path::new(p).exists() {
-      res.set_ar_path(p);
-      break;
+    let ar_paths = vec![
+      "/usr/bin/x86_64-w64-mingw32-ar" // TODO tool violation, must be under ./build/
+    ];
+    for p in ar_paths {
+      if Path::new(p).exists() {
+        res.set_ar_path(p);
+        break;
+      }
     }
   }
 
