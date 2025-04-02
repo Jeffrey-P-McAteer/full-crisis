@@ -57,7 +57,7 @@ rootca_folder = os.path.join(repo_dir, 'rootca')
 os.makedirs(rootca_folder, exist_ok=True)
 
 rootca_priv_key_file = os.path.join(rootca_folder, 'rootca_key.key')
-rootca_cert_file = os.path.join(rootca_folder, 'rootca_key.crt')
+rootca_cert_file = os.path.join(rootca_folder, 'rootca.crt')
 if not os.path.exists(rootca_priv_key_file):
   # This isn't supposed to be secure, it's an anti-bot-parsing technique.
   rootca_priv_key_config = {

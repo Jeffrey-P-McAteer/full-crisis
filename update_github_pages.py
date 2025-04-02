@@ -17,6 +17,12 @@ import datetime
 git_repo = os.path.dirname(__file__)
 os.chdir(git_repo)
 
+# First just run sign_release_bins.py so any .exe files we copy in are signed.
+# If this fails entirely, an un-signed binary is fine to ship too so this step is not fatal.
+subprocess.run([
+  'uv', 'run', os.path.join(git_repo, 'sign_release_bins.py')
+], check=False)
+
 git_remote_origin_url = subprocess.check_output(['git', 'remote', 'get-url', 'origin']).decode('utf-8').strip()
 
 open_preview = any('preview' in arg for arg in sys.argv)
@@ -77,6 +83,15 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
     os.path.join(f'{td}', 'web_globe_icon.png')
   )
 
+  root_ca_crt = os.path.join(git_repo, 'rootca', 'rootca.crt')
+  if not os.path.exists(root_ca_crt):
+    raise Exception(f'Please create {root_ca_crt} first! Run "uv run rootca_mgmt.py"')
+
+  shutil.copy(
+    root_ca_crt,
+    os.path.join(f'{td}', 'rootca.crt')
+  )
+
   # Built artifacts
   shutil.copy(
     os.path.join(git_repo, 'target', 'x86_64-pc-windows-gnu', 'release', 'full-crisis.exe'),
@@ -131,6 +146,20 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
       <br/>
       <header>Metrics</header>
       <a href="loc-graph.png"><img class="kpi-chart" src="loc-graph.png"></a>
+      <br/>
+      <br/>
+      <br/>
+      <header>Development RootCA</header>
+      <p>
+        During development windows x64 binaries will be signed using a self-signed certificate;
+        in order to trust this system you will have to manually install this certificate as a Root Certificate Authority
+        on your machine.
+        <br/>
+        <span class="warning">THIS IS AN INSECURE DECISION!</span>
+        <br/>
+        The development Root Certificate Authority may be <a href="rootca.crt">downloaded here</a>.
+      </p>
+      <br/>
       <br/>
       <br/>
       <br/>
@@ -227,6 +256,17 @@ img.kpi-chart:hover {
   transform: scale(1.06);
 }
 
+.warning {
+  /* colors from https://www.colourlovers.com/palette/2727/Hurricane_Warning! */
+  font-weight: bold;
+  color: #FF3030;
+  -webkit-text-stroke-width: 1pt;
+  -webkit-text-stroke-color: #680000;
+  padding: 1pt 8pt;
+  border-radius: 2pt;
+  border: 1pt solid black;
+  background: #FFFF7F
+}
 
 @media only screen and (max-width: 620pt) {
   main {

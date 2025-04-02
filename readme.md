@@ -28,6 +28,7 @@ Join historic disasters as emergency response personnel and hone your crisis-sol
 The following programs must be installed and available on your system's `PATH`
 
  - `python` (3.10+ or so, anything modern)
+ - `uv` (because it tames python's packaging chaos)
  - `git`
  - `cargo`
     - See https://rustup.rs/
@@ -64,6 +65,9 @@ We use Macroquad because it is a simple framework that supports PC + web
 
  - https://github.com/cross-rs/cross
  - https://mwalkowski.com/post/container-inception-docker-in-nspawn-container/
+
+ - https://github.com/burtonageo/cargo-bundle
+
 
 
 # License
