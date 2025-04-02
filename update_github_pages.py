@@ -1,3 +1,9 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#
+# ]
+# ///
 
 import os
 import sys
@@ -81,6 +87,11 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
     os.path.join(f'{td}', 'full-crisis.x86_64-unknown-linux-gnu')
   )
 
+  # Write files like f'{td}/loc-graph.png' for inclusion in HTML below
+  subprocess.run([
+    'uv', 'run', os.path.join(git_repo, 'record_kpis.py'), f'{td}'
+  ], check=True)
+
   with open(os.path.join(f'{td}', 'index.html'), 'w') as fd:
     fd.write(f'''
 <!DOCTYPE html>
@@ -118,6 +129,8 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
       </p>
       <br/>
       <br/>
+      <header>Metrics</header>
+      <a href="loc-graph.png"><img class="kpi-chart" src="loc-graph.png"></a>
       <br/>
       <br/>
       <br/>
@@ -204,6 +217,16 @@ a.noapp {
   background-color: #ffa700;
   border-color: #ffa700;
 }
+
+img.kpi-chart {
+  width: 300pt;
+  padding: 0;
+  display: inline-block;
+}
+img.kpi-chart:hover {
+  transform: scale(1.06);
+}
+
 
 @media only screen and (max-width: 620pt) {
   main {
