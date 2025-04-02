@@ -12,6 +12,11 @@ import time
 import datetime
 import shutil
 
+# jeffry-isms; he cloned + installed osslsigncode to /opt/osslsigncode/build
+if not shutil.which('osslsigncode') and os.path.exists('/opt/osslsigncode/build') and not '/opt/osslsigncode/build' in os.environ.get('PATH', ''):
+  os.environ['PATH'] = os.environ.get('PATH', '')+':/opt/osslsigncode/build'
+
+
 git_repo = os.path.dirname(__file__)
 os.chdir(git_repo)
 
