@@ -62,8 +62,6 @@ fn embed_icon() {
     println!("cargo::error=Error embedding icon in PE32+ exe file: {:?}", e);
   }
 
-  println!("cargo:rustc-link-arg-bins=resource.lib"); // This line, from https://github.com/mxre/winres/issues/32
-
 }
 
 
