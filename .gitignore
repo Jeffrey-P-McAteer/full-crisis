@@ -9,3 +9,11 @@ obj
 rootca
 rootca/*
 
+# Windowsisms
+Thumbs.db
+Thumbs.db\:encryptable
+Thumbs.db*
+
+
+
+
