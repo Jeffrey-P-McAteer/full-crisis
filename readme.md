@@ -69,6 +69,8 @@ We use Macroquad because it is a simple framework that supports PC + web
  - https://github.com/burtonageo/cargo-bundle
  - https://www.microsoft.com/en-us/wdsi/filesubmission
 
+ - https://areweguiyet.com/
+ - https://github.com/RibirX/Ribir
 
 # License
 
