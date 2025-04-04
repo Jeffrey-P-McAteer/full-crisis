@@ -276,10 +276,11 @@ img.kpi-chart:hover {
 
 @media only screen and (max-width: 620pt) {
   main {
-    width: 90vw !important;
+    width: 84vw !important;
     top: 0pt !important;
     border-radius: 0pt !important;
-    padding-top: 260pt !important;
+    padding: 2pt 4pt !important;
+    padding-top: 240pt !important;
   }
 }
 '''.strip())
