@@ -132,11 +132,11 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
 
       <header>Download <img src="full-crisis-icon.transparent.128.png" style="border-radius:6pt;"/> </header>
       <pre>{build_timestamp}</pre>
-      <a class="dl win" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64</a>
-      <a class="dl mac" href="javascript:alert('todo cross-compile MacOS x64')">MacOS x64 (todo)</a>
-      <a class="dl mac" href="javascript:alert('todo cross-compile MacOS ARM')">MacOS ARM (todo)</a>
-      <a class="dl linux" href="full-crisis.x86_64-unknown-linux-gnu">Linux x64</a>
-      <a class="dl noapp" href="javascript:alert('todo compile for WASM')">Play on the Web</a>
+      <a class="dl win mobile-light-bordered-text" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64</a>
+      <a class="dl mac mobile-light-bordered-text" href="javascript:alert('todo cross-compile MacOS x64')">MacOS x64 (todo)</a>
+      <a class="dl mac mobile-light-bordered-text" href="javascript:alert('todo cross-compile MacOS ARM')">MacOS ARM (todo)</a>
+      <a class="dl linux mobile-light-bordered-text" href="full-crisis.x86_64-unknown-linux-gnu">Linux x64</a>
+      <a class="dl noapp mobile-light-bordered-text" href="javascript:alert('todo compile for WASM')">Play on the Web</a>
 
       <header>Code</header>
       <p>
@@ -274,13 +274,18 @@ img.kpi-chart:hover {
   paint-order: stroke fill;
 }
 
-@media only screen and (max-width: 620pt) {
+@media only screen and (max-width: 630pt) {
   main {
-    width: 84vw !important;
+    width: 94vw !important;
     top: 0pt !important;
     border-radius: 0pt !important;
     padding: 2pt 4pt !important;
     padding-top: 240pt !important;
+  }
+  .mobile-light-bordered-text {
+    -webkit-text-stroke-width: 1pt;
+    -webkit-text-stroke-color: #E0E0E0;
+    paint-order: stroke fill;
   }
 }
 '''.strip())
