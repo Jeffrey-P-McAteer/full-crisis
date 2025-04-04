@@ -120,7 +120,7 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
   </head>
   <body>
     <main>
-      <header></header>
+      <br/>
       <p>
         Join historic disasters as emergency response personnel and hone your crisis-solving skills while saving the world!
       </p>
@@ -268,9 +268,15 @@ img.kpi-chart:hover {
   background: #FFFF7F
 }
 
+.background-bordered-text {
+  -webkit-text-stroke-width: 4pt;
+  -webkit-text-stroke-color: rgba(255,106,0,1); /* match top of gradient <main> gradient */
+  paint-order: stroke fill;
+}
+
 @media only screen and (max-width: 620pt) {
   main {
-    width: 94vw !important;
+    width: 90vw !important;
     top: 0pt !important;
     border-radius: 0pt !important;
     padding-top: 260pt !important;
