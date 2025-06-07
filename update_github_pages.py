@@ -199,7 +199,7 @@ main {
   font-family: Arial, sans-serif;
   font-size: 1.8em;
   color: #3E124A;
-  width: 600pt;
+  width: 740pt;
   position: absolute;
   top: 60pt;
   left: 0;
