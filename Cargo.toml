@@ -9,12 +9,35 @@ directories = "6.0"
 sys-locale = "0.3"
 rust_iso639 = "0.0.3"
 
-[dependencies.macroquad]
-version = "0.4"
+# File dialogues, from the hello-world iced editor
+rfd = "0.13"
+
+
+[dependencies.iced]
+#version = "0.13"
+git = "https://github.com/iced-rs/iced.git"
+features = ["wgpu", "tokio", "canvas", "image", "svg", "highlighter"]
+
+[dependencies.iced_renderer]
+version = "*"
+features = ["wgpu"]
+
+[dependencies.iced_aw]
+#version = "0.12"
+git = "https://github.com/iced-rs/iced_aw.git"
+features = ["tabs"]
+
+[dependencies.tokio]
+version = "1"
+features = ["rt-multi-thread", "macros", "io-util", "time", "net", "fs", "signal"]
 
 
 [target.x86_64-pc-windows-gnu.dependencies]
 winapi = {version = "0.3", features = ["wincon", "winuser"]}
 
+[target.x86_64-pc-windows-msvc.dependencies]
+winapi = {version = "0.3", features = ["wincon", "winuser"]}
+
 [build-dependencies]
 winres = "0.1"
+

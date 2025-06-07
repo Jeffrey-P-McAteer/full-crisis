@@ -17,15 +17,11 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-use macroquad::{
-    prelude::*,
-    ui::{hash, root_ui, widgets::InputText},
-    window::request_new_screen_size,
-};
+mod gui;
+mod err;
 
 // TODO move beyond hello world
-#[macroquad::main(window_conf)]
-async fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     hide_console_iff_windows();
 
     // TODO read+report folder where game files will be searched from
@@ -42,57 +38,20 @@ async fn main() {
         }
     }
 
-    let mut user_text_input = String::new();
+    // Iced wants to own the GUI thread and insists on using the main thread; so we let it.
+    let r = iced::application(gui::Editor::new, gui::Editor::update, gui::Editor::view)
+          .theme(gui::Editor::theme)
+          //.font(include_bytes!("../fonts/icons.ttf").as_slice())
+          .default_font(iced::Font::MONOSPACE)
+          .run();
 
-    loop {
-        clear_background(RED);
-
-        draw_line(40.0, 40.0, 100.0, 200.0, 15.0, BLUE);
-        draw_rectangle(screen_width() / 2.0 - 60.0, 100.0, 120.0, 60.0, GREEN);
-
-        draw_text("Hello, Macroquad!", 20.0, 20.0, 30.0, DARKGRAY);
-
-        let window_id = hash!();
-        root_ui().window(
-            window_id,
-            vec2(12.0, 40.0),
-            vec2(screen_width() * 0.75, 48.0),
-            |ui| {
-                let input_text_id = hash!();
-                InputText::new(input_text_id)
-                    .label("")
-                    .size(vec2(screen_width() - 4.0, 48.0 - 4.0))
-                    .ui(ui, &mut user_text_input);
-            },
-        );
-
-
-        next_frame().await
+    if let Err(e) = r {
+        eprintln!("[ Error in main() ] {}", e);
     }
+
+    Ok(())
 }
 
-
-fn window_conf() -> Conf {
-    Conf {
-        window_title: "Full-Crisis".to_owned(),
-        fullscreen: false,
-        high_dpi: true,
-        sample_count: 8,
-        window_resizable: true,
-        icon: Some(miniquad::conf::Icon{
-            // uv run build_embedded_icon_assets.py
-            small:   include_bytes!("../icon/full-crisis-icon.16x16.rgba.bin").clone(),
-            medium:  include_bytes!("../icon/full-crisis-icon.32x32.rgba.bin").clone(),
-            big:     include_bytes!("../icon/full-crisis-icon.64x64.rgba.bin").clone(),
-
-        }),
-        platform: miniquad::conf::Platform {
-            webgl_version: miniquad::conf::WebGLVersion::WebGL2,
-            ..Default::default()
-        },
-        ..Default::default()
-    }
-}
 
 
 fn hide_console_iff_windows() {
