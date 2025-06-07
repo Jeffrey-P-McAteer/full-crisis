@@ -209,7 +209,7 @@ main {
   box-shadow: #3E124A 2pt 2pt 24pt;
   padding: 6pt 16pt;
 
-  padding-top: 320pt;
+  padding-top: 440pt;
   background-image:    url(full-crisis-splash.transparent.png), linear-gradient(180deg, rgba(255,106,0,1) 0%, rgba(255,106,0,1) 22%, rgba(245,244,220,1) 66%, rgba(245,244,220,1) 100%);
   background-size:     contain;
   background-repeat:   no-repeat;
