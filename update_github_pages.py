@@ -92,6 +92,17 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
     os.path.join(f'{td}', 'rootca.crt')
   )
 
+  # If a target has not been built, detect + offer to build it
+  for target_triple in ['x86_64-unknown-linux-gnu', 'x86_64-pc-windows-gnu']:
+    if not os.path.exists(os.path.join(git_repo, 'target', target_triple, 'release')):
+      print(os.path.join(git_repo, 'target', target_triple, 'release'), 'Does not exist, build now?')
+      if not 'y'.casefold() in input('y/n?').casefold():
+        sys.exit(1)
+      else:
+        subprocess.run([
+          'cargo', 'build', '--target', target_triple, '--release'
+        ])
+
   # Built artifacts
   shutil.copy(
     os.path.join(git_repo, 'target', 'x86_64-pc-windows-gnu', 'release', 'full-crisis.exe'),
