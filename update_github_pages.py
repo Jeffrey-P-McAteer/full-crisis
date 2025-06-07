@@ -17,10 +17,10 @@ import datetime
 git_repo = os.path.dirname(__file__)
 os.chdir(git_repo)
 
-# First just run sign_release_bins.py so any .exe files we copy in are signed.
+# First just run sign-release-bins.py so any .exe files we copy in are signed.
 # If this fails entirely, an un-signed binary is fine to ship too so this step is not fatal.
 subprocess.run([
-  'uv', 'run', os.path.join(git_repo, 'sign_release_bins.py')
+  'uv', 'run', os.path.join(git_repo, 'sign-release-bins.py')
 ], check=False)
 
 git_remote_origin_url = subprocess.check_output(['git', 'remote', 'get-url', 'origin']).decode('utf-8').strip()
@@ -85,7 +85,7 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
 
   root_ca_crt = os.path.join(git_repo, 'rootca', 'rootca.crt')
   if not os.path.exists(root_ca_crt):
-    raise Exception(f'Please create {root_ca_crt} first! Run "uv run rootca_mgmt.py"')
+    raise Exception(f'Please create {root_ca_crt} first! Run "uv run rootca-mgmt.py"')
 
   shutil.copy(
     root_ca_crt,
@@ -115,7 +115,7 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
 
   # Write files like f'{td}/loc-graph.png' for inclusion in HTML below
   subprocess.run([
-    'uv', 'run', os.path.join(git_repo, 'record_kpis.py'), f'{td}'
+    'uv', 'run', os.path.join(git_repo, 'record-kpis.py'), f'{td}'
   ], check=True)
 
   with open(os.path.join(f'{td}', 'index.html'), 'w') as fd:
@@ -319,7 +319,7 @@ img.kpi-chart:hover {
   ], check=True, cwd=f'{td}')
 
   subprocess.run([
-    'git', 'commit', '-m', 'Automated update from update_github_pages.py'
+    'git', 'commit', '-m', 'Automated update from update-github-pages.py'
   ], check=True, cwd=f'{td}')
 
   subprocess.run([
