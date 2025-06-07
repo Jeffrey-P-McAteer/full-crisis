@@ -32,10 +32,7 @@ version = "1"
 features = ["rt-multi-thread", "macros", "io-util", "time", "net", "fs", "signal"]
 
 
-[target.x86_64-pc-windows-gnu.dependencies]
-winapi = {version = "0.3", features = ["wincon", "winuser"]}
-
-[target.x86_64-pc-windows-msvc.dependencies]
+[target.'cfg(target_os = "windows")'.dependencies]
 winapi = {version = "0.3", features = ["wincon", "winuser"]}
 
 [build-dependencies]
