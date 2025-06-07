@@ -9,6 +9,9 @@ obj
 rootca
 rootca/*
 
+dist
+dist/*
+
 # Windowsisms
 Thumbs.db
 Thumbs.db\:encryptable
