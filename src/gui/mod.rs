@@ -30,19 +30,7 @@ pub enum Message {
     FileOpened(Result<(PathBuf, Arc<String>), Error>),
     SaveFile,
     FileSaved(Result<PathBuf, Error>),
-}
-
-impl Default for Editor {
-  fn default() -> Editor {
-    Self {
-        file: None,
-        content: text_editor::Content::new(),
-        theme: highlighter::Theme::SolarizedDark,
-        word_wrap: true,
-        is_loading: true,
-        is_dirty: false,
-    }
-  }
+    Nop,
 }
 
 impl Editor {
@@ -63,6 +51,10 @@ impl Editor {
                         env!("CARGO_MANIFEST_DIR")
                     )),
                     Message::FileOpened,
+                ),
+                Task::perform(
+                    run_background_async_tasks(),
+                    |_| { Message::Nop }, // _wierd_, why?
                 ),
                 widget::focus_next(),
             ]),
@@ -145,6 +137,9 @@ impl Editor {
                 }
 
                 Task::none()
+            },
+            Message::Nop => {
+              Task::none()
             }
         }
     }
@@ -248,6 +243,13 @@ impl Editor {
 pub enum Error {
     DialogClosed,
     IoError(io::ErrorKind),
+}
+
+async fn run_background_async_tasks() -> Result<(), Error> {
+
+  eprintln!("TODO run_background_async_tasks");
+
+  Ok(())
 }
 
 async fn open_file() -> Result<(PathBuf, Arc<String>), Error> {
