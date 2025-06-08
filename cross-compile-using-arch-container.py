@@ -347,16 +347,11 @@ Defaults:nobody !tty_tickets
   #
   # # # # #
 
-  # time.sleep(0.5)
-  # print(f'Performing Cross docker image creation')
-  # di0(run_nobody_shell('cd /full-crisis && docker build . -t cross-x86_64-unknown-linux-gnu -f cargo-cross/Dockerfile.x86_64-unknown-linux-gnu --network=host '))
-  # di0(run_nobody_shell('cd /full-crisis && docker build . -t cross-i686-unknown-linux-gnu -f cargo-cross/Dockerfile.i686-unknown-linux-gnu --network=host '))
-
   time.sleep(0.5)
   print(f'Container is running, about to cross-compile for all targets')
 
   cmds_and_exit_codes = dict()
-  for host_triple in ['x86_64-pc-windows-gnu', 'i686-pc-windows-gnu', 'x86_64-unknown-linux-musl', 'i686-unknown-linux-musl', 'aarch64-apple-darwin']:
+  for host_triple in ['x86_64-pc-windows-gnu', 'i686-pc-windows-gnu', 'x86_64-unknown-linux-gnu', 'i686-unknown-linux-gnu', 'aarch64-apple-darwin']:
     cmd, ecode = run_nobody_shell(f'cd /full-crisis && /home/nobody/.cargo/bin/cross build --target {host_triple}')
     cmds_and_exit_codes[cmd] = ecode
     cmd, ecode = run_nobody_shell(f'cd /full-crisis && /home/nobody/.cargo/bin/cross build --release --target {host_triple}')
