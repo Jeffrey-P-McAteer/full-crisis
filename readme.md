@@ -23,6 +23,9 @@ Join historic disasters as emergency response personnel and hone your crisis-sol
     - [ ] Is it worth researching building a `.app` bundle w/o Apple's toolchain? Probably not worth it.
     - Linux folks are capable of running `cargo run --release`
 
+ - [-] See if we can place a 32-bit windows PE32 binary in a web-based VM such as https://github.com/Pixelsuft/SandboXP for our web demos
+
+
 # Development Dependencies
 
 The following programs must be installed and available on your system's `PATH`

@@ -327,16 +327,12 @@ Defaults:nobody !tty_tickets
     pass_flag('install-rust')
 
   if not flag_passed('install-glib2'):
-    di0(run_nobody_shell('yay -S --noconfirm glib2'))
+    di0(run_nobody_shell('yay -S --noconfirm glib2 glib2-devel lib32-glib2 gdk-pixbuf2 lib32-gdk-pixbuf2'))
     pass_flag('install-glib2')
 
   if not flag_passed('install-mingw-w64-binutils'):
     di0(run_nobody_shell('yay -S --noconfirm mingw-w64-binutils'))
     pass_flag('install-mingw-w64-binutils')
-
-  if not flag_passed('install-docker-buildx'):
-    di0(run_nobody_shell('yay -S --noconfirm docker-buildx'))
-    pass_flag('install-docker-buildx')
 
   di0(run_nobody_shell('ls -alh /full-crisis'))
   di0(run_nobody_shell('sudo chmod a+rw /var/run/docker.sock')) # Yeah yeah docker group this, docker group that. Our security boundary is the host.
@@ -354,8 +350,17 @@ Defaults:nobody !tty_tickets
   for host_triple in ['x86_64-pc-windows-gnu', 'i686-pc-windows-gnu', 'x86_64-unknown-linux-gnu', 'i686-unknown-linux-gnu', 'aarch64-apple-darwin']:
     cmd, ecode = run_nobody_shell(f'cd /full-crisis && /home/nobody/.cargo/bin/cross build --target {host_triple}')
     cmds_and_exit_codes[cmd] = ecode
+    if ecode != 0:
+      # Try again w/o cross
+      cmd, ecode = run_nobody_shell(f'cd /full-crisis && cargo build --target {host_triple}')
+      cmds_and_exit_codes[cmd] = ecode
+
     cmd, ecode = run_nobody_shell(f'cd /full-crisis && /home/nobody/.cargo/bin/cross build --release --target {host_triple}')
     cmds_and_exit_codes[cmd] = ecode
+    if ecode != 0:
+      # Try again w/o cross
+      cmd, ecode = run_nobody_shell(f'cd /full-crisis && cargo build --release --target {host_triple}')
+      cmds_and_exit_codes[cmd] = ecode
 
   # # # # #
   #
