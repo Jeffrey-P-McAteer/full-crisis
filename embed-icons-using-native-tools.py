@@ -102,7 +102,7 @@ def create_icns(icon_png_path, output_icns_path):
             resized.save(iconset_dir / name)
 
     subprocess.run([shutil.which('iconutil'), "-c", "icns", iconset_dir], check=True)
-    shutil.move('Icon.icns', output_icns_path)
+    shutil.move(os.path.join(os.path.dirname(output_icns_path), 'Icon.icns'), output_icns_path)
     shutil.rmtree(iconset_dir)
 
 def create_info_plist(app_name, executable_name, icon_file):
