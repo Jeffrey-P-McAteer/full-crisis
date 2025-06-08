@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#
+#   "Pillow"
 # ]
 # ///
 
@@ -10,6 +10,11 @@ import sys
 import subprocess
 import shutil
 import time
+import pathlib
+import plistlib
+
+import PIL
+
 
 def find_name_under(dir_name, file_name, max_recursion=8):
   found_files = []
@@ -28,6 +33,7 @@ def find_name_under(dir_name, file_name, max_recursion=8):
 
 repo_dir = os.path.dirname(__file__)
 ico_file = os.path.join(repo_dir, 'icon', 'full-crisis-icon.ico')
+png_file = os.path.join(repo_dir, 'icon', 'full-crisis-icon.png')
 
 resource_hacker_folders = find_name_under(r'C:\Program Files', 'Resource Hacker', max_recursion=1)
 resource_hacker_folders += find_name_under(r'C:\Program Files (x86)', 'Resource Hacker', max_recursion=1)
@@ -41,7 +47,7 @@ if len(resource_hacker_folders) > 0:
   resource_hacker_exes = find_name_under(resource_hacker_folders[0], 'ResourceHacker.exe')
   if len(resource_hacker_exes) > 0:
     resource_hacker_exe = resource_hacker_exes[0]
-    print(f'Found Resource Hacker at {resource_hacker_exe}')
+    print(f'[ Win ] Found Resource Hacker at {resource_hacker_exe}')
 
     full_crisis_exes = find_name_under(os.path.join(repo_dir, 'target', 'x86_64-pc-windows-gnu'), 'full-crisis.exe', max_recursion=2)
     full_crisis_exes += find_name_under(os.path.join(repo_dir, 'target', 'x86_64-pc-windows-msvc'), 'full-crisis.exe', max_recursion=2)
@@ -67,8 +73,91 @@ if len(resource_hacker_folders) > 0:
         print(f'WARNING: {full_crisis_exe_with_icon} does not exist!')
 
   else:
-    print(f'resource_hacker_exes = {resource_hacker_exes}')
+    print(f'[ Win ] resource_hacker_exes = {resource_hacker_exes}')
 else:
-  print(f'resource_hacker_folders = {resource_hacker_folders}')
+  print(f'[ Win ] resource_hacker_folders = {resource_hacker_folders}')
+
+print('[ Win ] Done!')
+
+# Now do mac icons + assemble a .app file under target/Mac
+
+def create_icns(icon_png_path, output_icns_path):
+    iconset_dir = pathlib.Path(output_icns_path)
+    iconset_dir.mkdir(exist_ok=True)
+
+    sizes = [16, 32, 64, 128, 256, 512, 1024]
+    with PIL.Image.open(icon_png_path) as img:
+        for size in sizes:
+            for scale in [1, 2]:
+                icon_size = size * scale
+                icon_name = f"icon_{size}x{size}{'@2x' if scale == 2 else ''}.png"
+                resized = img.resize((icon_size, icon_size), Image.LANCZOS)
+                resized.save(iconset_dir / icon_name)
+
+    subprocess.run([shutil.which('iconutil'), "-c", "icns", iconset_dir], check=True)
+
+def create_info_plist(app_name, executable_name, icon_file):
+    plist = {
+        "CFBundleName": app_name,
+        "CFBundleDisplayName": app_name,
+        "CFBundleExecutable": executable_name,
+        "CFBundleIdentifier": f"com.jmcateer.{app_name.lower()}",
+        "CFBundleVersion": "1.0",
+        "CFBundlePackageType": "APPL",
+        "CFBundleSignature": "????",
+        "CFBundleIconFile": icon_file,
+        "LSMinimumSystemVersion": "10.10"
+    }
+    return plist
+
+def build_app_bundle(folder_to_build_in, app_name, binary_path, icon_png):
+    app_dir = pathlib.Path(os.path.join(folder_to_build_in, f"{app_name}.app"))
+    contents = app_dir / "Contents"
+    macos = contents / "MacOS"
+    resources = contents / "Resources"
+
+    for path in [app_dir, contents, macos, resources]:
+        path.mkdir(parents=True, exist_ok=True)
+
+    # Copy binary
+    shutil.copy(binary_path, macos / app_name)
+    os.chmod(macos / app_name, 0o755)
+
+    # Convert and copy icon
+    icns_path = resources / "Icon.icns"
+    create_icns(icon_png, icns_path)
+
+    # Write Info.plist
+    plist = create_info_plist(app_name, app_name, "Icon.icns")
+    with open(contents / "Info.plist", "wb") as f:
+        plistlib.dump(plist, f)
+
+    print(f"{app_name}.app created successfully at {folder_to_build_in}")
+
+if shutil.which('iconutil'):
+  print(f'Found iconutil at {shutil.which("iconutil")}, building mac app...')
+
+  mac_targets = ['x86_64-apple-darwin', 'aarch64-apple-darwin']
+  for target in mac_targets:
+    if not os.path.exists(os.path.join(repo_dir, 'target', target, 'release', 'full-crisis')):
+      subprocess.run([
+        'cargo', 'build', '--release', f'{target}'
+      ], check=True, cwd=repo_dir)
+
+  for target in mac_targets:
+    if os.path.exists(os.path.join(repo_dir, 'target', target, 'release', 'full-crisis')):
+      build_app_bundle(
+        os.path.join(repo_dir, 'target', target, 'release'),
+        'Full-Crisis',
+        os.path.join(repo_dir, 'target', target, 'release', 'full-crisis'),
+        png_file
+      )
+
+  print('[ Mac ] Done!')
+else:
+  print('[ Mac ] Skipping because iconutil is not installed')
+
+
+
 
 
