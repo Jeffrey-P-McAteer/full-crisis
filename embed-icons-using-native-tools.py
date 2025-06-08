@@ -12,6 +12,7 @@ import shutil
 import time
 import pathlib
 import plistlib
+import tempfile
 
 import PIL
 import PIL.Image
@@ -152,6 +153,11 @@ def build_app_bundle(folder_to_build_in, app_name, binary_path, icon_png):
 
     return app_dir
 
+def create_dmg_bundle(dmg_file_path, app_dir_file):
+  with tempfile.TemporaryDirectory(suffix='full-crisis-staging') as staging_dir:
+    print(f'staging_dir = {staging_dir}')
+
+
 if shutil.which('iconutil'):
   print(f'Found iconutil at {shutil.which("iconutil")}, building mac app...')
 
@@ -173,7 +179,7 @@ if shutil.which('iconutil'):
       # Now package app_dir_file into a .dmg file
       dmg_file_path = rreplace(str(app_dir_file), '.app', '.dmg')
       print(f'Creating {dmg_file_path}')
-
+      create_dmg_bundle(dmg_file_path, app_dir_file)
 
 
   print('[ Mac ] Done!')
