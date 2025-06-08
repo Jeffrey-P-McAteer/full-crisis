@@ -347,7 +347,13 @@ Defaults:nobody !tty_tickets
   #
   # # # # #
 
-  time.sleep(1)
+  time.sleep(0.5)
+
+  print(f'Performing Cross docker image creation')
+  di0(run_nobody_shell('cd /full-crisis && docker build . -t cross-x86_64-unknown-linux-gnu -f cargo-cross/Dockerfile.x86_64-unknown-linux-gnu --network=host '))
+  di0(run_nobody_shell('cd /full-crisis && docker build . -t cross-i686-unknown-linux-gnu -f cargo-cross/Dockerfile.i686-unknown-linux-gnu --network=host '))
+
+  time.sleep(0.5)
   print(f'Container is running, about to cross-compile for all targets')
 
   cmds_and_exit_codes = dict()
@@ -394,7 +400,8 @@ r = subprocess.run([
     '--capability=all',
     '--network-veth',
     '--system-call-filter=@keyring bpf',
-    '--system-call-filter=add_key bpf keyctl',
+    '--system-call-filter=add_key bpf keyctl mount mknod',
+    '--private-users=no',
     '--directory', CONTAINER_ROOT,
 ], env=nspawn_env)
 
