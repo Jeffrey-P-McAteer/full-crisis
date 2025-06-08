@@ -83,7 +83,8 @@ print('[ Win ] Done!')
 # Now do mac icons + assemble a .app file under target/Mac
 
 def create_icns(icon_png_path, output_icns_path):
-    iconset_dir = pathlib.Path(output_icns_path)
+    icon_iconset_path = output_icns_path.replace('.icns', '.iconset')
+    iconset_dir = pathlib.Path(icon_iconset_path)
     iconset_dir.mkdir(exist_ok=True)
 
     sizes = [
@@ -101,6 +102,8 @@ def create_icns(icon_png_path, output_icns_path):
             resized.save(iconset_dir / name)
 
     subprocess.run([shutil.which('iconutil'), "-c", "icns", iconset_dir], check=True)
+    shutil.move('Icon.icns', output_icns_path)
+    shutil.rmtree(iconset_dir)
 
 def create_info_plist(app_name, executable_name, icon_file):
     plist = {
