@@ -86,14 +86,19 @@ def create_icns(icon_png_path, output_icns_path):
     iconset_dir = pathlib.Path(output_icns_path)
     iconset_dir.mkdir(exist_ok=True)
 
-    sizes = [16, 32, 64, 128, 256, 512]
+    sizes = [
+        (16, False), (16, True),
+        (32, False), (32, True),
+        (128, False), (128, True),
+        (256, False), (256, True),
+        (512, False), (512, True),
+    ]
     with PIL.Image.open(icon_png_path) as img:
-        for size in sizes:
-            for scale in [1, 2]:
-                icon_size = size * scale
-                icon_name = f"icon_{size}x{size}{'@2x' if scale == 2 else ''}.png"
-                resized = img.resize((icon_size, icon_size), PIL.Image.LANCZOS)
-                resized.save(iconset_dir / icon_name)
+        for size, is_2x in sizes:
+            icon_size = size * (2 if is_2x else 1)
+            name = f"icon_{size}x{size}{'@2x' if is_2x else ''}.png"
+            resized = img.resize((icon_size, icon_size), Image.LANCZOS)
+            resized.save(iconset_dir / name)
 
     subprocess.run([shutil.which('iconutil'), "-c", "icns", iconset_dir], check=True)
 
