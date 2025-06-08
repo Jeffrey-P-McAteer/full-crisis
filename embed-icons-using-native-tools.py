@@ -83,7 +83,7 @@ print('[ Win ] Done!')
 # Now do mac icons + assemble a .app file under target/Mac
 
 def create_icns(icon_png_path, output_icns_path):
-    icon_iconset_path = output_icns_path.replace('.icns', '.iconset')
+    icon_iconset_path = str(output_icns_path).replace('.icns', '.iconset')
     iconset_dir = pathlib.Path(icon_iconset_path)
     iconset_dir.mkdir(exist_ok=True)
 
