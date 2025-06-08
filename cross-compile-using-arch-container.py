@@ -330,6 +330,10 @@ Defaults:nobody !tty_tickets
     di0(run_nobody_shell('yay -S --noconfirm glib2 glib2-devel lib32-glib2 gdk-pixbuf2 lib32-gdk-pixbuf2'))
     pass_flag('install-glib2')
 
+  if not flag_passed('install-cairo'):
+    di0(run_nobody_shell('yay -S --noconfirm cairo lib32-cairo pango lib32-pango'))
+    pass_flag('install-cairo')
+
   if not flag_passed('install-mingw-w64-binutils'):
     di0(run_nobody_shell('yay -S --noconfirm mingw-w64-binutils'))
     pass_flag('install-mingw-w64-binutils')
