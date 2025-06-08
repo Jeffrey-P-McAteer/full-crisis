@@ -171,6 +171,9 @@ def get_temp_filepath(suffix=""):
     return temp_path
 
 def create_dmg_bundle(dmg_file_path, app_dir_file, background_png):
+  if os.path.exists(dmg_file_path):
+    os.remove(dmg_file_path)
+
   with tempfile.TemporaryDirectory(suffix='full-crisis-staging') as staging_dir:
     print(f'staging_dir = {staging_dir}')
     if not isinstance(staging_dir, pathlib.Path):
