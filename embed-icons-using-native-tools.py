@@ -86,7 +86,7 @@ def create_icns(icon_png_path, output_icns_path):
     iconset_dir = pathlib.Path(output_icns_path)
     iconset_dir.mkdir(exist_ok=True)
 
-    sizes = [16, 32, 64, 128, 256, 512, 1024]
+    sizes = [16, 32, 64, 128, 256, 512]
     with PIL.Image.open(icon_png_path) as img:
         for size in sizes:
             for scale in [1, 2]:
