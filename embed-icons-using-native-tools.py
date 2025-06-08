@@ -153,9 +153,87 @@ def build_app_bundle(folder_to_build_in, app_name, binary_path, icon_png):
 
     return app_dir
 
-def create_dmg_bundle(dmg_file_path, app_dir_file):
+def get_size_recursive(start_path):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            # skip if it is symbolic link
+            if not os.path.islink(fp):
+                total_size += os.path.getsize(fp)
+    return total_size
+
+
+def create_dmg_bundle(dmg_file_path, app_dir_file, background_png):
   with tempfile.TemporaryDirectory(suffix='full-crisis-staging') as staging_dir:
     print(f'staging_dir = {staging_dir}')
+    if not isinstance(staging_dir, pathlib.Path):
+      staging_dir = pathlib.Path(staging_dir)
+    shutil.copytree(app_dir_file, staging_dir / os.path.basename(app_dir_file))
+    # Create symbolic link to /Applications
+    applications_link = staging_dir / "Applications"
+    applications_link.symlink_to("/Applications")
+    (staging_dir / ".background").mkdir()
+    shutil.copy(background_png, staging_dir / ".background" / "background.png")
+
+    expected_size_mb = int(get_size_recursive(staging_dir) / 1_000_000.0) + 20
+    volume_name = os.path.basename(app_dir_file).replace('.app', '')
+
+    with tempfile.NamedTemporaryFile(suffix='.dmg') as temp_dmg:
+      subprocess.run([
+          "hdiutil", "create",
+          "-volname", volume_name,
+          "-srcfolder", str(staging_dir),
+          "-fs", "HFS+",
+          "-fsargs", "-c c=64,a=16,e=16",
+          "-format", "UDRW",
+          "-size", f'{expected_size_mb}m',
+          str(temp_dmg)
+      ], check=True)
+
+      mount_result = subprocess.run(["hdiutil", "attach", str(temp_dmg)], capture_output=True, text=True, check=True)
+      device_line = next((line for line in mount_result.stdout.splitlines() if "/Volumes/" in line), None)
+      volume_path = device_line.split("\t")[-1] if device_line else None
+
+      try:
+        apple_script = f'''
+tell application "Finder"
+    tell disk "{volume_name}"
+        open
+        set current view of container window to icon view
+        set toolbar visible of container window to false
+        set statusbar visible of container window to false
+        set the bounds of container window to {{100, 100, 600, 400}}
+        set viewOptions to the icon view options of container window
+        set arrangement of viewOptions to not arranged
+        set icon size of viewOptions to 128
+        set background picture of viewOptions to file ".background:background.png"
+
+        set position of item "{os.path.basename(app_dir_file)}" to {100, 150}
+        set position of item "Applications" to {400, 150}
+        close
+        open
+        update without registering applications
+        delay 2
+    end tell
+end tell
+'''
+        subprocess.run([
+            "osascript", "-e", apple_script
+        ], check=True)
+
+      finally:
+          subprocess.run(["hdiutil", "detach", volume_path], check=True)
+
+      # Now convert to a read-only dmg file
+      subprocess.run([
+        "hdiutil", "convert", str(temp_dmg),
+        "-format", "UDZO",
+        "-imagekey", "zlib-level=9",
+        "-o", dmg_file_path
+      ], check=True)
+
+
 
 
 if shutil.which('iconutil'):
@@ -178,8 +256,9 @@ if shutil.which('iconutil'):
       )
       # Now package app_dir_file into a .dmg file
       dmg_file_path = rreplace(str(app_dir_file), '.app', '.dmg')
+      background_png = os.path.join(repo_dir, 'icon', 'mac-dmg-background-image.png')
       print(f'Creating {dmg_file_path}')
-      create_dmg_bundle(dmg_file_path, app_dir_file)
+      create_dmg_bundle(dmg_file_path, app_dir_file, background_png)
 
 
   print('[ Mac ] Done!')
