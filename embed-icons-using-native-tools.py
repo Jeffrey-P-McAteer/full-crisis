@@ -195,10 +195,10 @@ def create_dmg_bundle(dmg_file_path, app_dir_file, background_png):
           "-fsargs", "-c c=64,a=16,e=16",
           "-format", "UDRW",
           "-size", f'{expected_size_mb}m',
-          str(temp_dmg.name)
+          temp_dmg
       ], check=True)
 
-      mount_result = subprocess.run(["hdiutil", "attach", str(temp_dmg.name)], capture_output=True, text=True, check=True)
+      mount_result = subprocess.run(["hdiutil", "attach", temp_dmg], capture_output=True, text=True, check=True)
       device_line = next((line for line in mount_result.stdout.splitlines() if "/Volumes/" in line), None)
       volume_path = device_line.split("\t")[-1] if device_line else None
 
@@ -234,7 +234,7 @@ end tell
 
       # Now convert to a read-only dmg file
       subprocess.run([
-        "hdiutil", "convert", str(temp_dmg.name),
+        "hdiutil", "convert", temp_dmg,
         "-format", "UDZO",
         "-imagekey", "zlib-level=9",
         "-o", dmg_file_path
