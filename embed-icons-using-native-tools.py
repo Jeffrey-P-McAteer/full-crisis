@@ -97,7 +97,7 @@ def create_icns(icon_png_path, output_icns_path):
         for size, is_2x in sizes:
             icon_size = size * (2 if is_2x else 1)
             name = f"icon_{size}x{size}{'@2x' if is_2x else ''}.png"
-            resized = img.resize((icon_size, icon_size), Image.LANCZOS)
+            resized = img.resize((icon_size, icon_size), PIL.Image.LANCZOS)
             resized.save(iconset_dir / name)
 
     subprocess.run([shutil.which('iconutil'), "-c", "icns", iconset_dir], check=True)
