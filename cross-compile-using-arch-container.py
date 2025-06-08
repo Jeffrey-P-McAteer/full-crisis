@@ -347,11 +347,6 @@ Defaults:nobody !tty_tickets
     cmd, ecode = run_nobody_shell(f'cd /full-crisis && /home/nobody/.cargo/bin/cross build --release --target {host_triple}')
     cmds_and_exit_codes[cmd] = ecode
 
-  print('=' * 8, 'Exit Codes', '=' * 8)
-  for cmd,ecode in cmds_and_exit_codes.items():
-    print(f'[{ecode}] {cmd}')
-  print()
-
   # # # # #
   #
   #    Compilation
@@ -360,6 +355,15 @@ Defaults:nobody !tty_tickets
 
   time.sleep(1)
   run_in_container('shutdown', 'now')
+  time.sleep(2)
+
+  sys.stdout.write('\033c') # Reset stdout
+  sys.stdout.flush()
+
+  print('=' * 8, 'Exit Codes', '=' * 8)
+  for cmd,ecode in cmds_and_exit_codes.items():
+    print(f'[{ecode}] {cmd}')
+  print()
 
 
 
