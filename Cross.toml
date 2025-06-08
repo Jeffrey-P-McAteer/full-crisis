@@ -1,0 +1,5 @@
+[target.x86_64-unknown-linux-gnu]
+dockerfile = "cargo-cross/Dockerfile.x86_64-unknown-linux-gnu"
+
+[target.i686-unknown-linux-gnu]
+dockerfile = "cargo-cross/Dockerfile.i686-unknown-linux-gnu"
