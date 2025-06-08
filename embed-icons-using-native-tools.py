@@ -163,6 +163,12 @@ def get_size_recursive(start_path):
                 total_size += os.path.getsize(fp)
     return total_size
 
+def get_temp_filepath(suffix=""):
+    # Create a temporary file just to get a valid name, then delete it
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        temp_path = tmp.name
+    os.unlink(temp_path)  # Now it's safe for a 3rd-party tool to create it
+    return temp_path
 
 def create_dmg_bundle(dmg_file_path, app_dir_file, background_png):
   with tempfile.TemporaryDirectory(suffix='full-crisis-staging') as staging_dir:
@@ -179,7 +185,8 @@ def create_dmg_bundle(dmg_file_path, app_dir_file, background_png):
     expected_size_mb = int(get_size_recursive(staging_dir) / 1_000_000.0) + 20
     volume_name = os.path.basename(app_dir_file).replace('.app', '')
 
-    with tempfile.NamedTemporaryFile(suffix='.dmg') as temp_dmg:
+    temp_dmg = get_temp_filepath('.dmg')
+    try:
       subprocess.run([
           "hdiutil", "create",
           "-volname", volume_name,
@@ -232,6 +239,10 @@ end tell
         "-imagekey", "zlib-level=9",
         "-o", dmg_file_path
       ], check=True)
+
+    finally:
+      if os.path.exists(temp_dmg):
+        os.remove(temp_dmg)
 
 
 
