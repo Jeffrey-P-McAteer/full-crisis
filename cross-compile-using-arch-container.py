@@ -340,10 +340,17 @@ Defaults:nobody !tty_tickets
   time.sleep(1)
   print(f'Container is running, about to cross-compile for all targets')
 
+  cmds_and_exit_codes = dict()
   for host_triple in ['x86_64-pc-windows-gnu', 'i686-pc-windows-gnu', 'x86_64-unknown-linux-gnu', 'i686-unknown-linux-gnu', 'aarch64-apple-darwin']:
-    di0(run_nobody_shell(f'cd /full-crisis && /home/nobody/.cargo/bin/cross build --target {host_triple}'))
-    di0(run_nobody_shell(f'cd /full-crisis && /home/nobody/.cargo/bin/cross build --release --target {host_triple}'))
+    cmd, ecode = run_nobody_shell(f'cd /full-crisis && /home/nobody/.cargo/bin/cross build --target {host_triple}')
+    cmds_and_exit_codes[cmd] = ecode
+    cmd, ecode = run_nobody_shell(f'cd /full-crisis && /home/nobody/.cargo/bin/cross build --release --target {host_triple}')
+    cmds_and_exit_codes[cmd] = ecode
 
+  print('=' * 8, 'Exit Codes', '=' * 8)
+  for cmd,ecode in cmds_and_exit_codes.items():
+    print(f'[{ecode}] {cmd}')
+  print()
 
   # # # # #
   #
