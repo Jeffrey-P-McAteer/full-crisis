@@ -122,6 +122,9 @@ def build_app_bundle(folder_to_build_in, app_name, binary_path, icon_png):
     macos = contents / "MacOS"
     resources = contents / "Resources"
 
+    if os.path.exists(app_dir):
+      shutil.rmtree(app_dir)
+
     for path in [app_dir, contents, macos, resources]:
         path.mkdir(parents=True, exist_ok=True)
 
