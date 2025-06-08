@@ -321,6 +321,8 @@ Defaults:nobody !tty_tickets
   if not flag_passed('install-rust'):
     di0(run_nobody_shell('yay -S --noconfirm rustup'))
     di0(run_nobody_shell('rustup default stable'))
+    di0(run_nobody_shell('rustup target add x86_64-unknown-linux-gnu'))
+    di0(run_nobody_shell('rustup target add i686-unknown-linux-gnu'))
     di0(run_nobody_shell('cargo install cross --git https://github.com/cross-rs/cross'))
     pass_flag('install-rust')
 
