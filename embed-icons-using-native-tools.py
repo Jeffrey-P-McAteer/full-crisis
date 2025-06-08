@@ -16,6 +16,10 @@ import plistlib
 import PIL
 import PIL.Image
 
+def rreplace(s, old, new, occurrence=1):
+  li = s.rsplit(old, occurrence)
+  return new.join(li)
+
 
 def find_name_under(dir_name, file_name, max_recursion=8):
   found_files = []
@@ -146,6 +150,8 @@ def build_app_bundle(folder_to_build_in, app_name, binary_path, icon_png):
 
     print(f"{app_name}.app created successfully at {folder_to_build_in}")
 
+    return app_dir
+
 if shutil.which('iconutil'):
   print(f'Found iconutil at {shutil.which("iconutil")}, building mac app...')
 
@@ -158,12 +164,17 @@ if shutil.which('iconutil'):
 
   for target in mac_targets:
     if os.path.exists(os.path.join(repo_dir, 'target', target, 'release', 'full-crisis')):
-      build_app_bundle(
+      app_dir_file = build_app_bundle(
         os.path.join(repo_dir, 'target', target, 'release'),
         'Full-Crisis',
         os.path.join(repo_dir, 'target', target, 'release', 'full-crisis'),
         png_file
       )
+      # Now package app_dir_file into a .dmg file
+      dmg_file_path = rreplace(str(app_dir_file), '.app', '.dmg')
+      print(f'Creating {dmg_file_path}')
+
+
 
   print('[ Mac ] Done!')
 else:
