@@ -59,7 +59,7 @@ fn embed_icon() {
   // println!("res={:#?}", res);
 
   if let Err(e) = res.compile() {
-    println!("cargo::error=Error embedding icon in PE32+ exe file: {:?}", e);
+    println!("cargo::warning=Error embedding icon in PE32+ exe file: {:?}", e);
   }
 
 }
