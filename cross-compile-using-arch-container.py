@@ -357,7 +357,10 @@ Defaults:nobody !tty_tickets
   run_in_container('shutdown', 'now')
   time.sleep(2)
 
-  sys.stdout.write('\033c') # Reset stdout
+  sys.stdout.write('\033[0m')    # Reset all attributes (colors, bold, etc.)
+  sys.stdout.write('\033[?7h')   # Ensure line wrap is on
+  sys.stdout.write('\033[?25h')  # Show the cursor
+  sys.stdout.write('\n')         # Move to next line if cursor is in weird spot
   sys.stdout.flush()
 
   print('=' * 8, 'Exit Codes', '=' * 8)
