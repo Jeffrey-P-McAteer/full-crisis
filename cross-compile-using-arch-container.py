@@ -402,6 +402,7 @@ r = subprocess.run([
     '--system-call-filter=@keyring bpf',
     '--system-call-filter=add_key bpf keyctl mount mknod',
     '--private-users=no',
+    '-U', '--bind=/proc:/run/proc', '--bind=/sys:/run/sys', # Idea from https://github.com/moby/moby/issues/47620
     '--directory', CONTAINER_ROOT,
 ], env=nspawn_env)
 
