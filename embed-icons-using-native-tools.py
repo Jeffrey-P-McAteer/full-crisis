@@ -14,6 +14,7 @@ import pathlib
 import plistlib
 
 import PIL
+import PIL.Image
 
 
 def find_name_under(dir_name, file_name, max_recursion=8):
