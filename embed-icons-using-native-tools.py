@@ -262,7 +262,7 @@ if shutil.which('iconutil'):
 
   mac_targets = ['x86_64-apple-darwin', 'aarch64-apple-darwin']
   for target in mac_targets:
-    if not os.path.exists(os.path.join(repo_dir, 'target', target, 'release', 'full-crisis')):
+    if not os.path.exists(os.path.join(repo_dir, 'target', target, 'release', 'full-crisis')) or len(os.environ.get('REBUILD', '')) > 0:
       subprocess.run([
         'cargo', 'build', '--release', f'{target}'
       ], check=True, cwd=repo_dir)
