@@ -155,7 +155,7 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
       <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.x86_64-apple-darwin.dmg">MacOS x64</a>
       <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.aarch64-apple-darwin.dmg">MacOS ARM</a>
       <a class="dl linux mobile-light-bordered-text" href="full-crisis.x86_64-unknown-linux-gnu">Linux x64</a>
-      <a class="dl noapp mobile-light-bordered-text" href="javascript:alert('todo compile for WASM')">Play on the Web</a>
+      <!--<a class="dl noapp mobile-light-bordered-text" href="javascript:alert('todo compile for WASM')">Play on the Web</a>-->
 
       <header>Code</header>
       <p>
