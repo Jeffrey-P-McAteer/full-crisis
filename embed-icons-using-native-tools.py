@@ -201,7 +201,7 @@ def create_dmg_bundle(dmg_file_path, app_dir_file, background_png):
           temp_dmg
       ], check=True)
 
-      mount_result = subprocess.run(["hdiutil", "attach", temp_dmg], capture_output=True, text=True, check=True)
+      mount_result = subprocess.run(["hdiutil", "attach", temp_dmg, "-readwrite"], capture_output=True, text=True, check=True)
       device_line = next((line for line in mount_result.stdout.splitlines() if "/Volumes/" in line), None)
       volume_path = device_line.split("\t")[-1] if device_line else None
 
@@ -231,6 +231,14 @@ end tell
         subprocess.run([
             "osascript", "-e", apple_script
         ], check=True)
+
+        ds_store_path = pathlib.Path(volume_path) / '.DS_Store'
+        for _ in range(20):
+          if ds_store_path.exists():
+              break
+          print(f'Waiting for {ds_store_path} to be created...')
+          time.sleep(0.75)
+
 
       finally:
           subprocess.run(["hdiutil", "detach", volume_path], check=True)
