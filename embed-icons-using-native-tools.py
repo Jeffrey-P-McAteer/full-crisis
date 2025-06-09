@@ -273,8 +273,12 @@ if shutil.which('iconutil'):
       print(f'Creating {dmg_file_path}')
       create_dmg_bundle(dmg_file_path, app_dir_file, background_png)
 
-
+  print(f'Copy back to main machine with:')
+  for target in mac_targets:
+    print(f'   rsync -aP jeffrey@169.254.100.10:full-crisis/target/{target} ./target/')
+  print()
   print('[ Mac ] Done!')
+
 else:
   print('[ Mac ] Skipping because iconutil is not installed')
 
