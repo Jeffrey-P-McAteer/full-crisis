@@ -109,6 +109,14 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
     os.path.join(f'{td}', 'full-crisis.x86_64-pc-windows-gnu.exe')
   )
   shutil.copy(
+    os.path.join(git_repo, 'target', 'x86_64-apple-darwin', 'release', 'Full-Crisis.dmg'),
+    os.path.join(f'{td}', 'Full-Crisis.x86_64-apple-darwin.dmg')
+  )
+  shutil.copy(
+    os.path.join(git_repo, 'target', 'aarch64-apple-darwin', 'release', 'Full-Crisis.dmg'),
+    os.path.join(f'{td}', 'Full-Crisis.aarch64-apple-darwin.dmg')
+  )
+  shutil.copy(
     os.path.join(git_repo, 'target', 'x86_64-unknown-linux-gnu', 'release', 'full-crisis'),
     os.path.join(f'{td}', 'full-crisis.x86_64-unknown-linux-gnu')
   )
@@ -144,8 +152,8 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
       <header>Download <img src="full-crisis-icon.transparent.128.png" style="border-radius:6pt;"/> </header>
       <pre>{build_timestamp}</pre>
       <a class="dl win mobile-light-bordered-text" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64</a>
-      <a class="dl mac mobile-light-bordered-text" href="javascript:alert('todo cross-compile MacOS x64')">MacOS x64 (todo)</a>
-      <a class="dl mac mobile-light-bordered-text" href="javascript:alert('todo cross-compile MacOS ARM')">MacOS ARM (todo)</a>
+      <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.x86_64-apple-darwin.dmg">MacOS x64</a>
+      <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.aarch64-apple-darwin.dmg">MacOS ARM</a>
       <a class="dl linux mobile-light-bordered-text" href="full-crisis.x86_64-unknown-linux-gnu">Linux x64</a>
       <a class="dl noapp mobile-light-bordered-text" href="javascript:alert('todo compile for WASM')">Play on the Web</a>
 
