@@ -264,7 +264,7 @@ if shutil.which('iconutil'):
   for target in mac_targets:
     if not os.path.exists(os.path.join(repo_dir, 'target', target, 'release', 'full-crisis')) or len(os.environ.get('REBUILD', '')) > 0:
       subprocess.run([
-        'cargo', 'build', '--release', f'{target}'
+        'cargo', 'build', '--release', f'--target={target}'
       ], check=True, cwd=repo_dir)
 
   for target in mac_targets:

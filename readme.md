@@ -54,7 +54,7 @@ If you do NOT have hardware-accelerated OpenGL rendering available (typically my
  - RDP to a windows box and run (assuming shared filesystem w/HOST)
  - WIN: `uv run embed-icons-using-native-tools.py`
  - SSH to a mac and run
- - MAC: `uv run embed-icons-using-native-tools.py` (assuming IP is 169.254.100.10)
+ - MAC: `REBUILD=t uv run embed-icons-using-native-tools.py` (assuming IP is 169.254.100.10)
  - HOST: `rsync -aP jeffrey@169.254.100.10:full-crisis/target/aarch64-apple-darwin ./target/`
  - HOST: `rsync -aP jeffrey@169.254.100.10:full-crisis/target/x86_64-apple-darwin ./target/`
  - HOST: `uv run update-github-pages.py`
