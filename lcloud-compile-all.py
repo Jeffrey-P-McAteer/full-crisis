@@ -11,6 +11,9 @@ import sys
 import subprocess
 import json
 import socket
+import time
+
+import paramiko
 
 STAGES = ['host', 'cloud', 'guest-win11', 'guest-macos']
 SELF_FILE_NAME = os.path.basename(__file__) # we can safely assume this is identical across all systems and is used when building file paths to next stage
@@ -76,6 +79,29 @@ def get_ip_for_vm_hostname(vm_hostname):
             return entry.get('ip-address', None)
     return None
 
+def paramiko_stream_cmd(channel, command):
+  print(f'Running command in VM: {command}')
+
+  channel.exec_command(command)
+
+  # Stream stdout
+  while True:
+      if channel.recv_ready():
+          output = channel.recv(1024).decode()
+          print(output, end="")  # already has newline
+
+      if channel.recv_stderr_ready():
+          error = channel.recv_stderr(1024).decode()
+          print(error, end="")  # already has newline
+
+      if channel.exit_status_ready():
+          break
+
+      time.sleep(0.1)  # avoid busy wait
+
+  return channel.recv_exit_status()
+
+
 
 ####################
 # Stage Logic
@@ -127,8 +153,18 @@ def cloud():
 
   win11_vm_ip = get_ip_for_vm_hostname('Builder-Win11')
   if win11_vm_ip is not None:
-    # The windows 11 machine Z:\ drive is the same as the cloud's /mnt/nfs/shared-vm-dir, so we copy build material there
-    pass
+    # The windows 11 machine Z:\ drive is the same as the cloud's /mnt/nfs/shared-vm-dir, so we just remote in & run the build
+    # and can be sure /mnt/nfs/shared-vm-dir/full-crisis will contain build results, no rsync needed.
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(hostname=win11_vm_ip, username='jeffrey', password='Passw0rd!', timeout=10)
+
+    transport = client.get_transport()
+
+    for target in ['x86_64-pc-windows-gnu', 'i686-pc-windows-gnu']:
+      channel = transport.open_session()
+      paramiko_stream_cmd(channel, f'uv run Z:\\full-crisis\\lcloud-compile-all.py guest-win11')
+
   else:
     print(f'WARNING: Builder-Win11 is not running! Run with: virsh start Builder-Win11')
   macos_vm_ip = get_ip_for_vm_hostname('Builder-MacOS')
