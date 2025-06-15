@@ -165,10 +165,8 @@ def cloud():
     client.connect(hostname=win11_vm_ip, username='jeffrey', password='Passw0rd!', timeout=10)
 
     transport = client.get_transport()
-
-    for target in ['x86_64-pc-windows-gnu', 'i686-pc-windows-gnu']:
-      channel = transport.open_session()
-      paramiko_stream_cmd(channel, f'uv run Z:\\full-crisis\\lcloud-compile-all.py guest-win11')
+    channel = transport.open_session()
+    paramiko_stream_cmd(channel, f'uv run Z:\\full-crisis\\lcloud-compile-all.py guest-win11')
 
   else:
     print(f'WARNING: Builder-Win11 is not running! Run with: virsh start Builder-Win11')
@@ -182,7 +180,13 @@ def cloud():
 
 def guest_win11():
   print(f'[ guest-win11 ] Running "guest-win11" stage on {socket.gethostname()}')
-
+  for target in ['x86_64-pc-windows-gnu', 'i686-pc-windows-gnu']:
+    subprocess.run([
+      'cargo', 'build', f'--target={target}'
+    ], cwd=f'Z:\\full-crisis')
+    subprocess.run([
+      'cargo', 'build', '--release', f'--target={target}'
+    ], cwd=f'Z:\\full-crisis')
   print(f'[ guest-win11 ] Done!')
 
 def guest_macos():
