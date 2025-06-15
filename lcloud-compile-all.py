@@ -13,7 +13,12 @@ import json
 import socket
 import time
 
-import paramiko
+paramiko = None
+try:
+  import paramiko
+except Exception as ex:
+  if os.name != 'nt':
+    raise ex
 
 STAGES = ['host', 'cloud', 'guest-win11', 'guest-macos']
 SELF_FILE_NAME = os.path.basename(__file__) # we can safely assume this is identical across all systems and is used when building file paths to next stage
@@ -116,7 +121,7 @@ def host():
   repo_dir_name = os.path.basename(repo_dir)
   subprocess.run([
     'rsync',
-      '-avz', '--progress', '-e', f'ssh -i "{host_cloud_key}"', '--exclude=target/docker-on-arch/',
+      '-az', '--progress', '-e', f'ssh -i "{host_cloud_key}"', '--exclude=target/docker-on-arch/',
       f'{repo_dir}',
       f'{user_at_host}:/mnt/nfs/shared-vm-dir/', # "/" at end will ensure /mnt/nfs/shared-vm-dir/full-crisis is created if not exists
   ],check=True)
@@ -135,7 +140,7 @@ def host():
   print(f'[ host ] Copying built files back...')
   subprocess.run([
     'rsync',
-      '-avz', '--progress', '-e', f'ssh -i "{host_cloud_key}"',
+      '-az', '--progress', '-e', f'ssh -i "{host_cloud_key}"',
       f'{user_at_host}:/mnt/nfs/shared-vm-dir/{repo_dir_name}/.',
       f'{repo_dir}',
   ],check=True)
