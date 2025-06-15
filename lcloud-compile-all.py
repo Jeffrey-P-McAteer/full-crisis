@@ -12,6 +12,7 @@ import subprocess
 import json
 import socket
 import time
+import threading
 
 paramiko = None
 try:
@@ -93,11 +94,11 @@ def paramiko_stream_cmd(channel, command):
   while True:
       if channel.recv_ready():
           output = channel.recv(1024).decode()
-          print(output, end="")  # already has newline
+          print(output, end="", flush=True)  # already has newline
 
       if channel.recv_stderr_ready():
           error = channel.recv_stderr(1024).decode()
-          print(error, end="")  # already has newline
+          print(error, end="", flush=True)  # already has newline
 
       if channel.exit_status_ready():
           break
@@ -106,14 +107,43 @@ def paramiko_stream_cmd(channel, command):
 
   return channel.recv_exit_status()
 
+def stream_output(stream, label):
+  if len(label) > 0:
+      for line in stream:
+          print(f"[{label}] {line}", end="")  # line already includes newline
+  else:
+      for line in stream:
+          print(f"{line}", end="")  # line already includes newline
 
+def run_streaming_command(cmd):
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        bufsize=1  # Line-buffered
+    )
+
+    # Start threads to read stdout and stderr
+    stdout_thread = threading.Thread(target=stream_output, args=(process.stdout, ""))
+    stderr_thread = threading.Thread(target=stream_output, args=(process.stderr, ""))
+
+    stdout_thread.start()
+    stderr_thread.start()
+
+    # Wait for both threads to finish
+    stdout_thread.join()
+    stderr_thread.join()
+
+    process.wait()
+    return process.returncode
 
 ####################
 # Stage Logic
 ####################
 
 def host():
-  print(f'[ host ] Running "host" stage on {socket.gethostname()}')
+  print(f'[ host ] Running "host" stage on {socket.gethostname()}', flush=True)
   setup_host_ip_space()
   user_at_host = f'{host_cloud_user}@{host_cloud_ip}'
   # Copy project directory to cloud's /mnt/nfs/shared-vm-dir, which is shared to VMs
@@ -130,12 +160,14 @@ def host():
     'scp', '-i', host_cloud_key,
       __file__,
       f'{user_at_host}:/tmp/{SELF_FILE_NAME}'
-  ],check=True)
+  ],check=True,bufsize=1,text=True)
+
   # Execute self on cloud at stage "cloud"
-  subprocess.run([
+  run_streaming_command([
     'ssh', '-i', host_cloud_key,
       f'{user_at_host}', 'uv', 'run', f'/tmp/{SELF_FILE_NAME}', 'cloud'
-  ],check=True)
+  ])
+
   # Copy built files back to local machine
   print(f'[ host ] Copying built files back...')
   subprocess.run([
@@ -143,16 +175,16 @@ def host():
       '-az', '--info=progress2', '-e', f'ssh -i "{host_cloud_key}"',
       f'{user_at_host}:/mnt/nfs/shared-vm-dir/{repo_dir_name}/.',
       f'{repo_dir}',
-  ],check=True)
+  ],check=True,bufsize=1,text=True)
   # Remove self just to be clean
   subprocess.run([
     'ssh', '-i', host_cloud_key,
       f'{user_at_host}', 'rm', f'/tmp/{SELF_FILE_NAME}'
-  ],check=True)
+  ],check=True,bufsize=1,text=True)
   print(f'[ host ] Done!')
 
 def cloud():
-  print(f'[ cloud ] Running "cloud" stage on {socket.gethostname()}')
+  print(f'[ cloud ] Running "cloud" stage on {socket.gethostname()}', flush=True)
   # Spin up the external drive early and asyncronously
   ignored_proc = subprocess.Popen(['ls', '/mnt/nfs'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
