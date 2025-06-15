@@ -182,11 +182,14 @@ def guest_win11():
   print(f'[ guest-win11 ] Running "guest-win11" stage on {socket.gethostname()}')
   for target in ['x86_64-pc-windows-gnu', 'i686-pc-windows-gnu']:
     subprocess.run([
+      'rustup', 'target', 'add', f'{target}'
+    ], cwd=f'Z:\\full-crisis', check=False)
+    subprocess.run([
       'cargo', 'build', f'--target={target}'
-    ], cwd=f'Z:\\full-crisis')
+    ], cwd=f'Z:\\full-crisis', check=True)
     subprocess.run([
       'cargo', 'build', '--release', f'--target={target}'
-    ], cwd=f'Z:\\full-crisis')
+    ], cwd=f'Z:\\full-crisis', check=True)
   print(f'[ guest-win11 ] Done!')
 
 def guest_macos():
