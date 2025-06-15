@@ -204,7 +204,15 @@ def cloud():
     print(f'WARNING: Builder-Win11 is not running! Run with: virsh start Builder-Win11')
   macos_vm_ip = get_ip_for_vm_hostname('Builder-MacOS')
   if macos_vm_ip is not None:
-    pass
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(hostname=macos_vm_ip, username='jeffrey', password='Passw0rd!', timeout=10)
+
+    transport = client.get_transport()
+    channel = transport.open_session()
+    paramiko_stream_cmd(channel, f'uv run Z:\\full-crisis\\lcloud-compile-all.py guest-win11')
+    # ^^ TODO update that command for the osx location of the nfs share
+
   else:
     print(f'WARNING: Builder-MacOS is not running! Run with: virsh start Builder-MacOS')
   print(f'[ cloud ] Done!')
