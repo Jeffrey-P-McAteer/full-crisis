@@ -121,7 +121,7 @@ def host():
   repo_dir_name = os.path.basename(repo_dir)
   subprocess.run([
     'rsync',
-      '-az', '--progress', '--no-inc-recursive', '-e', f'ssh -i "{host_cloud_key}"', '--exclude=target/docker-on-arch/',
+      '-az', '--info=progress2', '--no-inc-recursive', '-e', f'ssh -i "{host_cloud_key}"', '--exclude=target/docker-on-arch/',
       f'{repo_dir}',
       f'{user_at_host}:/mnt/nfs/shared-vm-dir/', # "/" at end will ensure /mnt/nfs/shared-vm-dir/full-crisis is created if not exists
   ],check=True)
@@ -140,7 +140,7 @@ def host():
   print(f'[ host ] Copying built files back...')
   subprocess.run([
     'rsync',
-      '-az', '--progress', '--no-inc-recursive', '-e', f'ssh -i "{host_cloud_key}"',
+      '-az', '--info=progress2', '--no-inc-recursive', '-e', f'ssh -i "{host_cloud_key}"',
       f'{user_at_host}:/mnt/nfs/shared-vm-dir/{repo_dir_name}/.',
       f'{repo_dir}',
   ],check=True)
