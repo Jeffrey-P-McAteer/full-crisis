@@ -221,7 +221,7 @@ def cloud():
 
 
 def guest_win11():
-  print(f'[ guest-win11 ] Running "guest-win11" stage on {socket.gethostname()}')
+  print(f'[ guest-win11 ] Running "guest-win11" stage on {socket.gethostname()}', flush=True)
   for target in ['x86_64-pc-windows-gnu', 'x86_64-pc-windows-msvc', ]: # 'i686-pc-windows-gnu', 'i686-pc-windows-msvc']:
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
@@ -232,12 +232,12 @@ def guest_win11():
     subprocess.run([
       'cargo', 'build', '--release', f'--target={target}'
     ], cwd=f'Z:\\full-crisis', check=True)
-  print(f'[ guest-win11 ] Done!')
+  print(f'[ guest-win11 ] Done!', flush=True)
 
 def guest_macos():
-  print(f'[ guest-macos ] Running "guest-macos" stage on {socket.gethostname()}')
+  print(f'[ guest-macos ] Running "guest-macos" stage on {socket.gethostname()}', flush=True)
 
-  print(f'[ guest-macos ] Done!')
+  print(f'[ guest-macos ] Done!', flush=True)
 
 
 # Call the stage function
