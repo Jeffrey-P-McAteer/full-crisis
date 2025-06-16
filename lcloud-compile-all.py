@@ -190,6 +190,7 @@ def cloud():
 
   win11_vm_ip = get_ip_for_vm_hostname('Builder-Win11')
   if win11_vm_ip is not None:
+    print(f'[ cloud ] Running a build in Builder-Win11 at {win11_vm_ip}')
     # The windows 11 machine Z:\ drive is the same as the cloud's /mnt/nfs/shared-vm-dir, so we just remote in & run the build
     # and can be sure /mnt/nfs/shared-vm-dir/full-crisis will contain build results, no rsync needed.
     client = paramiko.SSHClient()
@@ -204,6 +205,7 @@ def cloud():
     print(f'WARNING: Builder-Win11 is not running! Run with: virsh start Builder-Win11')
   macos_vm_ip = get_ip_for_vm_hostname('Builder-MacOS')
   if macos_vm_ip is not None:
+    print(f'[ cloud ] Running a build in Builder-MacOS at {macos_vm_ip}')
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.connect(hostname=macos_vm_ip, username='jeffrey', password='Passw0rd!', timeout=10)
@@ -220,7 +222,7 @@ def cloud():
 
 def guest_win11():
   print(f'[ guest-win11 ] Running "guest-win11" stage on {socket.gethostname()}')
-  for target in ['x86_64-pc-windows-gnu', 'i686-pc-windows-gnu']:
+  for target in ['x86_64-pc-windows-msvc', 'i686-pc-windows-msvc']:
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
     ], cwd=f'Z:\\full-crisis', check=False)
