@@ -187,6 +187,7 @@ def cloud():
   print(f'[ cloud ] Running "cloud" stage on {socket.gethostname()}', flush=True)
   # Spin up the external drive early and asyncronously
   ignored_proc = subprocess.Popen(['ls', '/mnt/nfs'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+  ignored_proc = subprocess.Popen(['sudo', 'cpupower', 'frequency-set', '-g', 'performance'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
   win11_vm_ip = get_ip_for_vm_hostname('Builder-Win11')
   if win11_vm_ip is not None:
