@@ -222,7 +222,7 @@ def cloud():
 
 def guest_win11():
   print(f'[ guest-win11 ] Running "guest-win11" stage on {socket.gethostname()}')
-  for target in ['x86_64-pc-windows-msvc', 'i686-pc-windows-msvc']:
+  for target in ['x86_64-pc-windows-gnu', 'x86_64-pc-windows-msvc', ]: # 'i686-pc-windows-gnu', 'i686-pc-windows-msvc']:
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
     ], cwd=f'Z:\\full-crisis', check=False)
