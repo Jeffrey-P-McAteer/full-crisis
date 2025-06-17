@@ -18,7 +18,8 @@ paramiko = None
 try:
   import paramiko
 except Exception as ex:
-  if os.name != 'nt':
+  ignorable = os.name == 'nt' or sys.platform == 'darwin'
+  if not ignorable:
     raise ex
 
 STAGES = ['host', 'cloud', 'guest-win11', 'guest-macos']
@@ -242,7 +243,16 @@ def guest_win11():
 
 def guest_macos():
   print(f'[ guest-macos ] Running "guest-macos" stage on {socket.gethostname()}', flush=True)
-
+  for target in ['x86_64-apple-darwin', 'aarch64-apple-darwin']:
+    subprocess.run([
+      'rustup', 'target', 'add', f'{target}'
+    ], cwd=f'Z:\\full-crisis', check=False)
+    subprocess.run([
+      'cargo', 'build', f'--target={target}'
+    ], cwd=f'Z:\\full-crisis', check=True)
+    subprocess.run([
+      'cargo', 'build', '--release', f'--target={target}'
+    ], cwd=f'Z:\\full-crisis', check=True)
   print(f'[ guest-macos ] Done!', flush=True)
 
 
