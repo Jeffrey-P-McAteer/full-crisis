@@ -24,7 +24,13 @@ except Exception as ex:
 STAGES = ['host', 'cloud', 'guest-win11', 'guest-macos']
 SELF_FILE_NAME = os.path.basename(__file__) # we can safely assume this is identical across all systems and is used when building file paths to next stage
 
-if len(sys.argv) < 2:
+stage = None
+if len(sys.argv) > 1:
+  stage = sys.argv[1]
+elif socket.gethostname().casefold() == 'azure-angel'.casefold():
+  stage = 'host' # it's jeff's laptop
+
+if stage is None:
   print(f'''
 Usage: uv run cloud-compile-all.py {"|".join(STAGES)}
 
@@ -35,7 +41,6 @@ This script copies itself to targets and runs stages on those machines;
 '''.strip())
   sys.exit(1)
 
-stage = sys.argv[1]
 if not (stage in STAGES):
   print(f'Unknown stage "{stage}", exiting')
   sys.exit(1)
