@@ -419,17 +419,18 @@ def host():
 
 def host_linux():
   linux_targets = ['x86_64-unknown-linux-gnu']
+  linux_workdir = os.path.dirname(__file__)
   for target in linux_targets:
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
-    ], cwd=macos_workdir, check=False)
+    ], cwd=linux_workdir, check=False)
     if guest_compile_debug:
       subprocess.run([
         'cargo', 'build', f'--target={target}'
-      ], cwd=macos_workdir, check=True)
+      ], cwd=linux_workdir, check=True)
     subprocess.run([
       'cargo', 'build', '--release', f'--target={target}'
-    ], cwd=macos_workdir, check=True)
+    ], cwd=linux_workdir, check=True)
 
 def cloud():
   print(f'[ cloud ] Running "cloud" stage on {socket.gethostname()}', flush=True)
