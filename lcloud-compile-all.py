@@ -68,6 +68,8 @@ cloud_dhcp_lease_file = '/var/lib/libvirt/dnsmasq/virbr0.status'
 windows_workdir = 'Z:\\full-crisis'
 macos_workdir = '/Volumes/nfs/shared-vm-dir/full-crisis'
 
+guest_compile_debug = False
+
 repo_dir = os.path.dirname(__file__).rstrip('/').rstrip('\\')
 ico_file = os.path.join(repo_dir, 'icon', 'full-crisis-icon.ico')
 png_file = os.path.join(repo_dir, 'icon', 'full-crisis-icon.png')
@@ -286,9 +288,10 @@ def guest_win11():
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
     ], cwd=windows_workdir, check=False)
-    subprocess.run([
-      'cargo', 'build', f'--target={target}'
-    ], cwd=windows_workdir, check=True)
+    if guest_compile_debug:
+      subprocess.run([
+        'cargo', 'build', f'--target={target}'
+      ], cwd=windows_workdir, check=True)
     subprocess.run([
       'cargo', 'build', '--release', f'--target={target}'
     ], cwd=windows_workdir, check=True)
@@ -344,9 +347,10 @@ def guest_macos():
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
     ], cwd=macos_workdir, check=False)
-    subprocess.run([
-      'cargo', 'build', f'--target={target}'
-    ], cwd=macos_workdir, check=True)
+    if guest_compile_debug:
+      subprocess.run([
+        'cargo', 'build', f'--target={target}'
+      ], cwd=macos_workdir, check=True)
     subprocess.run([
       'cargo', 'build', '--release', f'--target={target}'
     ], cwd=macos_workdir, check=True)
