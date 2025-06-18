@@ -391,7 +391,7 @@ def host():
   cloud_t = threading.Thread(target=run_streaming_command, args=([
     'ssh', '-i', host_cloud_key,
       f'{user_at_host}', 'uv', 'run', f'/tmp/{SELF_FILE_NAME}', 'cloud'
-  ]))
+  ],))
   cloud_t.start()
   threads.append(cloud_t)
 
