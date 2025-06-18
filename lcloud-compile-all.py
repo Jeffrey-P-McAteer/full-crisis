@@ -18,6 +18,7 @@ import traceback
 import tempfile
 import shutil
 import pathlib
+import plistlib
 
 paramiko = None
 try:
