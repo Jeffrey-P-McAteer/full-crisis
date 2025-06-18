@@ -17,12 +17,6 @@ import datetime
 git_repo = os.path.dirname(__file__)
 os.chdir(git_repo)
 
-# First just run sign-release-bins.py so any .exe files we copy in are signed.
-# If this fails entirely, an un-signed binary is fine to ship too so this step is not fatal.
-subprocess.run([
-  'uv', 'run', os.path.join(git_repo, 'sign-release-bins.py')
-], check=False)
-
 git_remote_origin_url = subprocess.check_output(['git', 'remote', 'get-url', 'origin']).decode('utf-8').strip()
 
 open_preview = any('preview' in arg for arg in sys.argv)
