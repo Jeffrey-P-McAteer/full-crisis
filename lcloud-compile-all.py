@@ -239,6 +239,9 @@ def cloud():
   else:
     print(f'WARNING: Builder-MacOS is not running! Run with: virsh start Builder-MacOS')
 
+  for t in vm_threads:
+    t.join()
+
   ignored_proc = subprocess.Popen(['sudo', 'cpupower', 'frequency-set', '-g', 'powersave'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
   print(f'[ cloud ] Done!')
