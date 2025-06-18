@@ -17,6 +17,7 @@ import threading
 import traceback
 import tempfile
 import shutil
+import pathlib
 
 paramiko = None
 try:
