@@ -326,6 +326,11 @@ def guest_win11():
             '-mask', 'ICONGROUP,MAINICON,'
         ], check=True)
 
+        for i in range(0, 10):
+          if os.path.exists(full_crisis_exe_with_icon):
+            break
+          time.sleep(0.25)
+
         if os.path.exists(full_crisis_exe_with_icon):
           os.remove(full_crisis_exe)
           shutil.copyfile(full_crisis_exe_with_icon, full_crisis_exe)
@@ -339,10 +344,13 @@ def guest_win11():
   else:
     print(f'[ guest-win11 ] resource_hacker_folders = {resource_hacker_folders}')
 
+  # TODO sign binaries!
+
   print(f'[ guest-win11 ] Done!', flush=True)
 
 def guest_macos():
   print(f'[ guest-macos ] Running "guest-macos" stage on {socket.gethostname()}', flush=True)
+  # Step 1: Compile for all targets
   for target in ['x86_64-apple-darwin', 'aarch64-apple-darwin']:
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
@@ -354,6 +362,10 @@ def guest_macos():
     subprocess.run([
       'cargo', 'build', '--release', f'--target={target}'
     ], cwd=macos_workdir, check=True)
+
+  # Step 2: Build a .app file for each target!
+
+
   print(f'[ guest-macos ] Done!', flush=True)
 
 
