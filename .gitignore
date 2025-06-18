@@ -17,6 +17,6 @@ Thumbs.db
 Thumbs.db\:encryptable
 Thumbs.db*
 
-
-
-
+# Macisms
+.DS_Store
+._.DS_Store
