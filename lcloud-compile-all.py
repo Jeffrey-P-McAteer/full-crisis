@@ -219,7 +219,7 @@ def cloud():
 
     transport = client.get_transport()
     channel = transport.open_session()
-    paramiko_stream_cmd(channel, f'uv run /Volumes/nfs/shared-vm-dir/full-crisis/lcloud-compile-all.py guest-macos')
+    paramiko_stream_cmd(channel, f'/usr/local/bin/uv run /Volumes/nfs/shared-vm-dir/full-crisis/lcloud-compile-all.py guest-macos')
     # ^^ TODO update that command for the osx location of the nfs share
 
   else:
