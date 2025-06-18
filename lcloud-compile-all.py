@@ -183,8 +183,8 @@ def host():
   subprocess.run([
     'rsync',
       '-az', '--info=progress2', '-e', f'ssh -i "{host_cloud_key}"', '--exclude=.git/',
-      f'{user_at_host}:/mnt/nfs/shared-vm-dir/{repo_dir_name}/.',
-      f'{repo_dir}',
+      f'{user_at_host}:/mnt/nfs/shared-vm-dir/{repo_dir_name}/target/.',
+      f'{repo_dir}/target',
   ],check=True,bufsize=1,text=True)
   # Remove self just to be clean
   subprocess.run([
