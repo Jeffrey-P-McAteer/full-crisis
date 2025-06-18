@@ -382,18 +382,33 @@ def host():
   ],check=True,bufsize=1,text=True)
 
   # Execute self on cloud at stage "cloud"
-  run_streaming_command([
+  # run_streaming_command([
+  #   'ssh', '-i', host_cloud_key,
+  #     f'{user_at_host}', 'uv', 'run', f'/tmp/{SELF_FILE_NAME}', 'cloud'
+  # ])
+
+  threads = []
+  cloud_t = threading.Thread(target=run_streaming_command, args=([
     'ssh', '-i', host_cloud_key,
       f'{user_at_host}', 'uv', 'run', f'/tmp/{SELF_FILE_NAME}', 'cloud'
-  ])
+  ]))
+  cloud_t.start()
+  threads.append(cloud_t)
+
+  host_linux_t = threading.Thread(target=host_linux, args=())
+  host_linux_t.start()
+  threads.append(host_linux_t)
+
+  for t in threads:
+    t.join()
 
   # Copy built files back to local machine
   print(f'[ host ] Copying built files back...')
   subprocess.run([
     'rsync',
       '-az', '--info=progress2', '-e', f'ssh -i "{host_cloud_key}"', '--exclude=.git/',
-      f'{user_at_host}:/mnt/nfs/shared-vm-dir/{repo_dir_name}/.',
-      f'{repo_dir}',
+      f'{user_at_host}:/mnt/nfs/shared-vm-dir/{repo_dir_name}/target/.',
+      f'{repo_dir}/target',
   ],check=True,bufsize=1,text=True)
   # Remove self just to be clean
   subprocess.run([
@@ -401,6 +416,20 @@ def host():
       f'{user_at_host}', 'rm', f'/tmp/{SELF_FILE_NAME}'
   ],check=True,bufsize=1,text=True)
   print(f'[ host ] Done!')
+
+def host_linux():
+  linux_targets = ['x86_64-unknown-linux-gnu']
+  for target in linux_targets:
+    subprocess.run([
+      'rustup', 'target', 'add', f'{target}'
+    ], cwd=macos_workdir, check=False)
+    if guest_compile_debug:
+      subprocess.run([
+        'cargo', 'build', f'--target={target}'
+      ], cwd=macos_workdir, check=True)
+    subprocess.run([
+      'cargo', 'build', '--release', f'--target={target}'
+    ], cwd=macos_workdir, check=True)
 
 def cloud():
   print(f'[ cloud ] Running "cloud" stage on {socket.gethostname()}', flush=True)
