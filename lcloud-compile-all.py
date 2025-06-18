@@ -13,6 +13,7 @@ import json
 import socket
 import time
 import threading
+import traceback
 
 paramiko = None
 try:
@@ -202,40 +203,45 @@ def cloud():
 
   win11_vm_ip = get_ip_for_vm_hostname('Builder-Win11')
   if win11_vm_ip is not None:
-    print(f'[ cloud ] Running a build in Builder-Win11 at {win11_vm_ip}')
-    # The windows 11 machine Z:\ drive is the same as the cloud's /mnt/nfs/shared-vm-dir, so we just remote in & run the build
-    # and can be sure /mnt/nfs/shared-vm-dir/full-crisis will contain build results, no rsync needed.
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname=win11_vm_ip, username='jeffrey', password='Passw0rd!', timeout=10)
+    try:
+      print(f'[ cloud ] Running a build in Builder-Win11 at {win11_vm_ip}')
+      # The windows 11 machine Z:\ drive is the same as the cloud's /mnt/nfs/shared-vm-dir, so we just remote in & run the build
+      # and can be sure /mnt/nfs/shared-vm-dir/full-crisis will contain build results, no rsync needed.
+      client = paramiko.SSHClient()
+      client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+      client.connect(hostname=win11_vm_ip, username='jeffrey', password='Passw0rd!', timeout=10)
 
-    transport = client.get_transport()
-    channel = transport.open_session()
-    #paramiko_stream_cmd(channel, f'uv run \"{windows_workdir}\\lcloud-compile-all.py\" guest-win11')
-    win_t = threading.Thread(target=paramiko_stream_cmd, args=(
-      channel, f'uv run \"{windows_workdir}\\lcloud-compile-all.py\" guest-win11'
-    ))
-    win_t.start()
-    vm_threads.append(win_t)
+      transport = client.get_transport()
+      channel = transport.open_session()
+      #paramiko_stream_cmd(channel, f'uv run \"{windows_workdir}\\lcloud-compile-all.py\" guest-win11')
+      win_t = threading.Thread(target=paramiko_stream_cmd, args=(
+        channel, f'uv run \"{windows_workdir}\\lcloud-compile-all.py\" guest-win11'
+      ))
+      win_t.start()
+      vm_threads.append(win_t)
+    except:
+      traceback.print_exc()
 
   else:
     print(f'WARNING: Builder-Win11 is not running! Run with: virsh start Builder-Win11')
   macos_vm_ip = get_ip_for_vm_hostname('Builder-MacOS')
   if macos_vm_ip is not None:
-    print(f'[ cloud ] Running a build in Builder-MacOS at {macos_vm_ip}')
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname=macos_vm_ip, username='jeffrey', password='Passw0rd!', timeout=10)
+    try:
+      print(f'[ cloud ] Running a build in Builder-MacOS at {macos_vm_ip}')
+      client = paramiko.SSHClient()
+      client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+      client.connect(hostname=macos_vm_ip, username='jeffrey', password='Passw0rd!', timeout=10)
 
-    transport = client.get_transport()
-    channel = transport.open_session()
-    #paramiko_stream_cmd(channel, f'/usr/local/bin/uv run \"{macos_workdir}/lcloud-compile-all.py\" guest-macos')
-    mac_t = threading.Thread(target=paramiko_stream_cmd, args=(
-      channel, f'/usr/local/bin/uv run \"{macos_workdir}/lcloud-compile-all.py\" guest-macos'
-    ))
-    mac_t.start()
-    vm_threads.append(mac_t)
-
+      transport = client.get_transport()
+      channel = transport.open_session()
+      #paramiko_stream_cmd(channel, f'/usr/local/bin/uv run \"{macos_workdir}/lcloud-compile-all.py\" guest-macos')
+      mac_t = threading.Thread(target=paramiko_stream_cmd, args=(
+        channel, f'/usr/local/bin/uv run \"{macos_workdir}/lcloud-compile-all.py\" guest-macos'
+      ))
+      mac_t.start()
+      vm_threads.append(mac_t)
+    except:
+      traceback.print_exc()
   else:
     print(f'WARNING: Builder-MacOS is not running! Run with: virsh start Builder-MacOS')
 
