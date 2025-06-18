@@ -326,7 +326,7 @@ def guest_win11():
             '-mask', 'ICONGROUP,MAINICON,'
         ], check=True)
 
-        for i in range(0, 10):
+        for i in range(0, 5):
           if os.path.exists(full_crisis_exe_with_icon):
             break
           time.sleep(0.25)
