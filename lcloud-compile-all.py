@@ -63,6 +63,9 @@ cloud_dhcp_lease_file = '/var/lib/libvirt/dnsmasq/virbr0.status'
 ####################
 # Guest stage data
 ####################
+windows_workdir = 'Z:\\full-crisis'
+macos_workdir = '/Volumes/nfs/shared-vm-dir/full-crisis'
+
 
 ####################
 # Utility functions
@@ -195,6 +198,8 @@ def cloud():
   ignored_proc = subprocess.Popen(['ls', '/mnt/nfs'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
   ignored_proc = subprocess.Popen(['sudo', 'cpupower', 'frequency-set', '-g', 'performance'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+  vm_threads = []
+
   win11_vm_ip = get_ip_for_vm_hostname('Builder-Win11')
   if win11_vm_ip is not None:
     print(f'[ cloud ] Running a build in Builder-Win11 at {win11_vm_ip}')
@@ -206,7 +211,12 @@ def cloud():
 
     transport = client.get_transport()
     channel = transport.open_session()
-    paramiko_stream_cmd(channel, f'uv run Z:\\full-crisis\\lcloud-compile-all.py guest-win11')
+    #paramiko_stream_cmd(channel, f'uv run \"{windows_workdir}\\lcloud-compile-all.py\" guest-win11')
+    win_t = threading.Thread(target=paramiko_stream_cmd, args=(
+      channel, f'uv run \"{windows_workdir}\\lcloud-compile-all.py\" guest-win11'
+    ))
+    win_t.start()
+    vm_threads.append(win_t)
 
   else:
     print(f'WARNING: Builder-Win11 is not running! Run with: virsh start Builder-Win11')
@@ -219,10 +229,18 @@ def cloud():
 
     transport = client.get_transport()
     channel = transport.open_session()
-    paramiko_stream_cmd(channel, f'/usr/local/bin/uv run /Volumes/nfs/shared-vm-dir/full-crisis/lcloud-compile-all.py guest-macos')
+    #paramiko_stream_cmd(channel, f'/usr/local/bin/uv run \"{macos_workdir}/lcloud-compile-all.py\" guest-macos')
+    mac_t = threading.Thread(target=paramiko_stream_cmd, args=(
+      channel, f'/usr/local/bin/uv run \"{macos_workdir}/lcloud-compile-all.py\" guest-macos'
+    ))
+    mac_t.start()
+    vm_threads.append(mac_t)
 
   else:
     print(f'WARNING: Builder-MacOS is not running! Run with: virsh start Builder-MacOS')
+
+  ignored_proc = subprocess.Popen(['sudo', 'cpupower', 'frequency-set', '-g', 'powersave'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
   print(f'[ cloud ] Done!')
 
 
@@ -231,13 +249,13 @@ def guest_win11():
   for target in ['x86_64-pc-windows-gnu', 'x86_64-pc-windows-msvc', ]: # 'i686-pc-windows-gnu', 'i686-pc-windows-msvc']:
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
-    ], cwd=f'Z:\\full-crisis', check=False)
+    ], cwd=windows_workdir, check=False)
     subprocess.run([
       'cargo', 'build', f'--target={target}'
-    ], cwd=f'Z:\\full-crisis', check=True)
+    ], cwd=windows_workdir, check=True)
     subprocess.run([
       'cargo', 'build', '--release', f'--target={target}'
-    ], cwd=f'Z:\\full-crisis', check=True)
+    ], cwd=windows_workdir, check=True)
   print(f'[ guest-win11 ] Done!', flush=True)
 
 def guest_macos():
@@ -245,13 +263,13 @@ def guest_macos():
   for target in ['x86_64-apple-darwin', 'aarch64-apple-darwin']:
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
-    ], cwd=f'/Volumes/nfs/shared-vm-dir/full-crisis', check=False)
+    ], cwd=macos_workdir, check=False)
     subprocess.run([
       'cargo', 'build', f'--target={target}'
-    ], cwd=f'/Volumes/nfs/shared-vm-dir/full-crisis', check=True)
+    ], cwd=macos_workdir, check=True)
     subprocess.run([
       'cargo', 'build', '--release', f'--target={target}'
-    ], cwd=f'/Volumes/nfs/shared-vm-dir/full-crisis', check=True)
+    ], cwd=macos_workdir, check=True)
   print(f'[ guest-macos ] Done!', flush=True)
 
 
