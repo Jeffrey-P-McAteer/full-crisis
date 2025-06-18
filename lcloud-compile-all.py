@@ -220,7 +220,6 @@ def cloud():
     transport = client.get_transport()
     channel = transport.open_session()
     paramiko_stream_cmd(channel, f'/usr/local/bin/uv run /Volumes/nfs/shared-vm-dir/full-crisis/lcloud-compile-all.py guest-macos')
-    # ^^ TODO update that command for the osx location of the nfs share
 
   else:
     print(f'WARNING: Builder-MacOS is not running! Run with: virsh start Builder-MacOS')
@@ -246,13 +245,13 @@ def guest_macos():
   for target in ['x86_64-apple-darwin', 'aarch64-apple-darwin']:
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
-    ], cwd=f'Z:\\full-crisis', check=False)
+    ], cwd=f'/Volumes/nfs/shared-vm-dir/full-crisis', check=False)
     subprocess.run([
       'cargo', 'build', f'--target={target}'
-    ], cwd=f'Z:\\full-crisis', check=True)
+    ], cwd=f'/Volumes/nfs/shared-vm-dir/full-crisis', check=True)
     subprocess.run([
       'cargo', 'build', '--release', f'--target={target}'
-    ], cwd=f'Z:\\full-crisis', check=True)
+    ], cwd=f'/Volumes/nfs/shared-vm-dir/full-crisis', check=True)
   print(f'[ guest-macos ] Done!', flush=True)
 
 
