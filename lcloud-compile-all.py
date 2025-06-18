@@ -545,7 +545,7 @@ def guest_macos():
 
   # Step 2: Build a .app file for each target!
   if shutil.which('iconutil'):
-    print(f'Found iconutil at {shutil.which("iconutil")}, building mac .app files')
+    print(f'[ guest-macos ] Found iconutil at {shutil.which("iconutil")}, building mac .app files')
     for target in mac_targets:
       if os.path.exists(os.path.join(repo_dir, 'target', target, 'release', 'full-crisis')):
         app_dir_file = build_app_bundle(
@@ -559,6 +559,8 @@ def guest_macos():
         background_png = os.path.join(repo_dir, 'icon', 'mac-dmg-background-image.png')
         print(f'[ guest-macos ] Creating {dmg_file_path}')
         create_dmg_bundle(dmg_file_path, app_dir_file, background_png)
+  else:
+    print(f'[ guest-macos ] iconutil does not exist, cannot build .app files!')
 
   print(f'[ guest-macos ] Done!', flush=True)
 
