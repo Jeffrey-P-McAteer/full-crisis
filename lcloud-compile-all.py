@@ -34,6 +34,7 @@ try:
 except:
   traceback.print_exc()
 
+print(f'Running from {sys.executable} {sys.version}')
 
 STAGES = ['host', 'cloud', 'guest-win11', 'guest-macos']
 SELF_FILE_NAME = os.path.basename(__file__) # we can safely assume this is identical across all systems and is used when building file paths to next stage
