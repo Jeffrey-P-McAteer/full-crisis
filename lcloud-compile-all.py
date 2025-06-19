@@ -372,6 +372,7 @@ def print_duration(begin_s, msg_f):
 
 def host():
   print(f'[ host ] Running "host" stage on {socket.gethostname()}', flush=True)
+  begin_s = time.time()
   setup_host_ip_space()
   user_at_host = f'{host_cloud_user}@{host_cloud_ip}'
   # Copy project directory to cloud's /mnt/nfs/shared-vm-dir, which is shared to VMs
@@ -424,6 +425,7 @@ def host():
     'ssh', '-i', host_cloud_key,
       f'{user_at_host}', 'rm', f'/tmp/{SELF_FILE_NAME}'
   ],check=True,bufsize=1,text=True)
+  print_duration(begin_s, '[ host ] took {}')
   print(f'[ host ] Done!')
 
 def host_linux():
