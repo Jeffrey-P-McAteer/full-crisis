@@ -355,7 +355,15 @@ end tell
       if os.path.exists(temp_dmg):
         os.remove(temp_dmg)
 
-
+def print_duration(begin_s, msg_f):
+  duration_s = time.time() - begin_s
+  minutes = int(duration_s / 60.0)
+  seconds = duration_s - (minutes * 60.0)
+  if minutes > 0:
+    duration_string = f'{minutes}m {seconds:.1f}s'
+  else:
+    duration_string = f'{duration_s:.1f}s'
+  print(msg_f.format(duration_string))
 
 ####################
 # Stage Logic
@@ -418,6 +426,7 @@ def host():
   print(f'[ host ] Done!')
 
 def host_linux():
+  begin_s = time.time()
   linux_targets = ['x86_64-unknown-linux-gnu']
   linux_workdir = os.path.dirname(__file__)
   for target in linux_targets:
@@ -431,9 +440,11 @@ def host_linux():
     subprocess.run([
       'cargo', 'build', '--release', f'--target={target}'
     ], cwd=linux_workdir, check=True)
+  print_duration(begin_s, '[ host-linux ] took {}')
 
 def cloud():
   print(f'[ cloud ] Running "cloud" stage on {socket.gethostname()}', flush=True)
+  begin_s = time.time()
   # Spin up the external drive early and asyncronously
   ignored_proc = subprocess.Popen(['ls', '/mnt/nfs'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
   ignored_proc = subprocess.Popen(['sudo', 'cpupower', 'frequency-set', '-g', 'performance'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -489,12 +500,15 @@ def cloud():
 
   ignored_proc = subprocess.Popen(['sudo', 'cpupower', 'frequency-set', '-g', 'powersave'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+  print_duration(begin_s, '[ cloud ] took {}')
+
   print(f'[ cloud ] Done!')
 
 
 def guest_win11():
   print(f'[ guest-win11 ] Running "guest-win11" stage on {socket.gethostname()}', flush=True)
   # Step 1: Compile all .exe binaries
+  begin_s = time.time()
   for target in ['x86_64-pc-windows-gnu', 'x86_64-pc-windows-msvc', ]: # 'i686-pc-windows-gnu', 'i686-pc-windows-msvc']:
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
@@ -557,10 +571,12 @@ def guest_win11():
 
   # TODO sign binaries!
 
+  print_duration(begin_s, '[ guest-win11 ] took {}')
   print(f'[ guest-win11 ] Done!', flush=True)
 
 def guest_macos():
   print(f'[ guest-macos ] Running "guest-macos" stage on {socket.gethostname()}', flush=True)
+  begin_s = time.time()
   # Step 1: Compile for all targets
   mac_targets = ['x86_64-apple-darwin', 'aarch64-apple-darwin']
   for target in mac_targets:
@@ -594,6 +610,7 @@ def guest_macos():
   else:
     print(f'[ guest-macos ] iconutil does not exist, cannot build .app files!')
 
+  print_duration(begin_s, '[ guest-macos ] took {}')
   print(f'[ guest-macos ] Done!', flush=True)
 
 
