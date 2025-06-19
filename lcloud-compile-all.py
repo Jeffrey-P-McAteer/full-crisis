@@ -446,8 +446,15 @@ def cloud():
   print(f'[ cloud ] Running "cloud" stage on {socket.gethostname()}', flush=True)
   begin_s = time.time()
   # Spin up the external drive early and asyncronously
-  ignored_proc = subprocess.Popen(['ls', '/mnt/nfs'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-  ignored_proc = subprocess.Popen(['sudo', 'cpupower', 'frequency-set', '-g', 'performance'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+  ignored_proc = subprocess.Popen([
+    'ls', '/mnt/nfs'
+  ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+  ignored_proc = subprocess.Popen([
+    'sudo', 'cpupower', 'frequency-set', '-g', 'performance'
+  ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+  ignored_proc = subprocess.Popen([
+    'sudo', 'find', '/var/lib/libvirt/qemu/ram', '-name', 'pc.ram', '-print', '-exec', 'vmtouch', '-vt', '{}', ';'
+  ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
   vm_threads = []
 
