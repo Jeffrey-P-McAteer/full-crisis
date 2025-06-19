@@ -364,7 +364,7 @@ def print_duration(begin_s, msg_f):
     duration_string = f'{minutes}m {seconds:.1f}s'
   else:
     duration_string = f'{duration_s:.1f}s'
-  print(msg_f.format(duration_string))
+  print(msg_f.format(duration_string), flush=True)
 
 ####################
 # Stage Logic
