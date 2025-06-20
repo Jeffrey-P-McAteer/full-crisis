@@ -33,6 +33,7 @@ mod err;
 
 pub static SYS_CFG: OnceCell<system::SystemConfig> = OnceCell::new();
 pub static CLI_ARGS: OnceCell<Args> = OnceCell::new();
+pub static GAME: OnceCell<game::GameState> = OnceCell::new();
 
 // TODO move beyond hello world
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -43,6 +44,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Store some globals for the cli + gui methods to reference
     let _ = CLI_ARGS.set(args.clone());
     let _ = SYS_CFG.set(system::SystemConfig::new());
+    let _ = GAME.set(game::GameState::new());
 
     match args.command {
         Command::Gui => {
