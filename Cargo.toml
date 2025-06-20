@@ -12,6 +12,9 @@ rust_iso639 = "0.0.3"
 # File dialogues, from the hello-world iced editor
 rfd = "0.13"
 
+# Yay global variables
+once_cell = "1.21.3"
+
 
 [dependencies.iced]
 #version = "0.13"
@@ -31,6 +34,9 @@ features = ["tabs"]
 version = "1"
 features = ["rt-multi-thread", "macros", "io-util", "time", "net", "fs", "signal"]
 
+[dependencies.clap]
+version = "4.5"
+features = ["derive"]
 
 [target.'cfg(target_os = "windows")'.dependencies]
 winapi = {version = "0.3", features = ["wincon", "winuser"]}

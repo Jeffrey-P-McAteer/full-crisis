@@ -17,42 +17,52 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+use clap::Parser;
+use once_cell::sync::OnceCell;
+
 /// iced-based native UI for all major platforms
 mod gui;
 /// Game engine itself, responsible for game data and state changes
 mod game;
+/// Contains host info such as config folders, language, etc. Items which the user can change but the game will not.
+mod system;
 /// cli-based console UI to play the game with
 mod cli;
 /// Utilities
 mod err;
 
+pub static SYS_CFG: OnceCell<system::SystemConfig> = OnceCell::new();
+pub static CLI_ARGS: OnceCell<Args> = OnceCell::new();
+
 // TODO move beyond hello world
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args = Args::parse();
+
     hide_console_iff_windows();
 
-    // TODO read+report folder where game files will be searched from
-    if let Some(proj_dir_obj) = directories::ProjectDirs::from("com.jmcateer", "FullCrisis",  "FullCrisis") {
-        eprintln!("proj_dir_obj.config_local_dir() = {:?}", proj_dir_obj.config_local_dir());
-        eprintln!("proj_dir_obj.data_dir() = {:?}", proj_dir_obj.data_dir());
-    }
+    // Store some globals for the cli + gui methods to reference
+    let _ = CLI_ARGS.set(args.clone());
+    let _ = SYS_CFG.set(system::SystemConfig::new());
 
-    if let Some(locale_bcp_47) = sys_locale::get_locale() {
-        eprintln!("locale_bcp_47 = {:?}", locale_bcp_47);
-        // Go from the first 2 chars, which are ISO-639 2-letter language codes, and get the ISO-639 3-letter code.0
-        if let Some(lang_639) = rust_iso639::from_code_1(&locale_bcp_47[..2]) {
-            eprintln!("lang_639.code_3 = {:?}", lang_639.code_3);
+    match args.command {
+        Command::Gui => {
+            // Iced wants to own the GUI thread and insists on using the main thread; so we let it.
+            let r = iced::application(gui::GameWindow::new, gui::GameWindow::update, gui::GameWindow::view)
+                  .theme(gui::GameWindow::theme)
+                  //.font(include_bytes!("../fonts/icons.ttf").as_slice())
+                  .default_font(iced::Font::MONOSPACE)
+                  .run();
+
+            if let Err(e) = r {
+                eprintln!("[ Error in main() ] {}", e);
+            }
         }
-    }
-
-    // Iced wants to own the GUI thread and insists on using the main thread; so we let it.
-    let r = iced::application(gui::GameWindow::new, gui::GameWindow::update, gui::GameWindow::view)
-          .theme(gui::GameWindow::theme)
-          //.font(include_bytes!("../fonts/icons.ttf").as_slice())
-          .default_font(iced::Font::MONOSPACE)
-          .run();
-
-    if let Err(e) = r {
-        eprintln!("[ Error in main() ] {}", e);
+        Command::Cli => {
+            let r = cli::run();
+            if let Err(e) = r {
+                eprintln!("[ Error in main() ] {}", e);
+            }
+        }
     }
 
     Ok(())
@@ -83,4 +93,28 @@ fn hide_console_iff_windows() {
 }
 
 
+#[derive(Clone, Debug, clap::Parser)]
+#[command(author, version, about)]
+pub struct Args {
+    #[arg(value_enum, default_value_t = Command::Gui)]
+    command: Command,
+
+    #[arg(short, action = clap::ArgAction::Count)]
+    verbosity: u8,
+}
+
+#[derive(Clone, Debug, clap::ValueEnum)]
+pub enum Command {
+    Gui,
+    Cli,
+}
+
+impl std::fmt::Display for Command {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            Command::Gui => write!(f, "gui"),
+            Command::Cli => write!(f, "cli"),
+        }
+    }
+}
 
