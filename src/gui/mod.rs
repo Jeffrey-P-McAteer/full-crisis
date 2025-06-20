@@ -11,59 +11,54 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-pub struct Editor {
-    file: Option<PathBuf>,
-    content: text_editor::Content,
-    theme: highlighter::Theme,
-    word_wrap: bool,
-    is_loading: bool,
-    is_dirty: bool,
+pub struct GameWindow {
+
 }
 
 #[derive(Debug, Clone)]
-pub enum Message {
+pub enum GameMessage {
     ActionPerformed(text_editor::Action),
     ThemeSelected(highlighter::Theme),
     WordWrapToggled(bool),
     NewFile,
     OpenFile,
-    FileOpened(Result<(PathBuf, Arc<String>), Error>),
+    //FileOpened(Result<(PathBuf, Arc<String>), Error>),
     SaveFile,
-    FileSaved(Result<PathBuf, Error>),
+    //FileSaved(Result<PathBuf, Error>),
     Nop,
 }
 
-impl Editor {
-    pub fn new() -> (Self, Task<Message>) {
+impl GameWindow {
+    pub fn new() -> (Self, Task<GameMessage>) {
         (
             Self {
-                file: None,
+                /*file: None,
                 content: text_editor::Content::new(),
                 theme: highlighter::Theme::SolarizedDark,
                 word_wrap: true,
                 is_loading: true,
-                is_dirty: false,
+                is_dirty: false,*/
             },
             Task::batch([
-                Task::perform(
+                /*Task::perform(
                     load_file(format!(
                         "{}/src/main.rs",
                         env!("CARGO_MANIFEST_DIR")
                     )),
                     Message::FileOpened,
-                ),
+                ),*/
                 Task::perform(
                     run_background_async_tasks(),
-                    |_| { Message::Nop }, // _wierd_, why?
+                    |_| { GameMessage::Nop }, // _wierd_, why?
                 ),
                 widget::focus_next(),
             ]),
         )
     }
 
-    pub fn update(&mut self, message: Message) -> Task<Message> {
+    pub fn update(&mut self, message: GameMessage) -> Task<GameMessage> {
         match message {
-            Message::ActionPerformed(action) => {
+            /*Message::ActionPerformed(action) => {
                 self.is_dirty = self.is_dirty || action.is_edit();
 
                 self.content.perform(action);
@@ -137,16 +132,17 @@ impl Editor {
                 }
 
                 Task::none()
-            },
-            Message::Nop => {
+            },*/
+            GameMessage::Nop => {
               Task::none()
-            }
+            },
+            _ => unimplemented!()
         }
     }
 
-    pub fn view(&self) -> Element<Message> {
+    pub fn view(&self) -> Element<GameMessage> {
         let controls = row![
-            action(new_icon(), "New file", Some(Message::NewFile)),
+            /*action(new_icon(), "New file", Some(Message::NewFile)),
             action(
                 open_icon(),
                 "Open file",
@@ -167,13 +163,13 @@ impl Editor {
                 Message::ThemeSelected
             )
             .text_size(14)
-            .padding([5, 10])
+            .padding([5, 10])*/
         ]
         .spacing(10)
         .align_y(Center);
 
         let status = row![
-            text(if let Some(path) = &self.file {
+            /*text(if let Some(path) = &self.file {
                 let path = path.display().to_string();
 
                 if path.len() > 60 {
@@ -189,13 +185,13 @@ impl Editor {
                 let (line, column) = self.content.cursor_position();
 
                 format!("{}:{}", line + 1, column + 1)
-            })
+            })*/
         ]
         .spacing(10);
 
         column![
             controls,
-            text_editor(&self.content)
+            /*text_editor(&self.content)
                 .height(Fill)
                 .on_action(Message::ActionPerformed)
                 .wrapping(if self.word_wrap {
@@ -222,7 +218,7 @@ impl Editor {
                         }
                         _ => text_editor::Binding::from_key_press(key_press),
                     }
-                }),
+                }),*/
             status,
         ]
         .spacing(10)
@@ -231,78 +227,27 @@ impl Editor {
     }
 
     pub fn theme(&self) -> Theme {
-        if self.theme.is_dark() {
+        /*if self.theme.is_dark() {
             Theme::Dark
         } else {
             Theme::Light
-        }
+        }*/
+        Theme::Light
     }
 }
 
-#[derive(Debug, Clone)]
-pub enum Error {
-    DialogClosed,
-    IoError(io::ErrorKind),
-}
-
-async fn run_background_async_tasks() -> Result<(), Error> {
+async fn run_background_async_tasks() -> Result<(), crate::err::BoxError> {
 
   eprintln!("TODO run_background_async_tasks");
 
   Ok(())
 }
 
-async fn open_file() -> Result<(PathBuf, Arc<String>), Error> {
-    let picked_file = rfd::AsyncFileDialog::new()
-        .set_title("Open a text file...")
-        .pick_file()
-        .await
-        .ok_or(Error::DialogClosed)?;
-
-    load_file(picked_file).await
-}
-
-async fn load_file(
-    path: impl Into<PathBuf>,
-) -> Result<(PathBuf, Arc<String>), Error> {
-    let path = path.into();
-
-    let contents = tokio::fs::read_to_string(&path)
-        .await
-        .map(Arc::new)
-        .map_err(|error| Error::IoError(error.kind()))?;
-
-    Ok((path, contents))
-}
-
-async fn save_file(
-    path: Option<PathBuf>,
-    contents: String,
-) -> Result<PathBuf, Error> {
-    let path = if let Some(path) = path {
-        path
-    } else {
-        rfd::AsyncFileDialog::new()
-            .save_file()
-            .await
-            .as_ref()
-            .map(rfd::FileHandle::path)
-            .map(Path::to_owned)
-            .ok_or(Error::DialogClosed)?
-    };
-
-    tokio::fs::write(&path, contents)
-        .await
-        .map_err(|error| Error::IoError(error.kind()))?;
-
-    Ok(path)
-}
-
-fn action<'a, Message: Clone + 'a>(
-    content: impl Into<Element<'a, Message>>,
+fn action<'a, GameMessage: Clone + 'a>(
+    content: impl Into<Element<'a, GameMessage>>,
     label: &'a str,
-    on_press: Option<Message>,
-) -> Element<'a, Message> {
+    on_press: Option<GameMessage>,
+) -> Element<'a, GameMessage> {
     let action = button(center_x(content).width(30));
 
     if let Some(on_press) = on_press {
@@ -318,20 +263,3 @@ fn action<'a, Message: Clone + 'a>(
     }
 }
 
-fn new_icon<'a, Message>() -> Element<'a, Message> {
-    icon('\u{0e800}')
-}
-
-fn save_icon<'a, Message>() -> Element<'a, Message> {
-    icon('\u{0e801}')
-}
-
-fn open_icon<'a, Message>() -> Element<'a, Message> {
-    icon('\u{0f115}')
-}
-
-fn icon<'a, Message>(codepoint: char) -> Element<'a, Message> {
-    const ICON_FONT: Font = Font::with_name("editor-icons");
-
-    text(codepoint).font(ICON_FONT).into()
-}

@@ -1,4 +1,6 @@
 
+pub type BoxError = Box<dyn std::error::Error + Send + 'static>;
+
 #[derive(Debug)]
 pub struct LocatedError {
     pub inner: Box<dyn std::error::Error>,

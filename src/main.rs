@@ -17,7 +17,13 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/// iced-based native UI for all major platforms
 mod gui;
+/// Game engine itself, responsible for game data and state changes
+mod game;
+/// cli-based console UI to play the game with
+mod cli;
+/// Utilities
 mod err;
 
 // TODO move beyond hello world
@@ -39,8 +45,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // Iced wants to own the GUI thread and insists on using the main thread; so we let it.
-    let r = iced::application(gui::Editor::new, gui::Editor::update, gui::Editor::view)
-          .theme(gui::Editor::theme)
+    let r = iced::application(gui::GameWindow::new, gui::GameWindow::update, gui::GameWindow::view)
+          .theme(gui::GameWindow::theme)
           //.font(include_bytes!("../fonts/icons.ttf").as_slice())
           .default_font(iced::Font::MONOSPACE)
           .run();
