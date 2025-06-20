@@ -32,7 +32,7 @@ features = ["tabs"]
 
 [dependencies.tokio]
 version = "1"
-features = ["rt-multi-thread", "macros", "io-util", "time", "net", "fs", "signal"]
+features = ["rt-multi-thread", "macros", "io-util", "time", "net", "fs", "signal", "sync"]
 
 [dependencies.clap]
 version = "4.5"

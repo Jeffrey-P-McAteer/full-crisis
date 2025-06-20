@@ -1,13 +1,16 @@
 
 #[derive(Debug)]
 pub struct GameState {
-  pub active_event_loop: ActiveEventLoop,
+  pub active_event_loop: tokio::sync::RwLock<ActiveEventLoop>,
 }
 
 impl GameState {
   pub fn new() -> Self {
     Self {
-      active_event_loop: ActiveEventLoop::WelcomeScreen(WelcomeScreen_View::Empty)
+      active_event_loop: tokio::sync::RwLock::new(
+        ActiveEventLoop::WelcomeScreen(WelcomeScreen_View::Empty)
+      ),
+
     }
   }
 }
