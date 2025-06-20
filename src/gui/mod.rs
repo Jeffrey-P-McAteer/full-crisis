@@ -12,6 +12,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 pub struct GameWindow {
+    pub game_state: crate::game::GameState,
 
 }
 
@@ -32,6 +33,7 @@ impl GameWindow {
     pub fn new() -> (Self, Task<GameMessage>) {
         (
             Self {
+                game_state: crate::game::GameState::new(),
                 /*file: None,
                 content: text_editor::Content::new(),
                 theme: highlighter::Theme::SolarizedDark,

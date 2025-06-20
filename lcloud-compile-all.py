@@ -430,6 +430,12 @@ def host():
 
 def host_linux():
   begin_s = time.time()
+
+  rust_flags = '-C target-cpu=x86-64-v3' # Intel Haswell (2013), AMD Excavator (2015), Zen (2017+), so safe to say anything built within 2018+ has these features.
+  if 'RUSTFLAGS' in os.environ:
+    print(f'warning: overriding your custom $RUSTFLAGS="{os.environ.get("RUSTFLAGS", "")}" with "{rust_flags}"')
+  os.environ['RUSTFLAGS'] = rust_flags
+
   linux_targets = ['x86_64-unknown-linux-gnu']
   linux_workdir = os.path.dirname(__file__)
   for target in linux_targets:

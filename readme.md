@@ -45,8 +45,12 @@ this folder mounted under `/full-crisis` within the nspawn container. We will th
 
 If you do NOT have hardware-accelerated OpenGL rendering available (typically my testing VMs), install Mesa which has software-rendering fallback options - https://github.com/pal1000/mesa-dist-win?tab=readme-ov-file#downloads
 
+# Steps to build for all targets (assuming starting on Arch + local cloud stuff available at `169.254.0.0/16`)
 
-# Steps to build for all targets (assuming starting on Arch)
+ - `uv run lcloud-compile-all.py host`
+ - `uv run update-github-pages.py`
+
+# (OLD) Steps to build for all targets (assuming starting on Arch)
 
  - HOST: `cargo build --target x86_64-unknown-linux-gnu --release`
  - HOST: `uv run cross-compile-using-arch-container.py`
@@ -59,6 +63,13 @@ If you do NOT have hardware-accelerated OpenGL rendering available (typically my
  - HOST: `rsync -aP jeffrey@169.254.100.10:full-crisis/target/x86_64-apple-darwin ./target/`
  - HOST: `uv run update-github-pages.py`
 
+
+# Build/CI research
+
+```bash
+cargo build --timings --release
+# \o/ graphs under target/cargo-timings/
+```
 
 # Vocabulary
 
