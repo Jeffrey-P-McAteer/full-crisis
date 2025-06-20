@@ -3,13 +3,18 @@ use iced::keyboard;
 use iced::widget::{
     self, button, center, column, container, horizontal_space, pick_list,
     row, text, text_editor, toggler, tooltip, center_x,
+    Container, Image,
 };
-use iced::{Center, Element, Fill, Font, Task, Theme};
+use iced::{Length, Left, Right, Center, Element, Fill, Font, Task, Theme};
 
 use std::ffi;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
+
+// Immutable global data
+const SPLASH_PNG_BYTES: &[u8] = include_bytes!("../../icon/full-crisis-splash.transparent.png");
+
 
 pub struct GameWindow {
     pub game_state: crate::game::GameState,
@@ -143,34 +148,18 @@ impl GameWindow {
     }
 
     pub fn view(&self) -> Element<GameMessage> {
-        let controls = row![
-            /*action(new_icon(), "New file", Some(Message::NewFile)),
-            action(
-                open_icon(),
-                "Open file",
-                (!self.is_loading).then_some(Message::OpenFile)
-            ),
-            action(
-                save_icon(),
-                "Save file",
-                self.is_dirty.then_some(Message::SaveFile)
-            ),
-            horizontal_space(),
-            toggler(self.word_wrap)
-                .label("Word Wrap")
-                .on_toggle(Message::WordWrapToggled),
-            pick_list(
-                highlighter::Theme::ALL,
-                Some(self.theme),
-                Message::ThemeSelected
-            )
-            .text_size(14)
-            .padding([5, 10])*/
-        ]
-        .spacing(10)
-        .align_y(Center);
+        let splash_handle = iced::widget::image::Handle::from_bytes(SPLASH_PNG_BYTES);
+        let splash_img = Image::new(splash_handle)
+            .width(Length::Fill)
+            .height(Length::Fill);
+        let background = Container::new(splash_img)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .center_x(Length::Fill)
+            .center_y(Length::Fill);
 
-        let status = row![
+
+        /*let buttons = column![
             /*text(if let Some(path) = &self.file {
                 let path = path.display().to_string();
 
@@ -189,43 +178,11 @@ impl GameWindow {
                 format!("{}:{}", line + 1, column + 1)
             })*/
         ]
-        .spacing(10);
-
-        column![
-            controls,
-            /*text_editor(&self.content)
-                .height(Fill)
-                .on_action(Message::ActionPerformed)
-                .wrapping(if self.word_wrap {
-                    text::Wrapping::Word
-                } else {
-                    text::Wrapping::None
-                })
-                .highlight(
-                    self.file
-                        .as_deref()
-                        .and_then(Path::extension)
-                        .and_then(ffi::OsStr::to_str)
-                        .unwrap_or("rs"),
-                    self.theme,
-                )
-                .key_binding(|key_press| {
-                    match key_press.key.as_ref() {
-                        keyboard::Key::Character("s")
-                            if key_press.modifiers.command() =>
-                        {
-                            Some(text_editor::Binding::Custom(
-                                Message::SaveFile,
-                            ))
-                        }
-                        _ => text_editor::Binding::from_key_press(key_press),
-                    }
-                }),*/
-            status,
-        ]
         .spacing(10)
-        .padding(10)
-        .into()
+        .align_x(Left);*/
+
+        //Modal::new(background, buttons).into()
+        background.into()
     }
 
     pub fn theme(&self) -> Theme {
@@ -264,4 +221,3 @@ fn action<'a, GameMessage: Clone + 'a>(
         action.style(button::secondary).into()
     }
 }
-

@@ -19,7 +19,7 @@ once_cell = "1.21.3"
 [dependencies.iced]
 #version = "0.13"
 git = "https://github.com/iced-rs/iced.git"
-features = ["wgpu", "tokio", "canvas", "image", "svg", "highlighter"]
+features = ["wgpu", "tokio", "canvas", "image", "svg", "advanced", "highlighter"]
 
 [dependencies.iced_renderer]
 version = "*"
