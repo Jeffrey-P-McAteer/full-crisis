@@ -10,6 +10,15 @@ pub struct LocatedError {
     pub addtl_msg: String,
 }
 
+// All this says is we assume the interior dyn Error is safe to access from not-the-constructing-thread.
+unsafe impl Send for LocatedError {}
+
+impl From<LocatedError> for Box<dyn std::error::Error + Send> {
+    fn from(err: LocatedError) -> Self {
+        Box::new(err)
+    }
+}
+
 impl std::error::Error for LocatedError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         Some(&*self.inner)
