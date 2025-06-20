@@ -60,6 +60,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
         Command::Cli => {
+            // For compatability w/ iced runtime we also use tokio for the CLI routines
             let rt = tokio::runtime::Builder::new_multi_thread()
                 .enable_all()
                 .worker_threads(4)
