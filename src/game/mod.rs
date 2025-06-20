@@ -8,7 +8,7 @@ impl GameState {
   pub fn new() -> Self {
     Self {
       active_event_loop: tokio::sync::RwLock::new(
-        ActiveEventLoop::WelcomeScreen(WelcomeScreen_View::Empty)
+        ActiveEventLoop::WelcomeScreen(WelcomeScreenView::Empty)
       ),
 
     }
@@ -18,13 +18,13 @@ impl GameState {
 /// This tracks what event loop should be running
 #[derive(Debug, PartialEq, Eq)]
 pub enum ActiveEventLoop {
-  WelcomeScreen(WelcomeScreen_View),
-  ActiveGame(Game_View),
+  WelcomeScreen(WelcomeScreenView),
+  ActiveGame(GameView),
   Exit
 }
 
 #[derive(Debug, PartialEq, Eq)]
-pub enum WelcomeScreen_View {
+pub enum WelcomeScreenView {
   Empty,
   NewGame,
   LoadGame,
@@ -32,7 +32,7 @@ pub enum WelcomeScreen_View {
 }
 
 #[derive(Debug, PartialEq, Eq)]
-pub enum Game_View {
+pub enum GameView {
 
 
 }
