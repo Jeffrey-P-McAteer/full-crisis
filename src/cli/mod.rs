@@ -1,10 +1,17 @@
 
 
-pub fn run() -> Result<(), crate::err::BoxError> {
+pub async fn run() -> Result<(), crate::err::BoxError> {
+  let game = crate::GAME.get().unwrap();
+  loop {
+    {
+      if *game.active_event_loop.read().await == crate::game::ActiveEventLoop::Exit {
+          break;
+      }
 
-  println!("TODO cli mode!");
+    }
 
-  println!("GAME.get().unwrap() = {:?}", crate::GAME.get().unwrap());
-
+    // idk
+    tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
+  }
   Ok(())
 }

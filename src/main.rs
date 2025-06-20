@@ -60,10 +60,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
         Command::Cli => {
-            let r = cli::run();
-            if let Err(e) = r {
-                eprintln!("[ Error in main() ] {}", e);
-            }
+            let rt = tokio::runtime::Builder::new_multi_thread()
+                .enable_all()
+                .worker_threads(4)
+                .build()
+                .expect("Failed to build Tokio runtime");
+
+            rt.block_on(async {
+                let r = cli::run().await;
+                if let Err(e) = r {
+                    eprintln!("[ Error in main() ] {}", e);
+                }
+            });
         }
     }
 

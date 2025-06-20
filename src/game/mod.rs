@@ -16,13 +16,14 @@ impl GameState {
 }
 
 /// This tracks what event loop should be running
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum ActiveEventLoop {
   WelcomeScreen(WelcomeScreen_View),
   ActiveGame(Game_View),
+  Exit
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum WelcomeScreen_View {
   Empty,
   NewGame,
@@ -30,7 +31,7 @@ pub enum WelcomeScreen_View {
   Settings
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Game_View {
 
 
