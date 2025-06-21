@@ -18,7 +18,7 @@ use rand::Rng;
 
 
 pub async fn run() -> Result<(), crate::err::BoxError> {
-  //let game = crate::GAME.get().unwrap();
+  let game = crate::GAME.get().unwrap();
   /*loop {
     {
       if *game.active_event_loop.read().await == crate::game::ActiveEventLoop::Exit {
@@ -60,6 +60,12 @@ pub async fn run() -> Result<(), crate::err::BoxError> {
     });
 
     loop {
+        {
+          if *game.active_event_loop.read().await == crate::game::ActiveEventLoop::Exit {
+              break;
+          }
+        }
+
         // Draw UI
         terminal.draw(|f| {
             let chunks = Layout::default()
@@ -104,7 +110,13 @@ pub async fn run() -> Result<(), crate::err::BoxError> {
                         KeyCode::Backspace => { input_str.pop(); },
                         KeyCode::Enter => {
                             // Process command
-                            println!("Entered command: {}", *input_str);
+                            //println!("Entered command: {}", *input_str);
+                            let cmd = input_str.to_string();
+                            // TODO better input processing
+                            if cmd == "exit" || cmd == "quit" || cmd == "e" || cmd == "q" {
+                                *game.active_event_loop.write().await = crate::game::ActiveEventLoop::Exit;
+                            }
+
                             input_str.clear();
                         },
                         KeyCode::Esc => break,
