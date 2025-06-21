@@ -367,6 +367,17 @@ def print_duration(begin_s, msg_f):
     duration_string = f'{duration_s:.1f}s'
   print(msg_f.format(duration_string), flush=True)
 
+def delete_target_binary(base_path, target_name):
+  potentials = [
+    os.path.join(base_path, 'target', target_name, 'debug', 'full-crisis.exe'),
+    os.path.join(base_path, 'target', target_name, 'release', 'full-crisis.exe'),
+    os.path.join(base_path, 'target', target_name, 'debug', 'full-crisis'),
+    os.path.join(base_path, 'target', target_name, 'release', 'full-crisis'),
+  ]
+  for p in potentials:
+    if os.path.exists(p):
+      os.remove(p)
+
 ####################
 # Stage Logic
 ####################
@@ -459,6 +470,7 @@ def host_linux():
   linux_targets = ['x86_64-unknown-linux-gnu']
   linux_workdir = os.path.dirname(__file__)
   for target in linux_targets:
+    delete_target_binary(linux_workdir, target)
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
     ], cwd=linux_workdir, check=False)
@@ -546,6 +558,7 @@ def guest_win11():
   # Step 1: Compile all .exe binaries
   begin_s = time.time()
   for target in ['x86_64-pc-windows-gnu', 'x86_64-pc-windows-msvc', ]: # 'i686-pc-windows-gnu', 'i686-pc-windows-msvc']:
+    delete_target_binary(windows_workdir, target)
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
     ], cwd=windows_workdir, check=False)
@@ -625,6 +638,7 @@ def guest_macos():
   # Step 1: Compile for all targets
   mac_targets = ['x86_64-apple-darwin', 'aarch64-apple-darwin']
   for target in mac_targets:
+    delete_target_binary(macos_workdir, target)
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
     ], cwd=macos_workdir, check=False)

@@ -36,6 +36,9 @@ pub enum GameMessage {
 
 impl GameWindow {
     pub fn new() -> (Self, Task<GameMessage>) {
+        #[cfg(target_os = "macos")]
+        macos_menu::install_menu();
+
         (
             Self {
                 game_state: crate::game::GameState::new(),
@@ -221,3 +224,39 @@ fn action<'a, GameMessage: Clone + 'a>(
         action.style(button::secondary).into()
     }
 }
+
+
+
+#[cfg(target_os = "macos")]
+mod macos_menu {
+    use cocoa::{
+        appkit::{NSApp, NSApplication, NSMenu, NSMenuItem},
+        base::{nil, YES},
+        foundation::NSString,
+    };
+    use objc::rc::autoreleasepool;
+    use objc::runtime::Object;
+
+    pub fn install_menu() {
+        autoreleasepool(|| unsafe {
+            let app = NSApp();
+
+            let menubar = NSMenu::new(nil).autorelease();
+            let app_menu_item = NSMenuItem::new(nil).autorelease();
+            menubar.addItem_(app_menu_item);
+            app.setMainMenu_(menubar);
+
+            let app_menu = NSMenu::new(nil).autorelease();
+            let quit_title = NSString::alloc(nil).init_str("Quit MyApp");
+            let quit_action = sel!(terminate:);
+            let quit_item = NSMenuItem::alloc(nil)
+                .initWithTitle_action_keyEquivalent_(quit_title, quit_action, NSString::alloc(nil).init_str("q"))
+                .autorelease();
+
+            app_menu.addItem_(quit_item);
+            app_menu_item.setSubmenu_(app_menu);
+        });
+    }
+}
+
+

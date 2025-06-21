@@ -22,7 +22,7 @@ rand = "0.8"
 [dependencies.iced]
 #version = "0.13"
 git = "https://github.com/iced-rs/iced.git"
-features = ["wgpu", "tokio", "canvas", "image", "svg", "advanced", "highlighter"]
+features = ["wgpu", "tokio", "canvas", "image", "svg", "advanced", "highlighter" ]
 
 [dependencies.iced_renderer]
 version = "*"
@@ -43,6 +43,11 @@ features = ["derive"]
 
 [target.'cfg(target_os = "windows")'.dependencies]
 winapi = {version = "0.3", features = ["wincon", "winuser"]}
+
+[target.'cfg(target_os = "macos")'.dependencies]
+winit = "0.29"
+objc = "0.2"
+cocoa = "0.25"
 
 [build-dependencies]
 winres = "0.1"
