@@ -390,6 +390,8 @@ def host():
   # Copy project directory to cloud's /mnt/nfs/shared-vm-dir, which is shared to VMs
   repo_dir = os.path.dirname(__file__).rstrip('/').rstrip('\\')
   repo_dir_name = os.path.basename(repo_dir)
+  for target_dirent in os.listdir(repo_dir):
+    delete_target_binary(repo_dir, target_dirent)
   subprocess.run([
     'rsync',
       '-az', '--info=progress2', '-e', f'ssh -i "{host_cloud_key}"', '--exclude=target/docker-on-arch/', '--exclude=.git/', '--exclude=target/',

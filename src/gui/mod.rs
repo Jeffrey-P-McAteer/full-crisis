@@ -229,6 +229,7 @@ fn action<'a, GameMessage: Clone + 'a>(
 
 #[cfg(target_os = "macos")]
 mod macos_menu {
+    use objc::rc::AutoreleasePool;
     use cocoa::{
         appkit::{NSApp, NSApplication, NSMenu, NSMenuItem},
         base::{nil, YES},
