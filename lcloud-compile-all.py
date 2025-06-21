@@ -439,7 +439,10 @@ def host():
         age_s = time.time() - os.path.getmtime(found_path)
         age_m = int(age_s / 60.0)
         age_s = age_s - (age_m * 60.0)
-        print(f'{age_m}m {age_s:.1f}s old - {found_path}')
+        if age_m > 60:
+          print(f'{found_path} is very old!')
+        else:
+          print(f'{age_m}m {age_s:.1f}s old - {found_path}')
 
 
   print(f'[ host ] Done!')
