@@ -181,7 +181,7 @@ def find_name_under(dir_name, file_name, max_recursion=8):
         dirent_path = os.path.join(dir_name, dirent)
         if dirent.casefold() == file_name.casefold():
           found_files.append( dirent_path )
-        if os.path.isdir(dirent_path):
+        if os.path.isdir(dirent_path) and not dirent.casefold() == 'docker-on-arch'.casefold(): # I get one special-case OK? it'd be annoying to take in a list of these.
           found_files += find_name_under(dirent_path, file_name, max_recursion=max_recursion-1)
     except PermissionError:
       print(f'Skipping {dir_name} because PermissionError')
