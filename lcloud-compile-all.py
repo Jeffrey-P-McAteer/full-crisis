@@ -436,7 +436,7 @@ def host():
   for artifact_name, checker_fn in artifact_names_checkers:
     for found_path in find_name_under(os.path.join(repo_dir, 'target'), artifact_name, max_recursion=12):
       if checker_fn(found_path):
-        age_s = time.time() - os.path.getmtime()
+        age_s = time.time() - os.path.getmtime(found_path)
         age_m = int(age_s / 60.0)
         age_s = age_s - (age_m * 60.0)
         print(f'{age_m}m {age_s:.1f}s old - {found_path}')
