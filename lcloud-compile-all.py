@@ -19,6 +19,7 @@ import tempfile
 import shutil
 import pathlib
 import plistlib
+import getpass
 
 paramiko = None
 try:
@@ -615,7 +616,7 @@ def guest_macos():
   # Step 0: we re-mount the NFS share because it commonly shows OLD file contents!
   subprocess.run(['sudo', 'umount', '/Volumes/nfs'], check=False)
   subprocess.run(['sudo', 'mkdir', '-p', '/Volumes/nfs'], check=False)
-  subprocess.run(['sudo', 'chown', 'user:staff', '/Volumes/nfs'], check=False)
+  subprocess.run(['sudo', 'chown', f'{getpass.getuser()}:staff', '/Volumes/nfs'], check=False)
   subprocess.run(['sudo', 'automount', '-vc'], check=False)
   for _ in range(0, 10):
     if not os.path.exists(macos_workdir):
