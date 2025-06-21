@@ -69,6 +69,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             rt.block_on(async {
                 let r = cli::run().await;
+
+                // Just in-case cli borked real bad, restore the terminal a 2nd time before printing any errors.
+                // Restore terminal
+                if let Err(e) = crossterm::terminal::disable_raw_mode() {
+                    eprintln!("{:?}", e);
+                }
+
                 if let Err(e) = r {
                     eprintln!("[ Error in main() ] {}", e);
                 }

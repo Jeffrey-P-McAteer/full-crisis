@@ -59,8 +59,6 @@ pub async fn run() -> Result<(), crate::err::BoxError> {
         }
     });
 
-    let h = tokio::runtime::Handle::current();
-
     loop {
         // Draw UI
         terminal.draw(|f| {
