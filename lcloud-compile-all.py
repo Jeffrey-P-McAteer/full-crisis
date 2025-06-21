@@ -617,7 +617,7 @@ def guest_macos():
   subprocess.run(['sudo', 'umount', '/Volumes/nfs'], check=False)
   subprocess.run(['sudo', 'mkdir', '-p', '/Volumes/nfs'], check=False)
   subprocess.run(['sudo', 'chown', f'{getpass.getuser()}:staff', '/Volumes/nfs'], check=False)
-  subprocess.run(['sudo', 'automount', '-vc'], check=False)
+  subprocess.run(['sudo', os.path.join(os.environ.get('HOME', ''), 'mount-nfs.sh')], check=False)
   for _ in range(0, 10):
     if not os.path.exists(macos_workdir):
       time.sleep(0.2)
