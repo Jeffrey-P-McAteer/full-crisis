@@ -380,7 +380,7 @@ def host():
   repo_dir_name = os.path.basename(repo_dir)
   subprocess.run([
     'rsync',
-      '-az', '--info=progress2', '-e', f'ssh -i "{host_cloud_key}"', '--exclude=target/docker-on-arch/', '--exclude=.git/',
+      '-az', '--info=progress2', '-e', f'ssh -i "{host_cloud_key}"', '--exclude=target/docker-on-arch/', '--exclude=.git/', '--exclude=target/',
       f'{repo_dir}',
       f'{user_at_host}:/mnt/nfs/shared-vm-dir/', # "/" at end will ensure /mnt/nfs/shared-vm-dir/full-crisis is created if not exists
   ],check=True)
