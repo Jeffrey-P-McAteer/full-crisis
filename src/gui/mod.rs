@@ -244,63 +244,65 @@ mod macos_menu {
     use objc::{msg_send, sel, sel_impl};
 
     pub fn install_menu_notyetrunning() -> NSApp {
-        let _pool = NSAutoreleasePool::new(nil);
+        unsafe {
+            let _pool = NSAutoreleasePool::new(nil);
 
-        // Create app
-        let app = NSApp();
-        app.setActivationPolicy_(NSApplicationActivationPolicyRegular);
+            // Create app
+            let app = NSApp();
+            app.setActivationPolicy_(NSApplicationActivationPolicyRegular);
 
-        // Create menu bar
-        let menubar = NSMenu::new(nil).autorelease();
-        let app_menu_item = NSMenuItem::new(nil).autorelease();
-        menubar.addItem_(app_menu_item);
-        app.setMainMenu_(menubar);
+            // Create menu bar
+            let menubar = NSMenu::new(nil).autorelease();
+            let app_menu_item = NSMenuItem::new(nil).autorelease();
+            menubar.addItem_(app_menu_item);
+            app.setMainMenu_(menubar);
 
-        // Create app menu
-        let app_menu = NSMenu::new(nil).autorelease();
+            // Create app menu
+            let app_menu = NSMenu::new(nil).autorelease();
 
-        // "Say Hello" menu item
-        let hello_item = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
-            NSString::alloc(nil).init_str("Say Hello"),
-            sel!(sayHello:),
-            NSString::alloc(nil).init_str("h"),
-        ).autorelease();
-        app_menu.addItem_(hello_item);
+            // "Say Hello" menu item
+            let hello_item = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
+                NSString::alloc(nil).init_str("Say Hello"),
+                sel!(sayHello:),
+                NSString::alloc(nil).init_str("h"),
+            ).autorelease();
+            app_menu.addItem_(hello_item);
 
-        // Separator
-        app_menu.addItem_(NSMenuItem::separatorItem(nil));
+            // Separator
+            app_menu.addItem_(NSMenuItem::separatorItem(nil));
 
-        // "Quit" menu item
-        let quit_title = NSString::alloc(nil).init_str("Quit");
-        let quit_item = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
-            quit_title,
-            sel!(terminate:),
-            NSString::alloc(nil).init_str("q"),
-        ).autorelease();
-        app_menu.addItem_(quit_item);
+            // "Quit" menu item
+            let quit_title = NSString::alloc(nil).init_str("Quit");
+            let quit_item = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
+                quit_title,
+                sel!(terminate:),
+                NSString::alloc(nil).init_str("q"),
+            ).autorelease();
+            app_menu.addItem_(quit_item);
 
-        app_menu_item.setSubmenu_(app_menu);
+            app_menu_item.setSubmenu_(app_menu);
 
-        // Create window
-        /*let window = NSWindow::alloc(nil).initWithContentRect_styleMask_backing_defer_(
-            NSRect::new(NSPoint::new(0., 0.), NSSize::new(400., 300.)),
-            NSWindowStyleMask::NSTitledWindowMask,
-            NSBackingStoreType::NSBackingStoreBuffered,
-            NO,
-        ).autorelease();
-        window.cascadeTopLeftFromPoint_(NSPoint::new(20., 20.));
-        window.setTitle_(NSString::alloc(nil).init_str("Hello macOS"));
-        window.makeKeyAndOrderFront_(nil);
-        */
+            // Create window
+            /*let window = NSWindow::alloc(nil).initWithContentRect_styleMask_backing_defer_(
+                NSRect::new(NSPoint::new(0., 0.), NSSize::new(400., 300.)),
+                NSWindowStyleMask::NSTitledWindowMask,
+                NSBackingStoreType::NSBackingStoreBuffered,
+                NO,
+            ).autorelease();
+            window.cascadeTopLeftFromPoint_(NSPoint::new(20., 20.));
+            window.setTitle_(NSString::alloc(nil).init_str("Hello macOS"));
+            window.makeKeyAndOrderFront_(nil);
+            */
 
-        // Set up responder for "sayHello:"
-        let delegate: id = msg_send![create_hello_delegate(), new];
-        //window.setDelegate_(delegate);
-        app.setDelegate_(delegate);
+            // Set up responder for "sayHello:"
+            let delegate: id = msg_send![create_hello_delegate(), new];
+            //window.setDelegate_(delegate);
+            app.setDelegate_(delegate);
 
-        // Activate app and run
-        NSRunningApplication::currentApplication(nil).activateWithOptions_(cocoa::appkit::NSApplicationActivateIgnoringOtherApps);
-        app
+            // Activate app and run
+            NSRunningApplication::currentApplication(nil).activateWithOptions_(cocoa::appkit::NSApplicationActivateIgnoringOtherApps);
+            app
+        }
     }
 
     /// Create a custom NSObject subclass with a sayHello: method
