@@ -38,9 +38,8 @@ impl GameWindow {
     pub fn new() -> (Self, Task<GameMessage>) {
         #[cfg(target_os = "macos")]
         {
-            let app = macos_menu::install_menu_notyetrunning();
             std::thread::spawn(move || {
-                app.run(); // Let's see if MacOS is as picky as Windorks about main-thread affinity
+                macos_menu::install_run_menu();// Let's see if MacOS is as picky as Windorks about main-thread affinity
             });
         }
 
@@ -243,7 +242,7 @@ mod macos_menu {
     use objc::runtime::{Class, Object, Sel};
     use objc::{msg_send, sel, sel_impl};
 
-    pub fn install_menu_notyetrunning() -> NSApp {
+    pub fn install_run_menu() /*-> *mut Object*/ {
         unsafe {
             let _pool = NSAutoreleasePool::new(nil);
 
@@ -301,7 +300,7 @@ mod macos_menu {
 
             // Activate app and run
             NSRunningApplication::currentApplication(nil).activateWithOptions_(cocoa::appkit::NSApplicationActivateIgnoringOtherApps);
-            app
+            app.run();
         }
     }
 
@@ -315,7 +314,7 @@ mod macos_menu {
             println!("Hello from menu!");
         }
 
-        decl.add_method(sel!(sayHello:), say_hello as extern "C" fn(&Object, Sel, id));
+        unsafe { decl.add_method(sel!(sayHello:), say_hello as extern "C" fn(&Object, Sel, id)); }
 
         decl.register()
     }
