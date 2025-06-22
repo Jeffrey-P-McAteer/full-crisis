@@ -10,7 +10,7 @@ Join historic disasters as emergency response personnel and hone your crisis-sol
 
  - [x] Begin an Icon
  - [ ] Make the Icon a lot better
- - [ ] Finish building webpage generator - http://full-crisis.jmcateer.com/ see `update_github_pages.py` for details
+ - [x] Finish building webpage generator - http://full-crisis.jmcateer.com/ see `update_github_pages.py` for details
  - [ ] Design a "Game" format
     - We want to be able to point at a folder and place _all_ story details there.
     - Multi-lingual design is a plus; we'll make the text storage in a manner that authors will write all languages at the same place as the phrase/event in question.
@@ -22,9 +22,6 @@ Join historic disasters as emergency response personnel and hone your crisis-sol
     - [ ] Windows-x64 `.exe` file
     - [ ] Is it worth researching building a `.app` bundle w/o Apple's toolchain? Probably not worth it.
     - Linux folks are capable of running `cargo run --release`
-
- - [-] See if we can place a 32-bit windows PE32 binary in a web-based VM such as https://github.com/Pixelsuft/SandboXP for our web demos
-
 
 # Development Dependencies
 
@@ -101,6 +98,16 @@ We use Macroquad because it is a simple framework that supports PC + web
 
  - https://unikraft.org/ - for a potential server?
 
+
+# Incomplete experiments
+
+ - [ ] MacOS Menu integration
+    - Because we use `iced` which does not expose this control, we will need to either use another crate which can hijack `winit` behavior such as `muda` - https://docs.rs/muda/latest/muda/#note-for-winit-or-tao-users
+    - or build some crazy multi-process capability but that sounds dumb and bad. TODO research `muda` integration so Macs can have menus!
+
+ - [-] See if we can place a 32-bit windows PE32 binary in a web-based VM such as https://github.com/Pixelsuft/SandboXP for our web demos
+    - We can easily build for the target, but integrating into a web environment is fraught with emulation issues including filesystem handling.
+    - Abandoned for now, but ideally some form of web based game would be nice.
 
 # License
 
