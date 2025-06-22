@@ -30,11 +30,24 @@ pub enum GameMessage {
     OpenFile,
     //FileOpened(Result<(PathBuf, Arc<String>), Error>),
     SaveFile,
-    //FileSaved(Result<PathBuf, Error>),
     Nop,
 }
 
 impl GameWindow {
+    pub fn make_app_settings() -> iced::Settings {
+        iced::Settings {
+
+            ..Default::default()
+        }
+    }
+    pub fn make_window_settings() -> iced::window::Settings {
+        iced::window::Settings {
+            resizable: true,
+            decorations: true, // TODO other way
+            fullscreen: true,
+            ..Default::default()
+        }
+    }
     pub fn new() -> (Self, Task<GameMessage>) {
 
         (

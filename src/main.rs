@@ -53,6 +53,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                   .theme(gui::GameWindow::theme)
                   //.font(include_bytes!("../fonts/icons.ttf").as_slice())
                   .default_font(iced::Font::MONOSPACE)
+                  .settings(gui::GameWindow::make_app_settings())
+                  .window(gui::GameWindow::make_window_settings())
                   .run();
 
             if let Err(e) = r {
