@@ -37,7 +37,12 @@ pub enum GameMessage {
 impl GameWindow {
     pub fn new() -> (Self, Task<GameMessage>) {
         #[cfg(target_os = "macos")]
-        macos_menu::install_menu();
+        {
+            let app = macos_menu::install_menu_notyetrunning();
+            std::thread::spawn(move || {
+                app.run(); // Let's see if MacOS is as picky as Windorks about main-thread affinity
+            });
+        }
 
         (
             Self {
@@ -229,35 +234,90 @@ fn action<'a, GameMessage: Clone + 'a>(
 
 #[cfg(target_os = "macos")]
 mod macos_menu {
-    use objc::rc::AutoreleasePool;
-    use cocoa::{
-        appkit::{NSApp, NSApplication, NSMenu, NSMenuItem},
-        base::{nil, YES},
-        foundation::NSString,
+    use cocoa::appkit::{
+        NSApp, NSApplication, NSApplicationActivationPolicyRegular, NSMenu, NSMenuItem,
+        NSRunningApplication, NSWindow, NSWindowStyleMask, NSBackingStoreType,
     };
-    use objc::rc::autoreleasepool;
-    use objc::runtime::Object;
+    use cocoa::base::{id, nil, YES, NO};
+    use cocoa::foundation::{NSAutoreleasePool, NSPoint, NSRect, NSSize, NSString};
+    use objc::runtime::{Class, Object, Sel};
+    use objc::{msg_send, sel, sel_impl};
 
-    pub fn install_menu() {
-        autoreleasepool(|| unsafe {
-            let app = NSApp();
+    pub fn install_menu_notyetrunning() -> NSApp {
+        let _pool = NSAutoreleasePool::new(nil);
 
-            let menubar = NSMenu::new(nil).autorelease();
-            let app_menu_item = NSMenuItem::new(nil).autorelease();
-            menubar.addItem_(app_menu_item);
-            app.setMainMenu_(menubar);
+        // Create app
+        let app = NSApp();
+        app.setActivationPolicy_(NSApplicationActivationPolicyRegular);
 
-            let app_menu = NSMenu::new(nil).autorelease();
-            let quit_title = NSString::alloc(nil).init_str("Quit MyApp");
-            let quit_action = sel!(terminate:);
-            let quit_item = NSMenuItem::alloc(nil)
-                .initWithTitle_action_keyEquivalent_(quit_title, quit_action, NSString::alloc(nil).init_str("q"))
-                .autorelease();
+        // Create menu bar
+        let menubar = NSMenu::new(nil).autorelease();
+        let app_menu_item = NSMenuItem::new(nil).autorelease();
+        menubar.addItem_(app_menu_item);
+        app.setMainMenu_(menubar);
 
-            app_menu.addItem_(quit_item);
-            app_menu_item.setSubmenu_(app_menu);
-        });
+        // Create app menu
+        let app_menu = NSMenu::new(nil).autorelease();
+
+        // "Say Hello" menu item
+        let hello_item = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
+            NSString::alloc(nil).init_str("Say Hello"),
+            sel!(sayHello:),
+            NSString::alloc(nil).init_str("h"),
+        ).autorelease();
+        app_menu.addItem_(hello_item);
+
+        // Separator
+        app_menu.addItem_(NSMenuItem::separatorItem(nil));
+
+        // "Quit" menu item
+        let quit_title = NSString::alloc(nil).init_str("Quit");
+        let quit_item = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
+            quit_title,
+            sel!(terminate:),
+            NSString::alloc(nil).init_str("q"),
+        ).autorelease();
+        app_menu.addItem_(quit_item);
+
+        app_menu_item.setSubmenu_(app_menu);
+
+        // Create window
+        /*let window = NSWindow::alloc(nil).initWithContentRect_styleMask_backing_defer_(
+            NSRect::new(NSPoint::new(0., 0.), NSSize::new(400., 300.)),
+            NSWindowStyleMask::NSTitledWindowMask,
+            NSBackingStoreType::NSBackingStoreBuffered,
+            NO,
+        ).autorelease();
+        window.cascadeTopLeftFromPoint_(NSPoint::new(20., 20.));
+        window.setTitle_(NSString::alloc(nil).init_str("Hello macOS"));
+        window.makeKeyAndOrderFront_(nil);
+        */
+
+        // Set up responder for "sayHello:"
+        let delegate: id = msg_send![create_hello_delegate(), new];
+        //window.setDelegate_(delegate);
+        app.setDelegate_(delegate);
+
+        // Activate app and run
+        NSRunningApplication::currentApplication(nil).activateWithOptions_(cocoa::appkit::NSApplicationActivateIgnoringOtherApps);
+        app
     }
+
+    /// Create a custom NSObject subclass with a sayHello: method
+    unsafe fn create_hello_delegate() -> *const Class {
+        let superclass = Class::get("NSObject").unwrap();
+        let mut decl = objc::declare::ClassDecl::new("HelloDelegate", superclass).unwrap();
+
+        // Add method
+        extern "C" fn say_hello(_: &Object, _: Sel, _: id) {
+            println!("Hello from menu!");
+        }
+
+        decl.add_method(sel!(sayHello:), say_hello as extern "C" fn(&Object, Sel, id));
+
+        decl.register()
+    }
+
 }
 
 
