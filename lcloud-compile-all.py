@@ -515,7 +515,7 @@ def cloud():
       channel = transport.open_session()
       #paramiko_stream_cmd(channel, f'uv run \"{windows_workdir}\\lcloud-compile-all.py\" guest-win11')
       win_t = threading.Thread(target=paramiko_stream_cmd, args=(
-        '[ guest-win11 ]', channel, f'uv run \"{windows_workdir}\\lcloud-compile-all.py\" guest-win11'
+        '[ guest-win11 ] ', channel, f'uv run \"{windows_workdir}\\lcloud-compile-all.py\" guest-win11'
       ))
       win_t.start()
       vm_threads.append(win_t)
@@ -538,7 +538,7 @@ def cloud():
       channel = transport.open_session()
       #paramiko_stream_cmd(channel, f'/usr/local/bin/uv run \"{macos_workdir}/lcloud-compile-all.py\" guest-macos')
       mac_t = threading.Thread(target=paramiko_stream_cmd, args=(
-        '[ guest-macos ]', channel, f'sudo \"$HOME/mount-nfs.sh\" ; sleep 0.5 ; /usr/local/bin/uv run \"{macos_workdir}/lcloud-compile-all.py\" guest-macos'
+        '[ guest-macos ] ', channel, f'sudo \"$HOME/mount-nfs.sh\" ; sleep 0.5 ; /usr/local/bin/uv run \"{macos_workdir}/lcloud-compile-all.py\" guest-macos'
       ))
       mac_t.start()
       vm_threads.append(mac_t)
