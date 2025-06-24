@@ -140,12 +140,12 @@ def paramiko_stream_cmd(prefix, channel, command):
 def stream_output(stream, label):
   if len(label) > 0:
       for line in stream:
-          print(f"[{label}] {line}", end="")  # line already includes newline
+          print(f"{label}{line}", end="")  # line already includes newline
   else:
       for line in stream:
           print(f"{line}", end="")  # line already includes newline
 
-def run_streaming_command(cmd):
+def run_streaming_command(cmd, label):
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
@@ -155,8 +155,8 @@ def run_streaming_command(cmd):
     )
 
     # Start threads to read stdout and stderr
-    stdout_thread = threading.Thread(target=stream_output, args=(process.stdout, ""))
-    stderr_thread = threading.Thread(target=stream_output, args=(process.stderr, ""))
+    stdout_thread = threading.Thread(target=stream_output, args=(process.stdout, label))
+    stderr_thread = threading.Thread(target=stream_output, args=(process.stderr, label))
 
     stdout_thread.start()
     stderr_thread.start()
@@ -415,7 +415,7 @@ def host():
   cloud_t = threading.Thread(target=run_streaming_command, args=([
     'ssh', '-i', host_cloud_key,
       f'{user_at_host}', 'uv', 'run', f'/tmp/{SELF_FILE_NAME}', 'cloud'
-  ],))
+  ], '[ cloud ] ',))
   cloud_t.start()
   threads.append(cloud_t)
 
