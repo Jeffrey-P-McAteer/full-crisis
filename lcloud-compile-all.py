@@ -523,7 +523,9 @@ def cloud():
       traceback.print_exc()
 
   else:
-    print(f'WARNING: Builder-Win11 is not running! Run with: virsh start Builder-Win11')
+    print(f'WARNING: Builder-Win11 is not running! We are booting it with: virsh start Builder-Win11')
+    subprocess.run(['virsh', 'start', 'Builder-Win11'], check=False)
+
   macos_vm_ip = get_ip_for_vm_hostname('Builder-MacOS')
   if macos_vm_ip is not None:
     try:
@@ -543,7 +545,9 @@ def cloud():
     except:
       traceback.print_exc()
   else:
-    print(f'WARNING: Builder-MacOS is not running! Run with: virsh start Builder-MacOS')
+    print(f'WARNING: Builder-MacOS is not running! We are booting it with: virsh start Builder-MacOS')
+    subprocess.run(['virsh', 'start', 'Builder-MacOS'], check=False)
+
 
   for t in vm_threads:
     t.join()
