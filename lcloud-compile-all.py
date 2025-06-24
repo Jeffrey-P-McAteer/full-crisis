@@ -124,11 +124,19 @@ def paramiko_stream_cmd(prefix, channel, command):
   while True:
       if channel.recv_ready():
           output = channel.recv(1024).decode()
-          print(prefix+output, end="", flush=True)  # already has newline
+          if len(output.splitlines()) <= 1:
+            print(prefix+output, end="", flush=True)  # already has newline
+          else:
+            for line in output.splitlines(keepends=False):
+              print(prefix+line, flush=True) # Add a prefix + platform end-of-line
 
       if channel.recv_stderr_ready():
           error = channel.recv_stderr(1024).decode()
-          print(prefix+error, end="", flush=True)  # already has newline
+          if len(error.splitlines()) <= 1:
+            print(prefix+error, end="", flush=True)  # already has newline
+          else:
+            for line in error.splitlines(keepends=False):
+              print(prefix+line, flush=True) # Add a prefix + platform end-of-line
 
       if channel.exit_status_ready():
           break
@@ -486,7 +494,7 @@ def host_linux():
   print_duration(begin_s, '[ host-linux ] took {}')
 
 def cloud():
-  print(f'[ cloud ] Running "cloud" stage on {socket.gethostname()}', flush=True)
+  print(f'Running "cloud" stage on {socket.gethostname()}', flush=True)
   begin_s = time.time()
   # Spin up the external drive early and asyncronously
   ignored_proc = subprocess.Popen([
@@ -504,7 +512,7 @@ def cloud():
   win11_vm_ip = get_ip_for_vm_hostname('Builder-Win11')
   if win11_vm_ip is not None:
     try:
-      print(f'[ cloud ] Running a build in Builder-Win11 at {win11_vm_ip}')
+      print(f'Running a build in Builder-Win11 at {win11_vm_ip}')
       # The windows 11 machine Z:\ drive is the same as the cloud's /mnt/nfs/shared-vm-dir, so we just remote in & run the build
       # and can be sure /mnt/nfs/shared-vm-dir/full-crisis will contain build results, no rsync needed.
       client = paramiko.SSHClient()
@@ -529,7 +537,7 @@ def cloud():
   macos_vm_ip = get_ip_for_vm_hostname('Builder-MacOS')
   if macos_vm_ip is not None:
     try:
-      print(f'[ cloud ] Running a build in Builder-MacOS at {macos_vm_ip}')
+      print(f'Running a build in Builder-MacOS at {macos_vm_ip}')
       client = paramiko.SSHClient()
       client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
       client.connect(hostname=macos_vm_ip, username='jeffrey', password='Passw0rd!', timeout=10)
@@ -554,13 +562,13 @@ def cloud():
 
   ignored_proc = subprocess.Popen(['sudo', 'cpupower', 'frequency-set', '-g', 'powersave'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-  print_duration(begin_s, '[ cloud ] took {}')
+  print_duration(begin_s, 'took {}')
 
-  print(f'[ cloud ] Done!')
+  print(f'Done!')
 
 
 def guest_win11():
-  print(f'[ guest-win11 ] Running "guest-win11" stage on {socket.gethostname()}', flush=True)
+  print(f'Running "guest-win11" stage on {socket.gethostname()}', flush=True)
   # Step 1: Compile all .exe binaries
   begin_s = time.time()
   for target in ['x86_64-pc-windows-gnu', 'x86_64-pc-windows-msvc', ]: # 'i686-pc-windows-gnu', 'i686-pc-windows-msvc']:
@@ -589,7 +597,7 @@ def guest_win11():
     resource_hacker_exes = find_name_under(resource_hacker_folders[0], 'ResourceHacker.exe')
     if len(resource_hacker_exes) > 0:
       resource_hacker_exe = resource_hacker_exes[0]
-      print(f'[ guest-win11 ] Found Resource Hacker at {resource_hacker_exe}')
+      print(f'Found Resource Hacker at {resource_hacker_exe}')
 
       full_crisis_exes = find_name_under(os.path.join(repo_dir, 'target', 'x86_64-pc-windows-gnu'), 'full-crisis.exe', max_recursion=2)
       full_crisis_exes += find_name_under(os.path.join(repo_dir, 'target', 'x86_64-pc-windows-msvc'), 'full-crisis.exe', max_recursion=2)
@@ -620,17 +628,17 @@ def guest_win11():
           print(f'WARNING: {full_crisis_exe_with_icon} does not exist!')
 
     else:
-      print(f'[ guest-win11 ] resource_hacker_exes = {resource_hacker_exes}')
+      print(f'resource_hacker_exes = {resource_hacker_exes}')
   else:
-    print(f'[ guest-win11 ] resource_hacker_folders = {resource_hacker_folders}')
+    print(f'resource_hacker_folders = {resource_hacker_folders}')
 
   # TODO sign binaries!
 
-  print_duration(begin_s, '[ guest-win11 ] took {}')
-  print(f'[ guest-win11 ] Done!', flush=True)
+  print_duration(begin_s, 'took {}')
+  print(f'Done!', flush=True)
 
 def guest_macos():
-  print(f'[ guest-macos ] Running "guest-macos" stage on {socket.gethostname()}', flush=True)
+  print(f'Running "guest-macos" stage on {socket.gethostname()}', flush=True)
   begin_s = time.time()
   # Step 0: we re-mount the NFS share because it commonly shows OLD file contents!
   subprocess.run(['sudo', 'umount', '/Volumes/nfs'], check=False)
@@ -658,7 +666,7 @@ def guest_macos():
 
   # Step 2: Build a .app file for each target!
   if shutil.which('iconutil'):
-    print(f'[ guest-macos ] Found iconutil at {shutil.which("iconutil")}, building mac .app files')
+    print(f'Found iconutil at {shutil.which("iconutil")}, building mac .app files')
     for target in mac_targets:
       if os.path.exists(os.path.join(repo_dir, 'target', target, 'release', 'full-crisis')):
         app_dir_file = build_app_bundle(
@@ -670,13 +678,13 @@ def guest_macos():
         # Now package app_dir_file into a .dmg file
         dmg_file_path = rreplace(str(app_dir_file), '.app', '.dmg')
         background_png = os.path.join(repo_dir, 'icon', 'mac-dmg-background-image.png')
-        print(f'[ guest-macos ] Creating {dmg_file_path}')
+        print(f'Creating {dmg_file_path}')
         create_dmg_bundle(dmg_file_path, app_dir_file, background_png)
   else:
-    print(f'[ guest-macos ] iconutil does not exist, cannot build .app files!')
+    print(f'iconutil does not exist, cannot build .app files!')
 
-  print_duration(begin_s, '[ guest-macos ] took {}')
-  print(f'[ guest-macos ] Done!', flush=True)
+  print_duration(begin_s, 'took {}')
+  print(f'Done!', flush=True)
 
 
 # Call the stage function
