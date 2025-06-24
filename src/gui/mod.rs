@@ -1,11 +1,10 @@
 use iced::highlighter;
 use iced::keyboard;
 use iced::widget::{
-    self, button, center, column, container, horizontal_space, pick_list,
-    row, text, text_editor, toggler, tooltip, center_x,
-    Container, Image,
+    self, Container, Image, button, center, center_x, column, container, horizontal_space,
+    pick_list, row, text, text_editor, toggler, tooltip,
 };
-use iced::{Length, Left, Right, Center, Element, Fill, Font, Task, Theme};
+use iced::{Center, Element, Fill, Font, Left, Length, Right, Task, Theme};
 
 use std::ffi;
 use std::io;
@@ -15,10 +14,8 @@ use std::sync::Arc;
 // Immutable global data
 const SPLASH_PNG_BYTES: &[u8] = include_bytes!("../../icon/full-crisis-splash.transparent.png");
 
-
 pub struct GameWindow {
     pub game_state: crate::game::GameState,
-
 }
 
 #[derive(Debug, Clone)]
@@ -36,7 +33,6 @@ pub enum GameMessage {
 impl GameWindow {
     pub fn make_app_settings() -> iced::Settings {
         iced::Settings {
-
             ..Default::default()
         }
     }
@@ -49,7 +45,6 @@ impl GameWindow {
         }
     }
     pub fn new() -> (Self, Task<GameMessage>) {
-
         (
             Self {
                 game_state: crate::game::GameState::new(),
@@ -70,7 +65,7 @@ impl GameWindow {
                 ),*/
                 Task::perform(
                     run_background_async_tasks(),
-                    |_| { GameMessage::Nop }, // _wierd_, why?
+                    |_| GameMessage::Nop, // _wierd_, why?
                 ),
                 widget::focus_next(),
             ]),
@@ -154,10 +149,8 @@ impl GameWindow {
 
                 Task::none()
             },*/
-            GameMessage::Nop => {
-              Task::none()
-            },
-            _ => unimplemented!()
+            GameMessage::Nop => Task::none(),
+            _ => unimplemented!(),
         }
     }
 
@@ -171,7 +164,6 @@ impl GameWindow {
             .height(Length::Fill)
             .center_x(Length::Fill)
             .center_y(Length::Fill);
-
 
         /*let buttons = column![
             /*text(if let Some(path) = &self.file {
@@ -210,10 +202,9 @@ impl GameWindow {
 }
 
 async fn run_background_async_tasks() -> Result<(), crate::err::BoxError> {
+    eprintln!("TODO run_background_async_tasks");
 
-  eprintln!("TODO run_background_async_tasks");
-
-  Ok(())
+    Ok(())
 }
 
 fn action<'a, GameMessage: Clone + 'a>(

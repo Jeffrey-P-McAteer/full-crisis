@@ -16,20 +16,19 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 use clap::Parser;
 use once_cell::sync::OnceCell;
 
-/// iced-based native UI for all major platforms
-mod gui;
-/// Game engine itself, responsible for game data and state changes
-mod game;
-/// Contains host info such as config folders, language, etc. Items which the user can change but the game will not.
-mod system;
 /// cli-based console UI to play the game with
 mod cli;
 /// Utilities
 mod err;
+/// Game engine itself, responsible for game data and state changes
+mod game;
+/// iced-based native UI for all major platforms
+mod gui;
+/// Contains host info such as config folders, language, etc. Items which the user can change but the game will not.
+mod system;
 
 pub static SYS_CFG: OnceCell<system::SystemConfig> = OnceCell::new();
 pub static CLI_ARGS: OnceCell<Args> = OnceCell::new();
@@ -49,13 +48,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     match args.command {
         Command::Gui => {
             // Iced wants to own the GUI thread and insists on using the main thread; so we let it.
-            let r = iced::application(gui::GameWindow::new, gui::GameWindow::update, gui::GameWindow::view)
-                  .theme(gui::GameWindow::theme)
-                  //.font(include_bytes!("../fonts/icons.ttf").as_slice())
-                  .default_font(iced::Font::MONOSPACE)
-                  .settings(gui::GameWindow::make_app_settings())
-                  .window(gui::GameWindow::make_window_settings())
-                  .run();
+            let r = iced::application(
+                gui::GameWindow::new,
+                gui::GameWindow::update,
+                gui::GameWindow::view,
+            )
+            .theme(gui::GameWindow::theme)
+            //.font(include_bytes!("../fonts/icons.ttf").as_slice())
+            .default_font(iced::Font::MONOSPACE)
+            .settings(gui::GameWindow::make_app_settings())
+            .window(gui::GameWindow::make_window_settings())
+            .run();
 
             if let Err(e) = r {
                 eprintln!("[ Error in main() ] {}", e);
@@ -88,8 +91,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-
-
 fn hide_console_iff_windows() {
     #[cfg(target_os = "windows")]
     {
@@ -111,7 +112,6 @@ fn hide_console_iff_windows() {
         // Otherwise do nothing, we want console messages when run from the console.
     }
 }
-
 
 #[derive(Clone, Debug, clap::Parser)]
 #[command(author, version, about)]
@@ -137,4 +137,3 @@ impl std::fmt::Display for Command {
         }
     }
 }
-

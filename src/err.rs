@@ -1,4 +1,3 @@
-
 pub type BoxError = Box<dyn std::error::Error + Send + 'static>;
 
 #[derive(Debug)]
@@ -28,9 +27,12 @@ impl std::error::Error for LocatedError {
 impl std::fmt::Display for LocatedError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if self.addtl_msg.len() > 0 {
-            write!(f, "{} from {}:{} ({})", self.inner, self.file, self.line, &self.addtl_msg)
-        }
-        else {
+            write!(
+                f,
+                "{} from {}:{} ({})",
+                self.inner, self.file, self.line, &self.addtl_msg
+            )
+        } else {
             write!(f, "{} from {}:{}", self.inner, self.file, self.line)
         }
     }
@@ -40,23 +42,46 @@ impl std::fmt::Display for LocatedError {
 #[macro_export]
 macro_rules! eloc {
     () => {
-        |e| crate::err::LocatedError { inner: e.into(), file: file!(), line: line!(), column: column!(), addtl_msg: String::new() }
+        |e| crate::err::LocatedError {
+            inner: e.into(),
+            file: file!(),
+            line: line!(),
+            column: column!(),
+            addtl_msg: String::new(),
+        }
     };
     ($msg:expr) => {
-        |e| crate::err::LocatedError { inner: e.into(), file: file!(), line: line!(), column: column!(), addtl_msg: $msg }
+        |e| crate::err::LocatedError {
+            inner: e.into(),
+            file: file!(),
+            line: line!(),
+            column: column!(),
+            addtl_msg: $msg,
+        }
     };
 }
 
 #[macro_export]
 macro_rules! eloc_str {
     () => {
-        |e| crate::err::LocatedError { inner: format!("{:?}", e).into(), file: file!(), line: line!(), column: column!(), addtl_msg: String::new() }
+        |e| crate::err::LocatedError {
+            inner: format!("{:?}", e).into(),
+            file: file!(),
+            line: line!(),
+            column: column!(),
+            addtl_msg: String::new(),
+        }
     };
     ($msg:expr) => {
-        |e| crate::err::LocatedError { inner: format!("{:?}", e).into(), file: file!(), line: line!(), column: column!(), addtl_msg: $msg }
+        |e| crate::err::LocatedError {
+            inner: format!("{:?}", e).into(),
+            file: file!(),
+            line: line!(),
+            column: column!(),
+            addtl_msg: $msg,
+        }
     };
 }
-
 
 pub(crate) use eloc;
 pub(crate) use eloc_str;
