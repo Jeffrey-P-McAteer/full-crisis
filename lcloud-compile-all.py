@@ -115,7 +115,7 @@ def get_ip_for_vm_hostname(vm_hostname):
             return entry.get('ip-address', None)
     return None
 
-def paramiko_stream_cmd(channel, command):
+def paramiko_stream_cmd(prefix, channel, command):
   print(f'Running command in VM: {command}')
 
   channel.exec_command(command)
@@ -124,11 +124,11 @@ def paramiko_stream_cmd(channel, command):
   while True:
       if channel.recv_ready():
           output = channel.recv(1024).decode()
-          print(output, end="", flush=True)  # already has newline
+          print(prefix+output, end="", flush=True)  # already has newline
 
       if channel.recv_stderr_ready():
           error = channel.recv_stderr(1024).decode()
-          print(error, end="", flush=True)  # already has newline
+          print(prefix+error, end="", flush=True)  # already has newline
 
       if channel.exit_status_ready():
           break
@@ -515,7 +515,7 @@ def cloud():
       channel = transport.open_session()
       #paramiko_stream_cmd(channel, f'uv run \"{windows_workdir}\\lcloud-compile-all.py\" guest-win11')
       win_t = threading.Thread(target=paramiko_stream_cmd, args=(
-        channel, f'uv run \"{windows_workdir}\\lcloud-compile-all.py\" guest-win11'
+        '[ guest-win11 ]', channel, f'uv run \"{windows_workdir}\\lcloud-compile-all.py\" guest-win11'
       ))
       win_t.start()
       vm_threads.append(win_t)
@@ -538,7 +538,7 @@ def cloud():
       channel = transport.open_session()
       #paramiko_stream_cmd(channel, f'/usr/local/bin/uv run \"{macos_workdir}/lcloud-compile-all.py\" guest-macos')
       mac_t = threading.Thread(target=paramiko_stream_cmd, args=(
-        channel, f'sudo \"$HOME/mount-nfs.sh\" ; sleep 0.5 ; /usr/local/bin/uv run \"{macos_workdir}/lcloud-compile-all.py\" guest-macos'
+        '[ guest-macos ]', channel, f'sudo \"$HOME/mount-nfs.sh\" ; sleep 0.5 ; /usr/local/bin/uv run \"{macos_workdir}/lcloud-compile-all.py\" guest-macos'
       ))
       mac_t.start()
       vm_threads.append(mac_t)
