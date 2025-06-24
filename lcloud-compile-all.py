@@ -507,6 +507,14 @@ def cloud():
     'sudo', 'find', '/var/lib/libvirt/qemu/ram', '-name', 'pc.ram', '-print', '-exec', 'vmtouch', '-vt', '{}', ';'
   ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+  # For macos, sometimes when we don't bind to the new interface
+  if not os.path.exists('/tmp/.restarted-nfs'):
+    ignored_proc = subprocess.Popen([
+      'sudo', 'systemctl', 'restart', 'nfs-server'
+    ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    with open('/tmp/.restarted-nfs', 'w') as fd:
+      fd.write('1')
+
   vm_threads = []
 
   win11_vm_ip = get_ip_for_vm_hostname('Builder-Win11')
