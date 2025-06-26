@@ -125,9 +125,16 @@ def to_list_of_strings(*ambiguous):
 def bring_up_kvm_domains(*domains):
   for domain in to_list_of_strings(domains):
     subprocess.run(['sudo', 'virsh', 'start', f'{domain}'], check=False)
+    # Ensure CFS cpu scheduler is in use
+    subprocess.run(['sudo', 'virsh', 'schedinfo', f'{domain}',
+      '--set', 'scheduler=cfs',
+      '--live', '--config',
+    ], check=False)
+
     # Hand back all processors to VM, speeding it up
     subprocess.run(['sudo', 'virsh', 'schedinfo', f'{domain}',
-      '--set', 'cpu_quota=-1'
+      '--set', 'cpu_quota=-1',
+      '--live',
     ], check=False)
 
 def spin_down_kvm_domains(*domains):
@@ -139,7 +146,8 @@ def spin_down_kvm_domains(*domains):
 
     subprocess.run(['sudo', 'virsh', 'schedinfo', f'{domain}',
       '--set', f'cpu_quota={int(cpu_quota_ms * 1000)}',
-      '--set', f'cpu_period={int(cpu_period_ms * 1000)}'
+      '--set', f'cpu_period={int(cpu_period_ms * 1000)}',
+      '--live',
     ], check=False)
 
 def get_ip_for_vm_hostname(vm_hostname):
