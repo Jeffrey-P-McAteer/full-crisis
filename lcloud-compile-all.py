@@ -134,8 +134,8 @@ def bring_up_kvm_domains(*domains):
 def spin_down_kvm_domains(*domains):
   for domain in to_list_of_strings(domains):
 
-    # Trim down to allowing CPU quota of 25ms per 100ms (ie 25% of a CPU or so)
-    cpu_period_ms = 100
+    # Trim down to allowing CPU quota of 25ms per 200ms (ie 12% of a CPU or so)
+    cpu_period_ms = 200
     cpu_quota_ms = 25
 
     subprocess.run(['sudo', 'virsh', 'schedinfo', f'{domain}',
@@ -143,6 +143,10 @@ def spin_down_kvm_domains(*domains):
       '--set', f'cpu_period={int(cpu_period_ms * 1000)}',
       '--live',
     ], check=False)
+
+    # If the VM supports it, free some memory for the host.
+    subprocess.run(['sudo', 'virsh', 'setmem', f'{domain}', '2048000', '--live',], check=False)
+
 
 def get_ip_for_vm_hostname(vm_hostname):
     if not os.path.exists(cloud_dhcp_lease_file):
