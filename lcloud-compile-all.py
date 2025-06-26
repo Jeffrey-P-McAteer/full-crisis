@@ -78,6 +78,11 @@ cloud_dhcp_lease_file = '/var/lib/libvirt/dnsmasq/virbr0.status'
 ####################
 # Guest stage data
 ####################
+
+all_guest_kvm_domain_names = [
+  'Builder-MacOS', 'Builder-Win11'
+]
+
 windows_workdir = 'Z:\\full-crisis'
 macos_workdir = '/Volumes/nfs/shared-vm-dir/full-crisis'
 
@@ -103,7 +108,39 @@ def setup_host_ip_space():
       'sudo', 'ip', 'address', 'add', f'{host_host_ip}/16', 'broadcast', '+', 'dev', eth_dev
     ], check=True)
 
+def to_list_of_strings(*ambiguous):
+  # *ambiguous is always a tuple
+  strings_list = []
+  for item in ambiguous:
+    if isinstance(item, str):
+      strings_list.append(item)
+    elif isinstance(item, tuple) or isinstance(item, list) or isinstance(item, set):
+      for sub_item in item:
+        strings_list.extend(to_list_of_strings(sub_item))
+    else:
+      raise Exception(f'Unknown string container item = {item} given from ambiguous = {ambiguous}')
 
+  return strings_list
+
+def bring_up_kvm_domains(*domains):
+  for domain in to_list_of_strings(domains):
+    subprocess.run(['sudo', 'virsh', 'start', f'{domain}'], check=False)
+    # Hand back all processors to VM, speeding it up
+    subprocess.run(['sudo', 'virsh', 'schedinfo', f'{domain}',
+      '--set', 'cpu_quota=-1'
+    ], check=False)
+
+def spin_down_kvm_domains(*domains):
+  for domain in to_list_of_strings(domains):
+
+    # Trim down to allowing CPU quota of 25ms per 100ms (ie 25% of a CPU or so)
+    cpu_period_ms = 100
+    cpu_quota_ms = 25
+
+    subprocess.run(['sudo', 'virsh', 'schedinfo', f'{domain}',
+      '--set', f'cpu_quota={int(cpu_quota_ms * 1000)}',
+      '--set', f'cpu_period={int(cpu_period_ms * 1000)}'
+    ], check=False)
 
 def get_ip_for_vm_hostname(vm_hostname):
     if not os.path.exists(cloud_dhcp_lease_file):
@@ -515,6 +552,9 @@ def cloud():
     with open('/tmp/.restarted-nfs', 'w') as fd:
       fd.write('1')
 
+  # Ensure our VMs have started
+  bring_up_kvm_domains(all_guest_kvm_domain_names)
+
   vm_threads = []
 
   win11_vm_ip = get_ip_for_vm_hostname('Builder-Win11')
@@ -567,6 +607,9 @@ def cloud():
 
   for t in vm_threads:
     t.join()
+
+  # Now spin them down
+  spin_down_kvm_domains(all_guest_kvm_domain_names)
 
   ignored_proc = subprocess.Popen(['sudo', 'cpupower', 'frequency-set', '-g', 'powersave'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
