@@ -125,12 +125,6 @@ def to_list_of_strings(*ambiguous):
 def bring_up_kvm_domains(*domains):
   for domain in to_list_of_strings(domains):
     subprocess.run(['sudo', 'virsh', 'start', f'{domain}'], check=False)
-    # Ensure CFS cpu scheduler is in use
-    subprocess.run(['sudo', 'virsh', 'schedinfo', f'{domain}',
-      '--set', 'scheduler=cfs',
-      '--live', '--config',
-    ], check=False)
-
     # Hand back all processors to VM, speeding it up
     subprocess.run(['sudo', 'virsh', 'schedinfo', f'{domain}',
       '--set', 'cpu_quota=-1',
