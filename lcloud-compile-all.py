@@ -130,6 +130,10 @@ def bring_up_kvm_domains(*domains):
       '--set', 'cpu_quota=-1',
       '--live',
     ], check=False)
+    subprocess.run(['sudo', 'virsh', 'schedinfo', f'{domain}',
+      '--set', 'vcpu_quota=-1',
+      '--live',
+    ], check=False)
 
 def spin_down_kvm_domains(*domains):
   for domain in to_list_of_strings(domains):
@@ -139,8 +143,8 @@ def spin_down_kvm_domains(*domains):
     cpu_quota_ms = 25
 
     subprocess.run(['sudo', 'virsh', 'schedinfo', f'{domain}',
-      '--set', f'cpu_quota={int(cpu_quota_ms * 1000)}',
-      '--set', f'cpu_period={int(cpu_period_ms * 1000)}',
+      '--set', f'vcpu_quota={int(cpu_quota_ms * 1000)}',
+      '--set', f'vcpu_period={int(cpu_period_ms * 1000)}',
       '--live',
     ], check=False)
 
