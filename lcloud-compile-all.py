@@ -67,8 +67,10 @@ if not (stage in STAGES):
 host_host_ip = '169.254.10.10'
 
 host_cloud_ip = '169.254.100.20'
+host_cloud_mac = '84:47:09:20:57:98' # used for WoL processing
 host_cloud_user = 'user'
 host_cloud_key = '/j/ident/azure_sidekick'
+host_cloud_suspend_after_build = os.environ.get('SUSPEND_AFTER_BUILD', 'f').lower() in ('y', 't', 'yes', 'true', '1')
 
 ####################
 # Cloud stage data
@@ -441,6 +443,16 @@ def host():
   print(f'[ host ] Running "host" stage on {socket.gethostname()}', flush=True)
   begin_s = time.time()
   setup_host_ip_space()
+
+  # Send WoL packets just-in-case
+  print(f'SUSPEND_AFTER_BUILD = {host_cloud_suspend_after_build}')
+  if not shutil.which('wol'):
+    print(f'Warning: install wol with "yay -S wol" to wake up cloud machine at {host_cloud_mac}')
+  else:
+    subprocess.run([
+      'wol', '-i', f'{host_cloud_ip}', f'{host_cloud_mac}'
+    ], check=False)
+
   user_at_host = f'{host_cloud_user}@{host_cloud_ip}'
   # Copy project directory to cloud's /mnt/nfs/shared-vm-dir, which is shared to VMs
   repo_dir = os.path.dirname(__file__).rstrip('/').rstrip('\\')
@@ -513,6 +525,12 @@ def host():
         else:
           print(f'{age_m}m {age_s:.1f}s old - {found_path}')
 
+  if host_cloud_suspend_after_build:
+    print('[ host ] Suspending Cloud machine...')
+    subprocess.run([
+      'ssh', '-i', host_cloud_key,
+        f'{user_at_host}', 'sudo', 'systemctl', 'suspend',
+    ],check=True,bufsize=1,text=True)
 
   print(f'[ host ] Done!')
 
