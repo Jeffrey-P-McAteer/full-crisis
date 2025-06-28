@@ -604,6 +604,7 @@ def cloud():
   if win11_vm_ip is not None:
     try:
       print(f'Running a build in Builder-Win11 at {win11_vm_ip}')
+      wait_until_ip_port_available(win11_vm_ip, 22)
       # The windows 11 machine Z:\ drive is the same as the cloud's /mnt/nfs/shared-vm-dir, so we just remote in & run the build
       # and can be sure /mnt/nfs/shared-vm-dir/full-crisis will contain build results, no rsync needed.
       client = paramiko.SSHClient()
@@ -628,6 +629,7 @@ def cloud():
   if macos_vm_ip is not None:
     try:
       print(f'Running a build in Builder-MacOS at {macos_vm_ip}')
+      wait_until_ip_port_available(macos_vm_ip, 22)
       client = paramiko.SSHClient()
       client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
       client.connect(hostname=macos_vm_ip, username='jeffrey', password='Passw0rd!', timeout=10)
