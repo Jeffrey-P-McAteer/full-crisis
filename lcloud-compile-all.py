@@ -110,6 +110,16 @@ def setup_host_ip_space():
       'sudo', 'ip', 'address', 'add', f'{host_host_ip}/16', 'broadcast', '+', 'dev', eth_dev
     ], check=True)
 
+def wait_until_ip_port_available(ip, port):
+  while True:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+      sock.settimeout(0.25)
+      try:
+        sock.connect((ip, port))
+        return
+      except (socket.timeout, ConnectionRefusedError, OSError):
+        time.sleep(0.25)
+
 def to_list_of_strings(*ambiguous):
   # *ambiguous is always a tuple
   strings_list = []
@@ -453,6 +463,9 @@ def host():
       'wol', '-i', f'{host_cloud_ip}', f'{host_cloud_mac}'
     ], check=False)
 
+  # Wait until machine responds
+  wait_until_ip_port_available(host_cloud_ip, 22)
+
   user_at_host = f'{host_cloud_user}@{host_cloud_ip}'
   # Copy project directory to cloud's /mnt/nfs/shared-vm-dir, which is shared to VMs
   repo_dir = os.path.dirname(__file__).rstrip('/').rstrip('\\')
@@ -506,7 +519,7 @@ def host():
     'ssh', '-i', host_cloud_key,
       f'{user_at_host}', 'rm', f'/tmp/{SELF_FILE_NAME}'
   ],check=True,bufsize=1,text=True)
-  print_duration(begin_s, '[ host ] took {}')
+
   # Also print timestamps of all artifacts to double-check build time; if one is old
   # that indicates build failed and we did not propogate the error across a VM
   artifact_names_checkers = [
@@ -532,6 +545,7 @@ def host():
         f'{user_at_host}', 'sudo', 'systemctl', 'suspend',
     ],check=True,bufsize=1,text=True)
 
+  print_duration(begin_s, '[ host ] took {}')
   print(f'[ host ] Done!')
 
 def host_linux():
