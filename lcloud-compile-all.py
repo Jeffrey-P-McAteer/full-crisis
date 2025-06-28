@@ -540,7 +540,8 @@ def host():
           print(f'{age_m}m {age_s:.1f}s old - {found_path}')
 
   if host_cloud_suspend_after_build:
-    print('[ host ] Suspending Cloud machine...')
+    print('[ host ] Suspending Cloud machine, wake up later with: ')
+    print(f'[ host ] wol -i {host_cloud_ip} {host_cloud_mac}')
     subprocess.run([
       'ssh', '-i', host_cloud_key,
         f'{user_at_host}', 'sudo', 'systemctl', 'suspend',
