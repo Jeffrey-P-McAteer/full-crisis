@@ -110,8 +110,9 @@ def setup_host_ip_space():
       'sudo', 'ip', 'address', 'add', f'{host_host_ip}/16', 'broadcast', '+', 'dev', eth_dev
     ], check=True)
 
-def wait_until_ip_port_available(ip, port):
-  while True:
+def wait_until_ip_port_available(ip, port, timeout_s=14):
+  end_time = time.time() + timeout_s
+  while time.time() < end_time:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
       sock.settimeout(0.25)
       try:
