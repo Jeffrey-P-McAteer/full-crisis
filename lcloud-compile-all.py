@@ -20,6 +20,7 @@ import shutil
 import pathlib
 import plistlib
 import getpass
+import datetime
 
 paramiko = None
 try:
@@ -61,6 +62,9 @@ if not (stage in STAGES):
   print(f'Unknown stage "{stage}", exiting')
   sys.exit(1)
 
+_now = datetime.datetime.now()
+hh = _now.hour + (_now.minute / 60.0)
+
 ####################
 # Host stage data
 ####################
@@ -71,6 +75,9 @@ host_cloud_mac = '84:47:09:20:57:98' # used for WoL processing
 host_cloud_user = 'user'
 host_cloud_key = '/j/ident/azure_sidekick'
 host_cloud_suspend_after_build = os.environ.get('SUSPEND_AFTER_BUILD', 'f').lower() in ('y', 't', 'yes', 'true', '1')
+if not host_cloud_suspend_after_build:
+  if hh > 16.1:
+    host_cloud_suspend_after_build = True
 
 ####################
 # Cloud stage data
