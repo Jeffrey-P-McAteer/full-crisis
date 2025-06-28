@@ -460,6 +460,7 @@ def host():
   if not shutil.which('wol'):
     print(f'Warning: install wol with "yay -S wol" to wake up cloud machine at {host_cloud_mac}')
   else:
+    print(f'[ host ] wol -i {host_cloud_ip} {host_cloud_mac}')
     subprocess.run([
       'wol', '-i', f'{host_cloud_ip}', f'{host_cloud_mac}'
     ], check=False)
