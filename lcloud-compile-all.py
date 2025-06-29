@@ -21,6 +21,7 @@ import pathlib
 import plistlib
 import getpass
 import datetime
+import base64
 
 paramiko = None
 try:
@@ -550,6 +551,11 @@ def host():
   if host_cloud_suspend_after_build:
     print('[ host ] Suspending Cloud machine, wake up later with: ')
     print(f'[ host ] wol -i {host_cloud_ip} {host_cloud_mac}')
+    subprocess.run([
+      'ssh', '-i', host_cloud_key,
+        f'{user_at_host}', 'bash', '-c',
+        f'/turn-wol-on-all-ifaces.sh',
+    ],check=True,bufsize=1,text=True)
     subprocess.run([
       'ssh', '-i', host_cloud_key,
         f'{user_at_host}', 'sudo', 'systemctl', 'suspend',
