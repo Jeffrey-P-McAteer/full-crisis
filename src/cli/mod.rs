@@ -195,27 +195,16 @@ pub fn maybe_block_on<F: IntoFuture>(fut: F, max_polls: usize) -> Option<F::Outp
 
 pub trait FutureExt: Future {
     /// Block the thread until the future is ready.
-
     ///
-
     /// # Example
-
     ///
-
     /// ```
-
     /// use pollster::FutureExt as _;
-
     ///
-
     /// let my_fut = async {};
-
     ///
-
     /// let result = my_fut.block_on();
-
     /// ```
-
     fn block_on(self) -> Self::Output
     where
         Self: Sized,
@@ -228,15 +217,12 @@ impl<F: Future> FutureExt for F {}
 
 enum SignalState {
     Empty,
-
     Waiting,
-
     Notified,
 }
 
 struct Signal {
     state: Mutex<SignalState>,
-
     cond: Condvar,
 }
 
