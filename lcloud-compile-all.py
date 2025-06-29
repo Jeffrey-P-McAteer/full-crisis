@@ -555,7 +555,7 @@ def host():
       'ssh', '-i', host_cloud_key,
         f'{user_at_host}', 'bash', '-c',
         f'/turn-wol-on-all-ifaces.sh',
-    ],check=True,bufsize=1,text=True)
+    ],check=False,bufsize=1,text=True)
     subprocess.run([
       'ssh', '-i', host_cloud_key,
         f'{user_at_host}', 'sudo', 'systemctl', 'suspend',
