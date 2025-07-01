@@ -76,9 +76,10 @@ host_cloud_mac = '84:47:09:20:57:98' # used for WoL processing
 host_cloud_user = 'user'
 host_cloud_key = '/j/ident/azure_sidekick'
 host_cloud_suspend_after_build = os.environ.get('SUSPEND_AFTER_BUILD', 'f').lower() in ('y', 't', 'yes', 'true', '1')
-if not host_cloud_suspend_after_build:
-  if hh > 16.1:
-    host_cloud_suspend_after_build = True
+#if not host_cloud_suspend_after_build:
+#  if hh > 16.1:
+#    host_cloud_suspend_after_build = True
+# ^^ low reliability -_-
 
 ####################
 # Cloud stage data
