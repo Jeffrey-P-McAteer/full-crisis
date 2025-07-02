@@ -99,9 +99,9 @@ macos_workdir = '/Volumes/nfs/shared-vm-dir/full-crisis'
 
 guest_compile_debug = False
 
-repo_dir = os.path.dirname(__file__).rstrip('/').rstrip('\\')
-ico_file = os.path.join(repo_dir, 'icon', 'full-crisis-icon.ico')
-png_file = os.path.join(repo_dir, 'icon', 'full-crisis-icon.png')
+REPO_DIR = os.path.dirname(__file__).rstrip('/').rstrip('\\')
+ICO_FILE = os.path.join(REPO_DIR, 'icon', 'full-crisis-icon.ico')
+PNG_FILE = os.path.join(REPO_DIR, 'icon', 'full-crisis-icon.png')
 
 
 ####################
@@ -455,6 +455,18 @@ def delete_target_binary(base_path, target_name):
     if os.path.exists(p):
       os.remove(p)
 
+def delete_all_target_binaries(base_path):
+  # TODO add new architecture targets here
+  targets = [
+    'x86_64-unknown-linux-gnu',
+    'x86_64-pc-windows-msvc',
+    'x86_64-pc-windows-gnu',
+    'x86_64-apple-darwin',
+    'aarch64-apple-darwin',
+  ]
+  for t in targets:
+    delete_target_binary(base_path, t)
+
 ####################
 # Stage Logic
 ####################
@@ -479,14 +491,12 @@ def host():
 
   user_at_host = f'{host_cloud_user}@{host_cloud_ip}'
   # Copy project directory to cloud's /mnt/nfs/shared-vm-dir, which is shared to VMs
-  repo_dir = os.path.dirname(__file__).rstrip('/').rstrip('\\')
-  repo_dir_name = os.path.basename(repo_dir)
-  for target_dirent in os.listdir(os.path.join(repo_dir, 'target')):
-    delete_target_binary(repo_dir, target_dirent)
+  repo_dir_name = os.path.basename(REPO_DIR)
+  delete_all_target_binaries(os.path.join(REPO_DIR, 'target'))
   subprocess.run([
     'rsync',
       '-az', '--info=progress2', '-e', f'ssh -i "{host_cloud_key}"', '--exclude=target/docker-on-arch/', '--exclude=.git/', '--exclude=target/',
-      f'{repo_dir}',
+      f'{REPO_DIR}',
       f'{user_at_host}:/mnt/nfs/shared-vm-dir/', # "/" at end will ensure /mnt/nfs/shared-vm-dir/full-crisis is created if not exists
   ],check=True)
   # Copy self to cloud
@@ -523,7 +533,7 @@ def host():
     'rsync',
       '-az', '--info=progress2', '-e', f'ssh -i "{host_cloud_key}"', '--exclude=.git/',
       f'{user_at_host}:/mnt/nfs/shared-vm-dir/{repo_dir_name}/target/.',
-      f'{repo_dir}/target',
+      f'{REPO_DIR}/target',
   ],check=True,bufsize=1,text=True)
   # Remove self just to be clean
   subprocess.run([
@@ -539,7 +549,7 @@ def host():
     ('Full-Crisis.app', lambda x: os.path.isdir(x)),
   ]
   for artifact_name, checker_fn in artifact_names_checkers:
-    for found_path in find_name_under(os.path.join(repo_dir, 'target'), artifact_name, max_recursion=12):
+    for found_path in find_name_under(os.path.join(REPO_DIR, 'target'), artifact_name, max_recursion=12):
       if checker_fn(found_path):
         age_s = time.time() - os.path.getmtime(found_path)
         age_m = int(age_s / 60.0)
@@ -613,6 +623,9 @@ def cloud():
 
   # Ensure our VMs have started
   bring_up_kvm_domains(all_guest_kvm_domain_names)
+
+  # Delete any artifacts; this works because the VMs build in the same folder as what we are using
+  delete_all_target_binaries(os.path.join(REPO_DIR, 'target'))
 
   vm_threads = []
 
@@ -709,8 +722,8 @@ def guest_win11():
       resource_hacker_exe = resource_hacker_exes[0]
       print(f'Found Resource Hacker at {resource_hacker_exe}')
 
-      full_crisis_exes = find_name_under(os.path.join(repo_dir, 'target', 'x86_64-pc-windows-gnu'), 'full-crisis.exe', max_recursion=2)
-      full_crisis_exes += find_name_under(os.path.join(repo_dir, 'target', 'x86_64-pc-windows-msvc'), 'full-crisis.exe', max_recursion=2)
+      full_crisis_exes = find_name_under(os.path.join(REPO_DIR, 'target', 'x86_64-pc-windows-gnu'), 'full-crisis.exe', max_recursion=2)
+      full_crisis_exes += find_name_under(os.path.join(REPO_DIR, 'target', 'x86_64-pc-windows-msvc'), 'full-crisis.exe', max_recursion=2)
       full_crisis_exes = list(set(full_crisis_exes))
 
       for full_crisis_exe in full_crisis_exes:
@@ -720,7 +733,7 @@ def guest_win11():
             '-open', full_crisis_exe,
             '-save', full_crisis_exe_with_icon,
             '-action', 'addskip',
-            '-res', ico_file,
+            '-res', ICO_FILE,
             '-mask', 'ICONGROUP,MAINICON,'
         ], check=True)
 
@@ -733,7 +746,7 @@ def guest_win11():
           os.remove(full_crisis_exe)
           shutil.copyfile(full_crisis_exe_with_icon, full_crisis_exe)
           os.remove(full_crisis_exe_with_icon)
-          print(f'Added icon {ico_file} to {full_crisis_exe}')
+          print(f'Added icon {ICO_FILE} to {full_crisis_exe}')
         else:
           print(f'WARNING: {full_crisis_exe_with_icon} does not exist!')
 
@@ -778,16 +791,16 @@ def guest_macos():
   if shutil.which('iconutil'):
     print(f'Found iconutil at {shutil.which("iconutil")}, building mac .app files')
     for target in mac_targets:
-      if os.path.exists(os.path.join(repo_dir, 'target', target, 'release', 'full-crisis')):
+      if os.path.exists(os.path.join(REPO_DIR, 'target', target, 'release', 'full-crisis')):
         app_dir_file = build_app_bundle(
-          os.path.join(repo_dir, 'target', target, 'release'),
+          os.path.join(REPO_DIR, 'target', target, 'release'),
           'Full-Crisis',
-          os.path.join(repo_dir, 'target', target, 'release', 'full-crisis'),
-          png_file
+          os.path.join(REPO_DIR, 'target', target, 'release', 'full-crisis'),
+          PNG_FILE
         )
         # Now package app_dir_file into a .dmg file
         dmg_file_path = rreplace(str(app_dir_file), '.app', '.dmg')
-        background_png = os.path.join(repo_dir, 'icon', 'mac-dmg-background-image.png')
+        background_png = os.path.join(REPO_DIR, 'icon', 'mac-dmg-background-image.png')
         print(f'Creating {dmg_file_path}')
         create_dmg_bundle(dmg_file_path, app_dir_file, background_png)
   else:
