@@ -1,4 +1,4 @@
-#![allow(unused_imports)]
+#![allow(unused_imports,dead_code)]
 /**
  *  full-crisis - An emergency-response simulator videogame
  *  Copyright (C) 2025  Jeffrey McAteer <jeffrey@jmcateer.com>
@@ -16,6 +16,7 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 use clap::Parser;
 use once_cell::sync::OnceCell;
 

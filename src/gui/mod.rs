@@ -207,6 +207,7 @@ async fn run_background_async_tasks() -> Result<(), crate::err::BoxError> {
     Ok(())
 }
 
+/*
 fn action<'a, GameMessage: Clone + 'a>(
     content: impl Into<Element<'a, GameMessage>>,
     label: &'a str,
@@ -226,3 +227,4 @@ fn action<'a, GameMessage: Clone + 'a>(
         action.style(button::secondary).into()
     }
 }
+*/
