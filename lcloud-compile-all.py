@@ -97,6 +97,7 @@ all_guest_kvm_domain_names = [
 windows_workdir = 'Z:\\full-crisis'
 macos_workdir = '/Volumes/nfs/shared-vm-dir/full-crisis'
 
+guest_suspend_after_build = os.environ.get('GUEST_SUSPEND_AFTER_BUILD', 'f').lower() in ('y', 't', 'yes', 'true', '1')
 guest_compile_debug = False
 
 REPO_DIR = os.path.dirname(__file__).rstrip('/').rstrip('\\')
@@ -601,6 +602,7 @@ def host_linux():
 
 def cloud():
   print(f'Running "cloud" stage on {socket.gethostname()}', flush=True)
+  print(f'GUEST_SUSPEND_AFTER_BUILD = {guest_suspend_after_build}')
   begin_s = time.time()
   # Spin up the external drive early and asyncronously
   ignored_proc = subprocess.Popen([
@@ -681,7 +683,9 @@ def cloud():
     t.join()
 
   # Now spin them down
-  spin_down_kvm_domains(all_guest_kvm_domain_names)
+  print(f'GUEST_SUSPEND_AFTER_BUILD = {guest_suspend_after_build}')
+  if guest_suspend_after_build:
+    spin_down_kvm_domains(all_guest_kvm_domain_names)
 
   ignored_proc = subprocess.Popen(['sudo', 'cpupower', 'frequency-set', '-g', 'powersave'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
