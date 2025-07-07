@@ -1,3 +1,6 @@
+
+#![allow(unreachable_patterns)]
+
 use iced::highlighter;
 use iced::keyboard;
 use iced::widget::{
@@ -20,13 +23,13 @@ pub struct GameWindow {
 
 #[derive(Debug, Clone)]
 pub enum GameMessage {
-    ActionPerformed(text_editor::Action),
-    ThemeSelected(highlighter::Theme),
-    WordWrapToggled(bool),
-    NewFile,
-    OpenFile,
+    //ActionPerformed(text_editor::Action),
+    //ThemeSelected(highlighter::Theme),
+    //WordWrapToggled(bool),
+    //NewFile,
+    //OpenFile,
     //FileOpened(Result<(PathBuf, Arc<String>), Error>),
-    SaveFile,
+    //SaveFile,
     Nop,
 }
 
@@ -150,7 +153,7 @@ impl GameWindow {
                 Task::none()
             },*/
             GameMessage::Nop => Task::none(),
-            _ => unimplemented!(),
+            _ => Task::none(),
         }
     }
 
