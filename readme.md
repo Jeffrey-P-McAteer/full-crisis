@@ -33,10 +33,43 @@ The following programs must be installed and available on your system's `PATH`
  - `cargo`
     - See https://rustup.rs/
 
-For cross-compilation, install `systemd-nspawn`.
+# Build: For your machine only
 
-The script `run_docker_from_container.py` will download + run an Arch Linux container (rootfs located under `target/docker-on-arch`) with
+This is the easiest one! Simply build via cargo and find your executable under `./target/release/full-crisis[.exe]`.
+
+```bash
+cargo build --release
+```
+
+# Build: NSpawn Cross-Compilation
+
+Cross-compilation is supported on Linux machines with `systemd-nspawn` available and a kernel newer than `5.8` (ie built with `cgroup2` or better).
+
+The script `old_scripts/cross-compile-using-arch-container.py` will download + run an Arch Linux container (rootfs located under `target/docker-on-arch`) with
 this folder mounted under `/full-crisis` within the nspawn container. We will then use https://github.com/cross-rs/cross to perform final cross-compilation.
+
+```bash
+uv run ./old_scripts/cross-compile-using-arch-container.py
+```
+
+# Build: Zig Cross-Compilation
+
+At the moment this technique DOES NOT WORK. Zig may be used if `zig` is installed and you are running on a Linux machine.
+
+```bash
+uv run ./old_scripts/zig-build-all-targets.py
+```
+
+# Build: Jeff's tiny local cloud
+
+If you're at my house and physically connected to a server's switch, run
+
+```bash
+uv run lcloud-compile-all.py
+```
+
+Which uses 2 KVM VMs to perform native builds on windows and mac, then copies artifacts from `./target` back to your machine.
+
 
 # Runtime Dependencies
 
