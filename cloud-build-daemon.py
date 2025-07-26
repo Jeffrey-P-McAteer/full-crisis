@@ -12,7 +12,7 @@
 # Misc config
 CACHE_EXPIRE_S = 24 * 60 * 60
 MAX_BUILD_FAILURES_PER_SHA = 6
-BUILD_DIR = '/opt/fc-cloud-build-daemon-build-dir'
+BUILD_DIR = '/opt/fc-cloud-build-daemon-build-dir/full-crisis'
 BUILD_USER_NAME = 'user'
 GITUB_TOKEN_FILE = '/opt/fc-cloud-build-daemon-build-dir-github-token.txt'
 
@@ -23,6 +23,9 @@ import time
 import urllib.request
 import json
 import traceback
+
+# Shared constants w/ lcloud-compile-app
+REPO_DIR = BUILD_DIR.rstrip('/').rstrip('\\')
 
 if 'install' in sys.argv:
   print(f'Creating {BUILD_DIR}')
@@ -123,6 +126,11 @@ if __name__ == '__main__':
   with open(GITUB_TOKEN_FILE, 'r') as fd:
     github_token = fd.read().strip()
 
+  # Explicitly tell us not to sleep after a build (it's the default, but just in case)
+  os.environ['GUEST_SUSPEND_AFTER_BUILD'] = 'f'
+  # Shared constant w/ lcloud-compile-all rsync command
+  repo_dir_name = os.path.basename(REPO_DIR)
+
   last_seen_commit_hash = get_latest_commit_sha()
   while last_seen_commit_hash is None:
     print(f'Retrying get_latest_commit_sha()')
@@ -169,6 +177,16 @@ if __name__ == '__main__':
       subprocess.run([
         'uv', 'run', 'lcloud-compile-all.py', 'host-linux' # Does non-vm linux build
       ], check=True, cwd=BUILD_DIR)
+
+      subprocess.run(['sync'], check=False)
+
+      # Copy build files back "to us" (we use the same shared disk as the regular lcloud-compile-all.py use from a laptop)
+      subprocess.run([
+        'rsync',
+          '-az', '--info=progress2', '--exclude=.git/',
+          f'/mnt/nfs/shared-vm-dir/{repo_dir_name}/target/.',
+          f'{BUILD_DIR}/target',
+      ], check=True)
 
       subprocess.run(['sync'], check=False)
 
