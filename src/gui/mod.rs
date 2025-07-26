@@ -1,6 +1,8 @@
 
 #![allow(unreachable_patterns)]
 
+use iced::widget::Column;
+use iced::advanced::Widget;
 use iced::highlighter;
 use iced::keyboard;
 use iced::widget::{
@@ -152,46 +154,17 @@ impl GameWindow {
 
                 Task::none()
             },*/
-            GameMessage::Nop => Task::none(),
+            GameMessage::Nop => {
+                eprintln!("Recieved a GameMessage::Nop");
+                Task::none()
+            },
             _ => Task::none(),
         }
     }
 
     pub fn view(&self) -> Element<GameMessage> {
-        let splash_handle = iced::widget::image::Handle::from_bytes(SPLASH_PNG_BYTES);
-        let splash_img = Image::new(splash_handle)
-            .width(Length::Fill)
-            .height(Length::Fill);
-        let background = Container::new(splash_img)
-            .width(Length::Fill)
-            .height(Length::Fill)
-            .center_x(Length::Fill)
-            .center_y(Length::Fill);
-
-        /*let buttons = column![
-            /*text(if let Some(path) = &self.file {
-                let path = path.display().to_string();
-
-                if path.len() > 60 {
-                    format!("...{}", &path[path.len() - 40..])
-                } else {
-                    path
-                }
-            } else {
-                String::from("New file")
-            }),
-            horizontal_space(),
-            text({
-                let (line, column) = self.content.cursor_position();
-
-                format!("{}:{}", line + 1, column + 1)
-            })*/
-        ]
-        .spacing(10)
-        .align_x(Left);*/
-
-        //Modal::new(background, buttons).into()
-        background.into()
+        // TODO if/else for menu_screen and game_screen
+        self.view_menu_screen()
     }
 
     pub fn theme(&self) -> Theme {
@@ -202,6 +175,66 @@ impl GameWindow {
         }*/
         Theme::Light
     }
+
+    pub fn view_menu_screen(&self) -> Element<GameMessage> {
+        let splash_handle = iced::widget::image::Handle::from_bytes(SPLASH_PNG_BYTES);
+        let splash_img = Image::<iced::widget::image::Handle>::new(splash_handle)
+            .width(Length::Fill)
+            .height(Length::Fill);
+        let background = Container::<GameMessage, Theme, iced::Renderer>::new(splash_img)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .center_x(Length::Fill)
+            .center_y(Length::Fill);
+
+        //let buttons: iced::widget::Column<'_, GameMessage, Theme, iced::Renderer> = column![
+        let buttons = column![
+            button("Continue Game")
+                .on_press(GameMessage::Nop)
+                .width(Length::Fill),
+            button("New Game")
+                .on_press(GameMessage::Nop)
+                .width(Length::Fill),
+            button("Settings")
+                .on_press(GameMessage::Nop)
+                .width(Length::Fill),
+        ]
+        .spacing(10)
+        .width(240)
+        .padding(10)
+        .align_x(Center);
+
+        // TODO swap out w/ button state
+        let right_panel = container(text("Select an option"))
+            .width(Length::Fill)
+            .align_x(Center)
+            .align_y(Center);
+
+
+        let foreground_content = row![buttons, right_panel]
+            .height(Length::Fill)
+            .width(Length::Fill);
+
+        // UI consists of background image + foreground content
+        Container::<GameMessage, Theme, iced::Renderer>::new(
+            Column::new()
+                .push(background)  // bottom layer
+                .push(Container::new(foreground_content)
+                        .width(Length::Fill)
+                        .height(Length::Fill)
+                        .align_x(Center)
+                        .align_y(Center)
+                ), // top layer
+        )
+        .width(Length::Fill)
+        .height(Length::Fill)
+        .into()
+    }
+
+    pub fn view_game_screen(&self) -> Element<GameMessage> {
+        std::unimplemented!()
+    }
+
 }
 
 async fn run_background_async_tasks() -> Result<(), crate::err::BoxError> {

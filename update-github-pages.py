@@ -16,9 +16,47 @@ import datetime
 import getpass
 import socket
 import tomllib
+import zlib
+
+# AI-generated utility
+def get_last_commit_sha_message(repo_path="."):
+    git_dir = os.path.join(repo_path, ".git")
+
+    # Read the HEAD file to find the current branch
+    with open(os.path.join(git_dir, "HEAD"), "r") as f:
+        ref_line = f.readline().strip()
+
+    if ref_line.startswith("ref: "):
+        ref_path = os.path.join(git_dir, ref_line[5:])
+        with open(ref_path, "r") as f:
+            commit_hash = f.readline().strip()
+    else:
+        # Detached HEAD (ref_line contains the commit hash directly)
+        commit_hash = ref_line
+
+    # Get the object file for the commit
+    obj_path = os.path.join(git_dir, "objects", commit_hash[:2], commit_hash[2:])
+    with open(obj_path, "rb") as f:
+        compressed_data = f.read()
+
+    decompressed_data = zlib.decompress(compressed_data)
+
+    # Convert to string
+    commit_data = decompressed_data.decode()
+
+    # Find the commit message (starts after two newlines)
+    message_index = commit_data.find("\n\n")
+    if message_index != -1:
+        return (commit_hash, commit_data[message_index+2:].strip())
+    else:
+        return (commit_hash, "(No commit message found)")
+
+
 
 git_repo = os.path.dirname(__file__)
 os.chdir(git_repo)
+
+last_commit_sha, last_commit_msg = get_last_commit_sha_message(git_repo)
 
 git_remote_origin_url = subprocess.check_output(['git', 'remote', 'get-url', 'origin']).decode('utf-8').strip()
 
@@ -31,7 +69,16 @@ if os.path.exists('Cargo.toml'):
       data = tomllib.load(fd)
       version = data["package"]["version"]
 
-build_timestamp = 'Version '+version+' built at '+datetime.datetime.now().strftime('%Y-%m-%d %H:%M')+' by '+getpass.getuser()+' on '+socket.gethostname()
+# Printed above download links in monospace
+build_timestamp = ' '.join([
+  'Version', version, 'built at', datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
+  'by', getpass.getuser(),
+  'on', socket.gethostname(),
+  '\n',
+  'from commit', last_commit_sha,
+  'with the message:\n',
+  last_commit_msg
+])
 
 with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
   print(f'Building pages for {git_repo} at {td}')
