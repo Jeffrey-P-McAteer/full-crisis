@@ -73,7 +73,7 @@ if os.path.exists('Cargo.toml'):
       version = data["package"]["version"]
 
 # Printed above download links in monospace
-build_timestamp = ' '.join([
+build_message = ' '.join([
   'Version', version, 'built at', datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
   'by', getpass.getuser(),
   'on', socket.gethostname(),
@@ -208,7 +208,7 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
       <br/>
 
       <header>Download <img src="full-crisis-icon.transparent.128.png" style="border-radius:6pt;"/> </header>
-      <pre>{build_timestamp}</pre>
+      <pre id="build-message">{build_message}</pre>
       <a class="dl win mobile-light-bordered-text" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64</a>
       <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.x86_64-apple-darwin.dmg">MacOS x64</a>
       <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.aarch64-apple-darwin.dmg">MacOS ARM</a>
@@ -245,6 +245,31 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
       <br/>
       </p>
     </main>
+    <script>
+/* Half-AI-Authored utility which scales the build message so it remains on screen when viewed with a phone */
+const pre = document.getElementById('build-message');
+const wrapper = pre.parentElement;
+const container = wrapper.parentElement;
+
+function scalePre() {{
+  // Reset scale to 1 to get actual natural width
+  pre.style.transform = "scale(1)";
+
+  // Measure full natural width of the <pre>
+  const contentWidth = pre.scrollWidth;
+  const containerWidth = container.clientWidth - 22;
+
+  // Calculate scale factor
+  const scale = Math.min(1, containerWidth / contentWidth);
+
+  // Apply scale
+  pre.style.transform = `scale(${{scale}})`;
+
+}}
+
+window.addEventListener('load', scalePre);
+window.addEventListener('resize', scalePre);
+    </script>
   </body>
 </html>
 '''.strip())
@@ -331,6 +356,10 @@ img.kpi-chart {
 }
 img.kpi-chart:hover {
   transform: scale(1.06);
+}
+
+pre#build-message {
+  transform-origin: left top;
 }
 
 .warning {
