@@ -48,7 +48,7 @@ StartLimitIntervalSec=0
 [Service]
 Type=simple
 Restart=always
-RestartSec=1
+RestartSec=2
 User={BUILD_USER_NAME}
 ExecStart=/usr/bin/uv run {__file__}
 RuntimeMaxSec=900m
@@ -121,6 +121,19 @@ def zero_sha_build_failures(sha):
   )
 
 
+def get_sha_build_success(sha):
+  global cache
+  return cache.get(f'build-succcess-{sha}', False)
+
+def set_sha_build_success(sha):
+  global cache
+  cache.set(
+    f'build-succcess-{sha}',
+    True,
+    expire=CACHE_EXPIRE_S
+  )
+
+
 if __name__ == '__main__':
   start_time = time.time()
 
@@ -174,7 +187,7 @@ if __name__ == '__main__':
 
     # Check to see if new commit exists, if so trigger build
     current_commit_hash = get_latest_commit_sha()
-    if current_commit_hash is None or current_commit_hash == last_seen_commit_hash or get_sha_build_failures(current_commit_hash) > MAX_BUILD_FAILURES_PER_SHA:
+    if current_commit_hash is None or get_sha_build_success(current_commit_hash) or get_sha_build_failures(current_commit_hash) > MAX_BUILD_FAILURES_PER_SHA:
       time.sleep(sleep_s)
       continue
 
@@ -246,6 +259,7 @@ if __name__ == '__main__':
 
       last_seen_commit_hash = current_commit_hash
       zero_sha_build_failures(current_commit_hash)
+      set_sha_build_success(current_commit_hash)
     except:
       traceback.print_exc()
       increase_sha_build_failures(current_commit_hash)
