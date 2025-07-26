@@ -10,6 +10,7 @@ Join historic disasters as emergency response personnel and hone your crisis-sol
 
  - [x] Begin an Icon
  - [ ] Make the Icon a lot better
+ - [x] Waste a ton of time overengineering the cloud build system
  - [x] Finish building webpage generator - http://full-crisis.jmcateer.com/ see `update_github_pages.py` for details
  - [ ] Design a "Game" format
     - We want to be able to point at a folder and place _all_ story details there.

@@ -138,6 +138,30 @@ if __name__ == '__main__':
     time.sleep(1.0)
     last_seen_commit_hash = get_latest_commit_sha()
 
+  # At start-up we perform some long-term maitenence tasks which generally only need to happen once.
+  root_ca_crt = os.path.join(REPO_DIR, 'rootca', 'rootca.crt')
+  if not os.path.exists(root_ca_crt):
+    proc = subprocess.Popen(
+        ['uv', 'run', 'rootca-mgmt.py'],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True  # ensures string I/O instead of bytes
+    )
+    time.sleep(0.5)
+    while True:
+      try:
+        stdout, stderr = proc.communicate('y\n')
+        print(stdout)
+        print(stderr)
+      except:
+        break
+    try:
+      proc.wait()
+    except:
+      pass
+
+
   while True:
     runtime_s = time.time() - start_time
 
@@ -217,7 +241,7 @@ if __name__ == '__main__':
       subprocess.run(['sync'], check=False)
 
       subprocess.run([
-        'uv', 'run', 'update-github-pages.py' # updates webpage w/ new build data
+        'uv', 'run', 'update-github-pages.py', 'noninteractive', # updates webpage w/ new build data
       ], check=True, cwd=BUILD_DIR)
 
       last_seen_commit_hash = current_commit_hash

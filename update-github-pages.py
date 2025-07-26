@@ -23,6 +23,7 @@ os.chdir(git_repo)
 git_remote_origin_url = subprocess.check_output(['git', 'remote', 'get-url', 'origin']).decode('utf-8').strip()
 
 open_preview = any('preview' in arg for arg in sys.argv)
+noninteractive = any('noninteractive' in arg for arg in sys.argv)
 
 version = '0.0.0'
 if os.path.exists('Cargo.toml'):
@@ -96,15 +97,19 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
   )
 
   # If a target has not been built, detect + offer to build it
-  for target_triple in ['x86_64-unknown-linux-gnu', 'x86_64-pc-windows-gnu']:
+  for target_triple in ['x86_64-unknown-linux-gnu']: # , 'x86_64-pc-windows-gnu']: # TODO investigate if the windows cross-compile is reasonable (see zig research)
     if not os.path.exists(os.path.join(git_repo, 'target', target_triple, 'release')):
       print(os.path.join(git_repo, 'target', target_triple, 'release'), 'Does not exist, build now?')
-      if not 'y'.casefold() in input('y/n?').casefold():
+      if noninteractive:
+        user_input = 'y'.casefold() # Non-interactive builds will go ahead and attempt to build a missing binary
+      else:
+        user_input = input('y/n?').casefold()
+      if not 'y'.casefold() in user_input:
         sys.exit(1)
       else:
         subprocess.run([
           'cargo', 'build', '--target', target_triple, '--release'
-        ])
+        ], check=False)
 
   # Built artifacts
   shutil.copy(
