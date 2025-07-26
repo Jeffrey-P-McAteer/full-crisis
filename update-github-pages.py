@@ -17,6 +17,7 @@ import getpass
 import socket
 import tomllib
 import zlib
+import textwrap
 
 # AI-generated utility
 def get_last_commit_sha_message(repo_path="."):
@@ -51,6 +52,8 @@ def get_last_commit_sha_message(repo_path="."):
     else:
         return (commit_hash, "(No commit message found)")
 
+def wrap_text(text, width=76):
+    return textwrap.fill(text, width=width, break_long_words=False, break_on_hyphens=False)
 
 
 git_repo = os.path.dirname(__file__)
@@ -74,10 +77,10 @@ build_timestamp = ' '.join([
   'Version', version, 'built at', datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
   'by', getpass.getuser(),
   'on', socket.gethostname(),
-  '\n',
-  'from commit', last_commit_sha,
-  'with the message:\n',
-  last_commit_msg
+
+  '\nfrom commit', last_commit_sha, 'with the message:',
+
+  '\n'+wrap_text(last_commit_msg)
 ])
 
 with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
