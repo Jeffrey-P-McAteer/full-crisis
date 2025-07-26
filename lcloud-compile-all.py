@@ -39,6 +39,9 @@ except:
 
 print(f'Running from {sys.executable} {sys.version}')
 
+# Prevent an error when originating from systemd daemons where a per-user rustup isn't on the PATH
+os.environ['PATH'] = os.path.join(pathlib.Path.home(), '.cargo', 'bin')+os.pathsep+os.environ.get('PATH', '')
+
 STAGES = ['host', 'cloud', 'guest-win11', 'guest-macos', 'host-linux']
 SELF_FILE_NAME = os.path.basename(__file__) # we can safely assume this is identical across all systems and is used when building file paths to next stage
 
