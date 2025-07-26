@@ -23,6 +23,7 @@ import time
 import urllib.request
 import json
 import traceback
+import threading
 
 # Shared constants w/ lcloud-compile-app
 REPO_DIR = BUILD_DIR.rstrip('/').rstrip('\\')
@@ -170,13 +171,38 @@ if __name__ == '__main__':
         'git', 'reset', '--hard', 'origin/master',
       ], check=True, cwd=BUILD_DIR)
 
-      # We now have the most recent changes locally, run the build!
+      subprocess.run(['sync'], check=False)
+
+      # We now have the most recent changes locally, copy code to shared VM dir
       subprocess.run([
-        'uv', 'run', 'lcloud-compile-all.py', 'cloud' # Does win + mac VMs
-      ], check=True, cwd=BUILD_DIR)
-      subprocess.run([
-        'uv', 'run', 'lcloud-compile-all.py', 'host-linux' # Does non-vm linux build
-      ], check=True, cwd=BUILD_DIR)
+        'rsync',
+          '-az', '--info=progress2', '--exclude=target/docker-on-arch/', '--exclude=.git/', '--exclude=target/',
+          f'{REPO_DIR}',
+          f'/mnt/nfs/shared-vm-dir/', # "/" at end will ensure /mnt/nfs/shared-vm-dir/full-crisis is created if not exists
+      ], check=True)
+
+      # Tell VMs to do builds, we use multiple threads b/c this is primarially I/O bound.
+
+      def run_cloud_build_t():
+        subprocess.run([
+          'uv', 'run', 'lcloud-compile-all.py', 'cloud' # Does win + mac VMs
+        ], check=True, cwd=BUILD_DIR)
+
+      def run_host_linux_build_t():
+        subprocess.run([
+          'uv', 'run', 'lcloud-compile-all.py', 'host-linux' # Does non-vm linux build
+        ], check=True, cwd=BUILD_DIR)
+
+      build_threads = [
+        threading.Thread(target=run_cloud_build_t,      args=()),
+        threading.Thread(target=run_host_linux_build_t, args=()),
+      ]
+
+      for t in build_threads:
+        t.start()
+
+      for t in build_threads:
+        t.join()
 
       subprocess.run(['sync'], check=False)
 
