@@ -15,6 +15,7 @@ import time
 import datetime
 import getpass
 import socket
+import tomllib
 
 git_repo = os.path.dirname(__file__)
 os.chdir(git_repo)
@@ -23,7 +24,13 @@ git_remote_origin_url = subprocess.check_output(['git', 'remote', 'get-url', 'or
 
 open_preview = any('preview' in arg for arg in sys.argv)
 
-build_timestamp = 'Built at '+datetime.datetime.now().strftime('%Y-%m-%d %H:%M')+' by '+getpass.getuser()+' on '+socket.gethostname()
+version = '0.0.0'
+if os.path.exists('Cargo.toml'):
+  with open('Cargo.toml', 'rb') as f:
+      data = tomllib.load(f)
+      version = data["package"]["version"]
+
+build_timestamp = 'Version '+version+' built at '+datetime.datetime.now().strftime('%Y-%m-%d %H:%M')+' by '+getpass.getuser()+' on '+socket.gethostname()
 
 with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
   print(f'Building pages for {git_repo} at {td}')
