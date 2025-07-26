@@ -146,10 +146,12 @@ if __name__ == '__main__':
       continue
 
     try:
+      print(f'= = = = = = = Building {current_commit_hash} = = = = = = =')
+
       # Run a build, only updating last_seen_commit_hash if we finish successfully. Otherwise, try again!
       if not os.path.exists(os.path.join(BUILD_DIR, '.git')):
         subprocess.run([
-          'git', 'clone', f'https://{github_token}github.com/Jeffrey-P-McAteer/full-crisis.git', BUILD_DIR,
+          'git', 'clone', f'https://{github_token}@github.com/Jeffrey-P-McAteer/full-crisis.git', BUILD_DIR,
         ], check=True)
 
       subprocess.run([
