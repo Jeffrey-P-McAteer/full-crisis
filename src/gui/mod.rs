@@ -33,6 +33,7 @@ pub enum GameMessage {
     //FileOpened(Result<(PathBuf, Arc<String>), Error>),
     //SaveFile,
     Nop,
+    QuitGameRequested,
 }
 
 impl GameWindow {
@@ -154,6 +155,12 @@ impl GameWindow {
 
                 Task::none()
             },*/
+            GameMessage::QuitGameRequested => {
+                // TODO and game-save requirements should go here
+
+                iced::window::get_latest().and_then(iced::window::close).chain(iced::exit())
+                // ^ this exit assumes a single window exists, if we have 2+ we will need to iterate, close them all, and then call iced::exit()
+            }
             GameMessage::Nop => {
                 eprintln!("Recieved a GameMessage::Nop");
                 Task::none()
@@ -197,6 +204,9 @@ impl GameWindow {
                 .width(Length::Fill),
             button("Settings")
                 .on_press(GameMessage::Nop)
+                .width(Length::Fill),
+            button("Quit Game")
+                .on_press(GameMessage::QuitGameRequested)
                 .width(Length::Fill),
         ]
         .spacing(10)
