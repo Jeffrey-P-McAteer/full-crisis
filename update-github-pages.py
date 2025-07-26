@@ -26,8 +26,8 @@ open_preview = any('preview' in arg for arg in sys.argv)
 
 version = '0.0.0'
 if os.path.exists('Cargo.toml'):
-  with open('Cargo.toml', 'rb') as f:
-      data = tomllib.load(f)
+  with open('Cargo.toml', 'rb') as fd:
+      data = tomllib.load(fd)
       version = data["package"]["version"]
 
 build_timestamp = 'Version '+version+' built at '+datetime.datetime.now().strftime('%Y-%m-%d %H:%M')+' by '+getpass.getuser()+' on '+socket.gethostname()
