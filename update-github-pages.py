@@ -146,25 +146,14 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
     os.path.join(f'{td}', 'rootca.crt')
   )
 
-  # If a target has not been built, detect + offer to build it
-  for target_triple in ['x86_64-unknown-linux-gnu']: # , 'x86_64-pc-windows-gnu']: # TODO investigate if the windows cross-compile is reasonable (see zig research)
-    if not os.path.exists(os.path.join(git_repo, 'target', target_triple, 'release')):
-      print(os.path.join(git_repo, 'target', target_triple, 'release'), 'Does not exist, build now?')
-      if noninteractive:
-        user_input = 'y'.casefold() # Non-interactive builds will go ahead and attempt to build a missing binary
-      else:
-        user_input = input('y/n?').casefold()
-      if not 'y'.casefold() in user_input:
-        sys.exit(1)
-      else:
-        subprocess.run([
-          'cargo', 'build', '--target', target_triple, '--release'
-        ], check=False)
-
   # Built artifacts
   shutil.copy(
     os.path.join(git_repo, 'target', 'x86_64-pc-windows-gnu', 'release', 'full-crisis.exe'),
     os.path.join(f'{td}', 'full-crisis.x86_64-pc-windows-gnu.exe')
+  )
+  shutil.copy(
+    os.path.join(git_repo, 'target', 'i686-pc-windows-gnu', 'release', 'full-crisis.exe'),
+    os.path.join(f'{td}', 'full-crisis.i686-pc-windows-gnu.exe')
   )
   shutil.copy(
     os.path.join(git_repo, 'target', 'x86_64-apple-darwin', 'release', 'Full-Crisis.dmg'),
@@ -210,6 +199,7 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
       <header>Download <img src="full-crisis-icon.transparent.128.png" style="border-radius:6pt;"/> </header>
       <pre id="build-message">{build_message}</pre>
       <a class="dl win mobile-light-bordered-text" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64</a>
+      <a class="dl win mobile-light-bordered-text" href="full-crisis.i686-pc-windows-gnu.exe">Windows i686</a>
       <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.x86_64-apple-darwin.dmg">MacOS x64</a>
       <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.aarch64-apple-darwin.dmg">MacOS ARM</a>
       <a class="dl linux mobile-light-bordered-text" href="full-crisis.x86_64-unknown-linux-gnu">Linux x64</a>
