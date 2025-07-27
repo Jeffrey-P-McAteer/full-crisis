@@ -22,7 +22,11 @@ fn embed_icon() {
     }
 
     if compiling_for_windows && is_32bit && with_gnu_tools {
-        println!("cargo:rustc-link-lib=gcc_eh"); // This fixes the linker error "more undefined references to `_Unwind_Resume' follow" et al
+        // This fixes the linker error "more undefined references to `_Unwind_Resume' follow" et al
+        println!("cargo:rustc-link-lib=gcc_eh");
+    }
+    if compiling_for_windows && is_32bit {
+        println!("cargo:rustc-link-arg==-static");
     }
 
 

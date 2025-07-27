@@ -700,20 +700,33 @@ def cloud():
 
 def guest_win11():
   print(f'Running "guest-win11" stage on {socket.gethostname()}', flush=True)
+  # Define some per-target env vars
+  per_target_env_vars = {
+    'i686': {
+      'RUSTFLAGS': '-C target-cpu=pentium -C target-feature=-sse,-sse2'
+    }
+  }
   # Step 1: Compile all .exe binaries
   begin_s = time.time()
   for target in ['x86_64-pc-windows-gnu', 'x86_64-pc-windows-msvc', 'i686-pc-windows-msvc', ]: # 'i686-pc-windows-gnu', 'i686-pc-windows-msvc']:
     delete_target_binary(windows_workdir, target)
+    subp_env = dict(os.environ)
+    for search_k, env_vars in per_target_env_vars.items():
+      if search_k.casefold() in target.casefold():
+        for k,v in env_vars.items():
+          print(f'For target {target} we set the env var {k}={v}')
+          subp_env[k] = v
+
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
-    ], cwd=windows_workdir, check=False)
+    ], cwd=windows_workdir, check=False, env=subp_env)
     if guest_compile_debug:
       subprocess.run([
         'cargo', 'build', f'--target={target}'
-      ], cwd=windows_workdir, check=True)
+      ], cwd=windows_workdir, check=True, env=subp_env)
     subprocess.run([
       'cargo', 'build', '--release', f'--target={target}'
-    ], cwd=windows_workdir, check=True)
+    ], cwd=windows_workdir, check=True, env=subp_env)
 
   # Step 2: Add in icons!
   resource_hacker_folders = find_name_under(r'C:\Program Files', 'Resource Hacker', max_recursion=1)
@@ -732,6 +745,7 @@ def guest_win11():
 
       full_crisis_exes = find_name_under(os.path.join(REPO_DIR, 'target', 'x86_64-pc-windows-gnu'), 'full-crisis.exe', max_recursion=2)
       full_crisis_exes += find_name_under(os.path.join(REPO_DIR, 'target', 'x86_64-pc-windows-msvc'), 'full-crisis.exe', max_recursion=2)
+      full_crisis_exes += find_name_under(os.path.join(REPO_DIR, 'target', 'i686-pc-windows-gnu'), 'full-crisis.exe', max_recursion=2)
       full_crisis_exes += find_name_under(os.path.join(REPO_DIR, 'target', 'i686-pc-windows-msvc'), 'full-crisis.exe', max_recursion=2)
       full_crisis_exes = list(set(full_crisis_exes))
 
