@@ -174,6 +174,8 @@ if __name__ == '__main__':
     except:
       pass
 
+  # We also clear any memory of build failures if the whole daemon re-starts
+  zero_sha_build_failures(last_seen_commit_hash)
 
   while True:
     runtime_s = time.time() - start_time
@@ -189,11 +191,11 @@ if __name__ == '__main__':
     current_commit_hash = get_latest_commit_sha()
     if current_commit_hash is None or get_sha_build_success(current_commit_hash) or get_sha_build_failures(current_commit_hash) >= MAX_BUILD_FAILURES_PER_SHA:
       if current_commit_hash is None:
-        print(f'We are offline, cannot read current_commit_hash={current_commit_hash}')
+        print(f'We are offline, cannot read current_commit_hash={current_commit_hash}', flush=True)
       if get_sha_build_failures(current_commit_hash) >= MAX_BUILD_FAILURES_PER_SHA:
-        print(f'Failed to build {current_commit_hash} {MAX_BUILD_FAILURES_PER_SHA} times, giving up.')
+        print(f'Failed to build {current_commit_hash} {MAX_BUILD_FAILURES_PER_SHA} times, giving up.', flush=True)
       if get_sha_build_success(current_commit_hash):
-        print(f'We have already built {current_commit_hash}.')
+        print(f'We have already built {current_commit_hash}.', flush=True)
       time.sleep(sleep_s)
       continue
 
