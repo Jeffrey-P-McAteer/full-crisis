@@ -465,7 +465,7 @@ def delete_all_target_binaries(base_path):
     'x86_64-unknown-linux-gnu',
     'x86_64-pc-windows-msvc',
     'x86_64-pc-windows-gnu',
-    'i686-pc-windows-gnu',
+    'i686-pc-windows-msvc',
     'x86_64-apple-darwin',
     'aarch64-apple-darwin',
   ]
@@ -702,7 +702,7 @@ def guest_win11():
   print(f'Running "guest-win11" stage on {socket.gethostname()}', flush=True)
   # Step 1: Compile all .exe binaries
   begin_s = time.time()
-  for target in ['x86_64-pc-windows-gnu', 'x86_64-pc-windows-msvc', 'i686-pc-windows-gnu', ]: # 'i686-pc-windows-gnu', 'i686-pc-windows-msvc']:
+  for target in ['x86_64-pc-windows-gnu', 'x86_64-pc-windows-msvc', 'i686-pc-windows-msvc', ]: # 'i686-pc-windows-gnu', 'i686-pc-windows-msvc']:
     delete_target_binary(windows_workdir, target)
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
@@ -732,7 +732,7 @@ def guest_win11():
 
       full_crisis_exes = find_name_under(os.path.join(REPO_DIR, 'target', 'x86_64-pc-windows-gnu'), 'full-crisis.exe', max_recursion=2)
       full_crisis_exes += find_name_under(os.path.join(REPO_DIR, 'target', 'x86_64-pc-windows-msvc'), 'full-crisis.exe', max_recursion=2)
-      full_crisis_exes += find_name_under(os.path.join(REPO_DIR, 'target', 'i686-pc-windows-gnu'), 'full-crisis.exe', max_recursion=2)
+      full_crisis_exes += find_name_under(os.path.join(REPO_DIR, 'target', 'i686-pc-windows-msvc'), 'full-crisis.exe', max_recursion=2)
       full_crisis_exes = list(set(full_crisis_exes))
 
       for full_crisis_exe in full_crisis_exes:
