@@ -10,12 +10,21 @@ fn main() {
 
 fn embed_icon() {
     let mut compiling_for_windows = false;
+    let mut is_32bit = false;
+    let mut with_gnu_tools = false;
 
     if let Ok(target_triple) = std::env::var("TARGET") {
         if target_triple.contains("windows") {
             compiling_for_windows = true;
         }
+        is_32bit = target_triple.contains("i686") || target_triple.contains("x86");
+        with_gnu_tools = target_triple.contains("gnu");
     }
+
+    if compiling_for_windows && is_32bit && with_gnu_tools {
+        println!("cargo:rustc-link-lib=gcc_eh"); // This fixes the linker error "more undefined references to `_Unwind_Resume' follow" et al
+    }
+
 
     if !compiling_for_windows {
         return;
