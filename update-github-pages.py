@@ -152,8 +152,8 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
     os.path.join(f'{td}', 'full-crisis.x86_64-pc-windows-gnu.exe')
   )
   shutil.copy(
-    os.path.join(git_repo, 'target', 'i686-pc-windows-gnu', 'release', 'full-crisis.exe'),
-    os.path.join(f'{td}', 'full-crisis.i686-pc-windows-gnu.exe')
+    os.path.join(git_repo, 'target', 'i686-pc-windows-msvc', 'release', 'full-crisis.exe'),
+    os.path.join(f'{td}', 'full-crisis.i686-pc-windows-msvc.exe')
   )
   shutil.copy(
     os.path.join(git_repo, 'target', 'x86_64-apple-darwin', 'release', 'Full-Crisis.dmg'),
@@ -199,7 +199,7 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
       <header>Download <img src="full-crisis-icon.transparent.128.png" style="border-radius:6pt;"/> </header>
       <pre id="build-message">{build_message}</pre>
       <a class="dl win mobile-light-bordered-text" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64</a>
-      <a class="dl win mobile-light-bordered-text" href="full-crisis.i686-pc-windows-gnu.exe">Windows i686</a>
+      <a class="dl win mobile-light-bordered-text" href="full-crisis.i686-pc-windows-msvc.exe">Windows i686</a>
       <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.x86_64-apple-darwin.dmg">MacOS x64</a>
       <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.aarch64-apple-darwin.dmg">MacOS ARM</a>
       <a class="dl linux mobile-light-bordered-text" href="full-crisis.x86_64-unknown-linux-gnu">Linux x64</a>
