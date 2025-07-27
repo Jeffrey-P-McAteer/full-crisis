@@ -11,7 +11,7 @@
 
 # Misc config
 CACHE_EXPIRE_S = 24 * 60 * 60
-MAX_BUILD_FAILURES_PER_SHA = 6
+MAX_BUILD_FAILURES_PER_SHA = 4
 BUILD_DIR = '/opt/fc-cloud-build-daemon-build-dir/full-crisis'
 BUILD_USER_NAME = 'user'
 GITUB_TOKEN_FILE = '/opt/fc-cloud-build-daemon-build-dir-github-token.txt'
@@ -187,7 +187,13 @@ if __name__ == '__main__':
 
     # Check to see if new commit exists, if so trigger build
     current_commit_hash = get_latest_commit_sha()
-    if current_commit_hash is None or get_sha_build_success(current_commit_hash) or get_sha_build_failures(current_commit_hash) > MAX_BUILD_FAILURES_PER_SHA:
+    if current_commit_hash is None or get_sha_build_success(current_commit_hash) or get_sha_build_failures(current_commit_hash) >= MAX_BUILD_FAILURES_PER_SHA:
+      if current_commit_hash is None:
+        print(f'We are offline, cannot read current_commit_hash={current_commit_hash}')
+      if get_sha_build_failures(current_commit_hash) >= MAX_BUILD_FAILURES_PER_SHA:
+        print(f'Failed to build {current_commit_hash} {MAX_BUILD_FAILURES_PER_SHA} times, giving up.')
+      if get_sha_build_success(current_commit_hash):
+        print(f'We have already built {current_commit_hash}.')
       time.sleep(sleep_s)
       continue
 
