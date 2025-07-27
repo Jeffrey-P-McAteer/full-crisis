@@ -1,14 +1,14 @@
 #[derive(Debug)]
 pub struct GameState {
-    pub active_event_loop: tokio::sync::RwLock<ActiveEventLoop>,
+    pub active_event_loop: std::sync::Arc<std::sync::RwLock<ActiveEventLoop>>,
 }
 
 impl GameState {
     pub fn new() -> Self {
         Self {
-            active_event_loop: tokio::sync::RwLock::new(ActiveEventLoop::WelcomeScreen(
+            active_event_loop: std::sync::Arc::new(std::sync::RwLock::new(ActiveEventLoop::WelcomeScreen(
                 WelcomeScreenView::Empty,
-            )),
+            ))),
         }
     }
 }
@@ -25,7 +25,7 @@ pub enum ActiveEventLoop {
 pub enum WelcomeScreenView {
     Empty,
     NewGame,
-    LoadGame,
+    ContinueGame,
     Settings,
 }
 

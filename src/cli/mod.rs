@@ -61,8 +61,10 @@ pub async fn run() -> Result<(), crate::err::BoxError> {
 
     loop {
         {
-            if *game.active_event_loop.read().await == crate::game::ActiveEventLoop::Exit {
-                break;
+            if let Ok(evt_loop_val) = game.active_event_loop.try_read() {
+                if *evt_loop_val == crate::game::ActiveEventLoop::Exit {
+                    break;
+                }
             }
         }
 
@@ -115,8 +117,9 @@ pub async fn run() -> Result<(), crate::err::BoxError> {
                             let cmd = input_str.to_string();
                             // TODO better input processing
                             if cmd == "exit" || cmd == "quit" || cmd == "e" || cmd == "q" {
-                                *game.active_event_loop.write().await =
-                                    crate::game::ActiveEventLoop::Exit;
+                                if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
+                                    *evt_loop_wguard = crate::game::ActiveEventLoop::Exit;
+                                }
                             }
 
                             input_str.clear();

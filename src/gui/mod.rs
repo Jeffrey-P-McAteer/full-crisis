@@ -1,5 +1,5 @@
 
-#![allow(unreachable_patterns)]
+#![allow(unreachable_patterns, non_camel_case_types)]
 
 use iced::widget::Column;
 use iced::advanced::Widget;
@@ -15,7 +15,6 @@ use std::ffi;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-
 // Immutable global data
 const SPLASH_PNG_BYTES: &[u8] = include_bytes!("../../icon/full-crisis-splash.transparent.png");
 
@@ -25,15 +24,13 @@ pub struct GameWindow {
 
 #[derive(Debug, Clone)]
 pub enum GameMessage {
-    //ActionPerformed(text_editor::Action),
-    //ThemeSelected(highlighter::Theme),
-    //WordWrapToggled(bool),
-    //NewFile,
-    //OpenFile,
-    //FileOpened(Result<(PathBuf, Arc<String>), Error>),
-    //SaveFile,
     Nop,
+    // view_menu_screen states
+    Menu_NewGameRequested,
+    Menu_ContinueGameRequested,
+    Menu_SettingsRequested,
     QuitGameRequested,
+    // view_game_screen states
 }
 
 impl GameWindow {
@@ -80,81 +77,24 @@ impl GameWindow {
 
     pub fn update(&mut self, message: GameMessage) -> Task<GameMessage> {
         match message {
-            /*Message::ActionPerformed(action) => {
-                self.is_dirty = self.is_dirty || action.is_edit();
-
-                self.content.perform(action);
-
-                Task::none()
-            }
-            Message::ThemeSelected(theme) => {
-                self.theme = theme;
-
-                Task::none()
-            }
-            Message::WordWrapToggled(word_wrap) => {
-                self.word_wrap = word_wrap;
-
-                Task::none()
-            }
-            Message::NewFile => {
-                if !self.is_loading {
-                    self.file = None;
-                    self.content = text_editor::Content::new();
+            GameMessage::Menu_NewGameRequested => {
+                if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
+                    *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::NewGame);
                 }
-
                 Task::none()
             }
-            Message::OpenFile => {
-                if self.is_loading {
-                    Task::none()
-                } else {
-                    self.is_loading = true;
-
-                    Task::perform(open_file(), Message::FileOpened)
+            GameMessage::Menu_ContinueGameRequested => {
+                if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
+                    *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::ContinueGame);
                 }
-            }
-            Message::FileOpened(result) => {
-                self.is_loading = false;
-                self.is_dirty = false;
-
-                if let Ok((path, contents)) = result {
-                    self.file = Some(path);
-                    self.content = text_editor::Content::with_text(&contents);
-                }
-
                 Task::none()
             }
-            Message::SaveFile => {
-                if self.is_loading {
-                    Task::none()
-                } else {
-                    self.is_loading = true;
-
-                    let mut text = self.content.text();
-
-                    if let Some(ending) = self.content.line_ending() {
-                        if !text.ends_with(ending.as_str()) {
-                            text.push_str(ending.as_str());
-                        }
-                    }
-
-                    Task::perform(
-                        save_file(self.file.clone(), text),
-                        Message::FileSaved,
-                    )
+            GameMessage::Menu_SettingsRequested => {
+                if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
+                    *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::Settings);
                 }
-            }
-            Message::FileSaved(result) => {
-                self.is_loading = false;
-
-                if let Ok(path) = result {
-                    self.file = Some(path);
-                    self.is_dirty = false;
-                }
-
                 Task::none()
-            },*/
+            }
             GameMessage::QuitGameRequested => {
                 // TODO and game-save requirements should go here
 
@@ -197,13 +137,13 @@ impl GameWindow {
         //let buttons: iced::widget::Column<'_, GameMessage, Theme, iced::Renderer> = column![
         let buttons = column![
             button("Continue Game")
-                .on_press(GameMessage::Nop)
+                .on_press(GameMessage::Menu_ContinueGameRequested)
                 .width(Length::Fill),
             button("New Game")
-                .on_press(GameMessage::Nop)
+                .on_press(GameMessage::Menu_NewGameRequested)
                 .width(Length::Fill),
             button("Settings")
-                .on_press(GameMessage::Nop)
+                .on_press(GameMessage::Menu_SettingsRequested)
                 .width(Length::Fill),
             button("Quit Game")
                 .on_press(GameMessage::QuitGameRequested)
@@ -215,7 +155,11 @@ impl GameWindow {
         .align_x(Center);
 
         // TODO swap out w/ button state
-        let right_panel = container(text("Select an option"))
+        /*let right_panel = container(text("Select an option"))
+            .width(Length::Fill)
+            .align_x(Center)
+            .align_y(Center);*/
+        let right_panel = container(self.build_menu_screen_right_ui())
             .width(Length::Fill)
             .align_x(Center)
             .align_y(Center);
@@ -241,9 +185,45 @@ impl GameWindow {
         .into()
     }
 
-    pub fn view_game_screen(&self) -> Element<GameMessage> {
-        std::unimplemented!()
+    pub fn build_menu_screen_right_ui(&self) -> Container<GameMessage> {
+        if let Ok(evt_loop_val) = self.game_state.active_event_loop.try_read() {
+            if let crate::game::ActiveEventLoop::WelcomeScreen(ref ws_area) = *evt_loop_val {
+                match ws_area {
+                    crate::game::WelcomeScreenView::NewGame => {
+                        Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO new game UI"))
+                    }
+                    crate::game::WelcomeScreenView::ContinueGame => {
+                        Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO continue UI"))
+                    }
+                    crate::game::WelcomeScreenView::Settings => {
+                        Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO settings UI"))
+                    }
+                    _ => {
+                        Container::<GameMessage, Theme, iced::Renderer>::new(text("Select from left menu"))
+                    }
+                }
+            }
+            else {
+                Container::<GameMessage, Theme, iced::Renderer>::new(text("Select from left menu"))
+            }
+        }
+        else {
+            Container::<GameMessage, Theme, iced::Renderer>::new(text("Select from left menu"))
+        }
     }
+
+    // pub fn build_continue_ui<'a>(&self) -> Container<'a, GameMessage> {
+    //     Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO continue UI"))
+    // }
+
+    // pub fn build_new_game_ui<'a>(&self) -> Container<'a, GameMessage> {
+    //     Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO new game UI"))
+    // }
+
+    // pub fn build_settings_ui<'a>(&self) -> Container<'a, GameMessage> {
+    //     Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO settings UI"))
+    // }
+
 
 }
 
