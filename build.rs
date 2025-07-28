@@ -17,7 +17,7 @@ fn embed_icon() {
         if target_triple.contains("windows") {
             compiling_for_windows = true;
         }
-        is_32bit = target_triple.contains("i686") || target_triple.contains("x86");
+        is_32bit = target_triple.contains("i686"); // TODO x86 also matches x86_64 -_- we'll hard-code more specific values if more are used
         with_gnu_tools = target_triple.contains("gnu");
     }
 
