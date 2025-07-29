@@ -3,7 +3,7 @@ use winres;
 use std::path::{Path, PathBuf};
 
 fn main() {
-    println!("cargo::rerun-if-changed=icon/full-crisis-icon.ico");
+    println!("cargo::rerun-if-changed=../icon/full-crisis-icon.ico");
     println!("cargo::rerun-if-changed=build.rs");
     embed_icon();
 }
@@ -61,7 +61,7 @@ fn embed_icon() {
         }
     }
 
-    let ico_rel_path: PathBuf = ["icon", "full-crisis-icon.ico"].iter().collect();
+    let ico_rel_path: PathBuf = ["..", "icon", "full-crisis-icon.ico"].iter().collect();
 
     res.set_icon(&ico_rel_path.to_string_lossy());
 
