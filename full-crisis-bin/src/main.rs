@@ -22,18 +22,11 @@ use once_cell::sync::OnceCell;
 
 /// cli-based console UI to play the game with
 mod cli;
-/// Utilities
-mod err;
-/// Game engine itself, responsible for game data and state changes
-mod game;
-/// iced-based native UI for all major platforms
-mod gui;
 /// Contains host info such as config folders, language, etc. Items which the user can change but the game will not.
 mod system;
 
 pub static SYS_CFG: OnceCell<system::SystemConfig> = OnceCell::new();
 pub static CLI_ARGS: OnceCell<Args> = OnceCell::new();
-pub static GAME: OnceCell<game::GameState> = OnceCell::new();
 
 // TODO move beyond hello world
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -44,21 +37,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Store some globals for the cli + gui methods to reference
     let _ = CLI_ARGS.set(args.clone());
     let _ = SYS_CFG.set(system::SystemConfig::new());
-    let _ = GAME.set(game::GameState::new());
 
     match args.command {
         Command::Gui => {
             // Iced wants to own the GUI thread and insists on using the main thread; so we let it.
             let r = iced::application(
-                gui::GameWindow::new,
-                gui::GameWindow::update,
-                gui::GameWindow::view,
+                full_crisis::gui::GameWindow::new,
+                full_crisis::gui::GameWindow::update,
+                full_crisis::gui::GameWindow::view,
             )
-            .theme(gui::GameWindow::theme)
+            .theme(full_crisis::gui::GameWindow::theme)
             //.font(include_bytes!("../fonts/icons.ttf").as_slice())
             .default_font(iced::Font::MONOSPACE)
-            .settings(gui::GameWindow::make_app_settings())
-            .window(gui::GameWindow::make_window_settings())
+            .settings(full_crisis::gui::GameWindow::make_app_settings())
+            .window(full_crisis::gui::GameWindow::make_window_settings())
             .run();
 
             if let Err(e) = r {

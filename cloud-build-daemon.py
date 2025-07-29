@@ -238,9 +238,15 @@ if __name__ == '__main__':
           'uv', 'run', 'lcloud-compile-all.py', 'host-linux' # Does non-vm linux build
         ], check=True, cwd=BUILD_DIR)
 
+      def run_host_wasm32_build_t():
+        subprocess.run([
+          'uv', 'run', 'lcloud-compile-all.py', 'host-wasm32' # Does non-vm linux build
+        ], check=True, cwd=BUILD_DIR)
+
       build_threads = [
         threading.Thread(target=run_cloud_build_t,      args=()),
         threading.Thread(target=run_host_linux_build_t, args=()),
+        threading.Thread(target=run_host_wasm32_build_t, args=()),
       ]
 
       for t in build_threads:

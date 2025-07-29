@@ -42,7 +42,7 @@ print(f'Running from {sys.executable} {sys.version}')
 # Prevent an error when originating from systemd daemons where a per-user rustup isn't on the PATH
 os.environ['PATH'] = os.path.join(pathlib.Path.home(), '.cargo', 'bin')+os.pathsep+os.environ.get('PATH', '')
 
-STAGES = ['host', 'cloud', 'guest-win11', 'guest-macos', 'host-linux']
+STAGES = ['host', 'cloud', 'guest-win11', 'guest-macos', 'host-linux', 'host-wasm32']
 SELF_FILE_NAME = os.path.basename(__file__) # we can safely assume this is identical across all systems and is used when building file paths to next stage
 
 stage = None
@@ -465,7 +465,6 @@ def delete_all_target_binaries(base_path):
     'x86_64-unknown-linux-gnu',
     'x86_64-pc-windows-msvc',
     'x86_64-pc-windows-gnu',
-    'i686-pc-windows-msvc',
     'x86_64-apple-darwin',
     'aarch64-apple-darwin',
   ]
@@ -529,6 +528,10 @@ def host():
   host_linux_t.start()
   threads.append(host_linux_t)
 
+  host_wasm32_t = threading.Thread(target=host_wasm32, args=())
+  host_wasm32_t.start()
+  threads.append(host_wasm32_t)
+
   for t in threads:
     t.join()
 
@@ -549,9 +552,10 @@ def host():
   # Also print timestamps of all artifacts to double-check build time; if one is old
   # that indicates build failed and we did not propogate the error across a VM
   artifact_names_checkers = [
-    ('full-crisis', lambda x: os.path.isfile(x)),
-    ('full-crisis.exe', lambda x: os.path.isfile(x)),
-    ('Full-Crisis.app', lambda x: os.path.isdir(x)),
+    ('full-crisis',        lambda x: os.path.isfile(x)),
+    ('full-crisis.exe',    lambda x: os.path.isfile(x)),
+    ('Full-Crisis.app',    lambda x: os.path.isdir(x)),
+    ('full_crisis_web.js', lambda x: os.path.isfile(x)),
   ]
   for artifact_name, checker_fn in artifact_names_checkers:
     for found_path in find_name_under(os.path.join(REPO_DIR, 'target'), artifact_name, max_recursion=12):
@@ -603,6 +607,24 @@ def host_linux():
       'cargo', 'build', '--release', f'--target={target}'
     ], cwd=linux_workdir, check=True)
   print_duration(begin_s, '[ host-linux ] took {}')
+
+def host_wasm32():
+  begin_s = time.time()
+
+  rust_flags = ''
+  if 'RUSTFLAGS' in os.environ:
+    print(f'warning: overriding your custom $RUSTFLAGS="{os.environ.get("RUSTFLAGS", "")}" with "{rust_flags}"')
+  os.environ['RUSTFLAGS'] = rust_flags
+
+  if not shutil.which('wasm-pack'):
+    print('Installing wasm-pack with: cargo install wasm-pack')
+    subprocess.run(['cargo', 'install', 'wasm-pack'], check=True)
+
+  workdir = os.path.join(os.path.dirname(__file__), 'full-crisis-web')
+  subprocess.run([
+    'wasm-pack', 'build', '--target', 'web'
+  ], cwd=workdir, check=False)
+  print_duration(begin_s, '[ host-wasm32 ] took {}')
 
 def cloud():
   print(f'Running "cloud" stage on {socket.gethostname()}', flush=True)
@@ -700,23 +722,12 @@ def cloud():
 
 def guest_win11():
   print(f'Running "guest-win11" stage on {socket.gethostname()}', flush=True)
-  # Define some per-target env vars
-  per_target_env_vars = {
-    'i686': {
-      'RUSTFLAGS': '-C target-cpu=pentium -C target-feature=-sse,-sse2'
-    }
-  }
   # Step 1: Compile all .exe binaries
   begin_s = time.time()
-  for target in ['x86_64-pc-windows-gnu', 'x86_64-pc-windows-msvc', 'i686-pc-windows-msvc', ]: # 'i686-pc-windows-gnu', 'i686-pc-windows-msvc']:
+  for target in ['x86_64-pc-windows-gnu', 'x86_64-pc-windows-msvc']:
     delete_target_binary(windows_workdir, target)
     subp_env = dict(os.environ)
-    for search_k, env_vars in per_target_env_vars.items():
-      if search_k.casefold() in target.casefold():
-        for k,v in env_vars.items():
-          print(f'For target {target} we set the env var {k}={v}')
-          subp_env[k] = v
-
+    # ^ if we ever need to inject env vars, do it here
     subprocess.run([
       'rustup', 'target', 'add', f'{target}'
     ], cwd=windows_workdir, check=False, env=subp_env)
@@ -745,8 +756,6 @@ def guest_win11():
 
       full_crisis_exes = find_name_under(os.path.join(REPO_DIR, 'target', 'x86_64-pc-windows-gnu'), 'full-crisis.exe', max_recursion=2)
       full_crisis_exes += find_name_under(os.path.join(REPO_DIR, 'target', 'x86_64-pc-windows-msvc'), 'full-crisis.exe', max_recursion=2)
-      full_crisis_exes += find_name_under(os.path.join(REPO_DIR, 'target', 'i686-pc-windows-gnu'), 'full-crisis.exe', max_recursion=2)
-      full_crisis_exes += find_name_under(os.path.join(REPO_DIR, 'target', 'i686-pc-windows-msvc'), 'full-crisis.exe', max_recursion=2)
       full_crisis_exes = list(set(full_crisis_exes))
 
       for full_crisis_exe in full_crisis_exes:

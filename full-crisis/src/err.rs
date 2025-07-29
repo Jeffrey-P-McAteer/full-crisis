@@ -42,7 +42,7 @@ impl std::fmt::Display for LocatedError {
 #[macro_export]
 macro_rules! eloc {
     () => {
-        |e| crate::err::LocatedError {
+        |e| full_crisis::err::LocatedError {
             inner: e.into(),
             file: file!(),
             line: line!(),
@@ -51,7 +51,7 @@ macro_rules! eloc {
         }
     };
     ($msg:expr) => {
-        |e| crate::err::LocatedError {
+        |e| full_crisis::err::LocatedError {
             inner: e.into(),
             file: file!(),
             line: line!(),
@@ -64,7 +64,7 @@ macro_rules! eloc {
 #[macro_export]
 macro_rules! eloc_str {
     () => {
-        |e| crate::err::LocatedError {
+        |e| full_crisis::err::LocatedError {
             inner: format!("{:?}", e).into(),
             file: file!(),
             line: line!(),
@@ -73,7 +73,7 @@ macro_rules! eloc_str {
         }
     };
     ($msg:expr) => {
-        |e| crate::err::LocatedError {
+        |e| full_crisis::err::LocatedError {
             inner: format!("{:?}", e).into(),
             file: file!(),
             line: line!(),
@@ -83,5 +83,5 @@ macro_rules! eloc_str {
     };
 }
 
-pub(crate) use eloc;
-pub(crate) use eloc_str;
+pub use eloc;
+pub use eloc_str;

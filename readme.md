@@ -33,6 +33,8 @@ The following programs must be installed and available on your system's `PATH`
  - `git`
  - `cargo`
     - See https://rustup.rs/
+    - `wasm-pack` for web development (cargo install wasm-pack, make sure to zero `RUSTFLAGS=` if you have any set)
+
 
 # Build: For your machine only
 

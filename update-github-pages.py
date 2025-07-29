@@ -152,10 +152,6 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
     os.path.join(f'{td}', 'full-crisis.x86_64-pc-windows-gnu.exe')
   )
   shutil.copy(
-    os.path.join(git_repo, 'target', 'i686-pc-windows-msvc', 'release', 'full-crisis.exe'),
-    os.path.join(f'{td}', 'full-crisis.i686-pc-windows-msvc.exe')
-  )
-  shutil.copy(
     os.path.join(git_repo, 'target', 'x86_64-apple-darwin', 'release', 'Full-Crisis.dmg'),
     os.path.join(f'{td}', 'Full-Crisis.x86_64-apple-darwin.dmg')
   )
@@ -166,6 +162,19 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
   shutil.copy(
     os.path.join(git_repo, 'target', 'x86_64-unknown-linux-gnu', 'release', 'full-crisis'),
     os.path.join(f'{td}', 'full-crisis.x86_64-unknown-linux-gnu')
+  )
+
+  # Copy wasm pkg dir under "wasm32"
+  os.makedirs(os.path.join(f'{td}', 'wasm32'), exist_ok=True)
+  shutil.copytree(
+    os.path.join(git_repo, 'full-crisis-web', 'pkg'),
+    os.path.join(f'{td}', 'wasm32'),
+    dirs_exist_ok=True
+  )
+  # Copy the file fc_index.html to wasm32/index.html
+  shutil.copy(
+    os.path.join(git_repo, 'full-crisis-web', 'fc_index.html'),
+    os.path.join(f'{td}', 'wasm32', 'index.html')
   )
 
   # Write files like f'{td}/loc-graph.png' for inclusion in HTML below
@@ -199,11 +208,10 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
       <header>Download <img src="full-crisis-icon.transparent.128.png" style="border-radius:6pt;"/> </header>
       <pre id="build-message">{build_message}</pre>
       <a class="dl win mobile-light-bordered-text" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64</a>
-      <a class="dl win mobile-light-bordered-text" href="full-crisis.i686-pc-windows-msvc.exe">Windows i686</a>
       <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.x86_64-apple-darwin.dmg">MacOS x64</a>
       <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.aarch64-apple-darwin.dmg">MacOS ARM</a>
       <a class="dl linux mobile-light-bordered-text" href="full-crisis.x86_64-unknown-linux-gnu">Linux x64</a>
-      <!--<a class="dl noapp mobile-light-bordered-text" href="javascript:alert('todo compile for WASM')">Play on the Web</a>-->
+      <a class="dl noapp mobile-light-bordered-text" href="wasm32/index.html">Play on the Web</a>
 
       <header>Code</header>
       <p>

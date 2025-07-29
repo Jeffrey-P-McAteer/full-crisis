@@ -1,0 +1,43 @@
+[package]
+name = "full_crisis"
+version = "0.1.0"
+edition = "2024"
+
+# This is only a rust library, we need full-crisis-bin or full-crisis-web to
+# create an application.
+[lib]
+crate-type = ["lib"]
+
+[dependencies]
+rust_iso639 = "0.0.3"
+
+# Yay global variables
+once_cell = "1.21.3"
+
+[dependencies.iced]
+#version = "0.13"
+git = "https://github.com/iced-rs/iced.git"
+#features = ["wgpu", "tokio", "canvas", "image", "svg", "advanced", "highlighter" ]
+# "highlighter" pulls in onig_sys which does not compile for wasm32-unknown-unknown
+default-features = false
+features = ["image", "svg", "advanced", "wgpu", "tiny-skia", "web-colors", "auto-detect-theme", "smol", ]
+
+[dependencies.iced_renderer]
+version = "*"
+features = ["wgpu", "tiny-skia", ]
+
+[dependencies.iced_aw]
+#version = "0.12"
+git = "https://github.com/iced-rs/iced_aw.git"
+features = ["tabs"]
+
+
+# [dependencies.rand]
+# version = "0.8"
+# default-features = false
+
+# # Override for web to use js random backends
+# [target.'cfg(target_arch = "wasm32")'.dependencies]
+# rand = { version = "0.8", default-features = false, features = ["js"] }
+
+

@@ -1,0 +1,18 @@
+[package]
+name = "full-crisis-web"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+full_crisis = { path = "../full-crisis" }
+wasm-bindgen = { version = "0.2" }
+
+[dependencies.iced]
+git = "https://github.com/iced-rs/iced.git"
+default-features = false
+features = ["webgl", "wgpu", "tiny-skia", "web-colors", "auto-detect-theme", "smol", "fira-sans", ]
+
+

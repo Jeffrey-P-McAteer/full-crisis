@@ -3,7 +3,9 @@
 
 use iced::widget::Column;
 use iced::advanced::Widget;
-use iced::highlighter;
+
+//use iced::highlighter;
+
 use iced::keyboard;
 use iced::widget::{
     self, Container, Image, button, center, center_x, column, container, horizontal_space,
@@ -16,7 +18,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 // Immutable global data
-const SPLASH_PNG_BYTES: &[u8] = include_bytes!("../../icon/full-crisis-splash.transparent.png");
+const SPLASH_PNG_BYTES: &[u8] = include_bytes!("../../../icon/full-crisis-splash.transparent.png");
 
 pub struct GameWindow {
     pub game_state: crate::game::GameState,
@@ -136,16 +138,16 @@ impl GameWindow {
 
         //let buttons: iced::widget::Column<'_, GameMessage, Theme, iced::Renderer> = column![
         let buttons = column![
-            button("Continue Game")
+            button(text("Continue Game"))
                 .on_press(GameMessage::Menu_ContinueGameRequested)
                 .width(Length::Fill),
-            button("New Game")
+            button(text("New Game"))
                 .on_press(GameMessage::Menu_NewGameRequested)
                 .width(Length::Fill),
-            button("Settings")
+            button(text("Settings"))
                 .on_press(GameMessage::Menu_SettingsRequested)
                 .width(Length::Fill),
-            button("Quit Game")
+            button(text("Quit Game"))
                 .on_press(GameMessage::QuitGameRequested)
                 .width(Length::Fill),
         ]

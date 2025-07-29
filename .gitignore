@@ -12,6 +12,9 @@ rootca/*
 dist
 dist/*
 
+pkg
+pkg/*
+
 # Windowsisms
 Thumbs.db
 Thumbs.db\:encryptable

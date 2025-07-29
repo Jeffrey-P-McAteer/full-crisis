@@ -18,11 +18,11 @@ use tokio::{
     time::{self, Duration},
 };
 
-pub async fn run() -> Result<(), crate::err::BoxError> {
-    let game = crate::GAME.get().unwrap();
+pub async fn run() -> Result<(), full_crisis::err::BoxError> {
+    let game = full_crisis::GAME.get().unwrap();
     /*loop {
       {
-        if *game.active_event_loop.read().await == crate::game::ActiveEventLoop::Exit {
+        if *game.active_event_loop.read().await == full_crisis::game::ActiveEventLoop::Exit {
             break;
         }
 
@@ -32,11 +32,11 @@ pub async fn run() -> Result<(), crate::err::BoxError> {
       tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
     }*/
 
-    enable_raw_mode().map_err(crate::err::eloc!())?;
+    enable_raw_mode().map_err(full_crisis::err::eloc!())?;
     let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen, EnableMouseCapture).map_err(crate::err::eloc!())?;
+    execute!(stdout, EnterAlternateScreen, EnableMouseCapture).map_err(full_crisis::err::eloc!())?;
     let backend = CrosstermBackend::new(stdout);
-    let mut terminal = Terminal::new(backend).map_err(crate::err::eloc!())?;
+    let mut terminal = Terminal::new(backend).map_err(full_crisis::err::eloc!())?;
 
     // Shared state
     let number = Arc::new(tokio::sync::Mutex::new(0));
@@ -62,7 +62,7 @@ pub async fn run() -> Result<(), crate::err::BoxError> {
     loop {
         {
             if let Ok(evt_loop_val) = game.active_event_loop.try_read() {
-                if *evt_loop_val == crate::game::ActiveEventLoop::Exit {
+                if *evt_loop_val == full_crisis::game::ActiveEventLoop::Exit {
                     break;
                 }
             }
@@ -99,11 +99,11 @@ pub async fn run() -> Result<(), crate::err::BoxError> {
                     f.render_widget(input_widget, chunks[1]);
                 }
             })
-            .map_err(crate::err::eloc!())?;
+            .map_err(full_crisis::err::eloc!())?;
 
         // Poll for key events or UI update
-        if event::poll(Duration::from_millis(100)).map_err(crate::err::eloc!())? {
-            match event::read().map_err(crate::err::eloc!())? {
+        if event::poll(Duration::from_millis(100)).map_err(full_crisis::err::eloc!())? {
+            match event::read().map_err(full_crisis::err::eloc!())? {
                 Event::Key(key) => {
                     let mut input_str = input.lock().await;
                     match key.code {
@@ -118,7 +118,7 @@ pub async fn run() -> Result<(), crate::err::BoxError> {
                             // TODO better input processing
                             if cmd == "exit" || cmd == "quit" || cmd == "e" || cmd == "q" {
                                 if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
-                                    *evt_loop_wguard = crate::game::ActiveEventLoop::Exit;
+                                    *evt_loop_wguard = full_crisis::game::ActiveEventLoop::Exit;
                                 }
                             }
 
@@ -139,14 +139,14 @@ pub async fn run() -> Result<(), crate::err::BoxError> {
     }
 
     // Restore terminal
-    disable_raw_mode().map_err(crate::err::eloc!())?;
+    disable_raw_mode().map_err(full_crisis::err::eloc!())?;
     execute!(
         terminal.backend_mut(),
         LeaveAlternateScreen,
         DisableMouseCapture
     )
-    .map_err(crate::err::eloc!())?;
-    terminal.show_cursor().map_err(crate::err::eloc!())?;
+    .map_err(full_crisis::err::eloc!())?;
+    terminal.show_cursor().map_err(full_crisis::err::eloc!())?;
 
     Ok(())
 }
