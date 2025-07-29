@@ -67,8 +67,8 @@ open_preview = any('preview' in arg for arg in sys.argv)
 noninteractive = any('noninteractive' in arg for arg in sys.argv)
 
 version = '0.0.0'
-if os.path.exists('Cargo.toml'):
-  with open('Cargo.toml', 'rb') as fd:
+if os.path.exists(os.path.join('full-crisis', 'Cargo.toml')):
+  with open(os.path.join('full-crisis', 'Cargo.toml'), 'rb') as fd:
       data = tomllib.load(fd)
       version = data["package"]["version"]
 
