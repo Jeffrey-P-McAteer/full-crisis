@@ -17,3 +17,9 @@ default-features = false
 features = ["webgl", "wgpu", "tiny-skia", "web-colors", "auto-detect-theme", "smol", "fira-sans", ]
 
 
+[package.metadata.wasm-pack.profile.release]
+# See https://github.com/WebAssembly/binaryen/blob/version_117/test/lit/help/wasm-opt.test
+wasm-opt = [
+    "-Os",
+]
+
