@@ -177,7 +177,7 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
     os.path.join(git_repo, 'full-crisis-web', 'fc_index.html'),
     os.path.join(f'{td}', 'wasm32', 'index.html')
   )
-  # Finally, if the pkg folder contained a .gitignore remove it!
+  # Finally, if the pkg folder containes a .gitignore remove it!
   if os.path.exists(os.path.join(f'{td}', 'wasm32', '.gitignore')):
     try:
       os.remove(os.path.join(f'{td}', 'wasm32', '.gitignore'))
