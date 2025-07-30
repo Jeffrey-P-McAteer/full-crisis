@@ -9,6 +9,7 @@ import os
 import sys
 import subprocess
 import tempfile
+import traceback
 import shutil
 import webbrowser
 import time
@@ -176,6 +177,12 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
     os.path.join(git_repo, 'full-crisis-web', 'fc_index.html'),
     os.path.join(f'{td}', 'wasm32', 'index.html')
   )
+  # Finally, if the pkg folder contained a .gitignore remove it!
+  if os.path.exists(os.path.join(f'{td}', 'wasm32', '.gitignore')):
+    try:
+      os.remove(os.path.join(f'{td}', 'wasm32', '.gitignore'))
+    except:
+      traceback.print_exc()
 
   # Write files like f'{td}/loc-graph.png' for inclusion in HTML below
   subprocess.run([
