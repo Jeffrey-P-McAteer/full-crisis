@@ -7,8 +7,9 @@ edition = "2024"
 crate-type = ["cdylib"]
 
 [dependencies]
-full_crisis = { path = "../full-crisis" }
+full_crisis =  { path = "../full-crisis" }
 wasm-bindgen = { version = "0.2" }
+wee_alloc =    { version = "0.4" }
 
 [dependencies.iced]
 git = "https://github.com/iced-rs/iced.git"
