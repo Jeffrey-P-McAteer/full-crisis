@@ -1,6 +1,6 @@
 [package]
 name = "full_crisis"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 
 # This is only a rust library, we need full-crisis-bin or full-crisis-web to
