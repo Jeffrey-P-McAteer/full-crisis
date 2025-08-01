@@ -5,6 +5,7 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen(start)]
 pub fn start() -> Result<(), JsValue> {
+    full_crisis::init_global_vars();
     // Iced wants to own the GUI thread and insists on using the main thread; so we let it.
     iced::application(
         full_crisis::gui::GameWindow::new,

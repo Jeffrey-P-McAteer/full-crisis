@@ -38,6 +38,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let _ = CLI_ARGS.set(args.clone());
     let _ = SYS_CFG.set(system::SystemConfig::new());
 
+    full_crisis::init_global_vars();
+
     match args.command {
         Command::Gui => {
             // Iced wants to own the GUI thread and insists on using the main thread; so we let it.

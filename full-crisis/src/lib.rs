@@ -28,3 +28,10 @@ pub mod gui;
 /// Contains host info such as config folders, language, etc. Items which the user can change but the game will not.
 
 pub static GAME: OnceCell<game::GameState> = OnceCell::new();
+
+pub fn init_global_vars() {
+  if let Err(e) = GAME.set(game::GameState::new()) {
+    println!("{:?}", e);
+  }
+}
+
