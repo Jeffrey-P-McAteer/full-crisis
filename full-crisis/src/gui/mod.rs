@@ -195,7 +195,7 @@ impl GameWindow {
                         Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO new game UI"))
                     }
                     crate::game::WelcomeScreenView::ContinueGame => {
-                        Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO continue UI"))
+                        self.build_new_game_ui()
                     }
                     crate::game::WelcomeScreenView::Settings => {
                         Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO settings UI"))
@@ -218,9 +218,11 @@ impl GameWindow {
     //     Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO continue UI"))
     // }
 
-    // pub fn build_new_game_ui<'a>(&self) -> Container<'a, GameMessage> {
-    //     Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO new game UI"))
-    // }
+    pub fn build_new_game_ui<'a>(&self) -> Container<'a, GameMessage> {
+
+        Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO new game UI"))
+
+    }
 
     // pub fn build_settings_ui<'a>(&self) -> Container<'a, GameMessage> {
     //     Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO settings UI"))
