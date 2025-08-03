@@ -182,6 +182,8 @@ if __name__ == '__main__':
   # We also clear any memory of build failures if the whole daemon re-starts
   zero_sha_build_failures(last_seen_commit_hash)
 
+  blink_cmd('--------100')
+
   while True:
     runtime_s = time.time() - start_time
 

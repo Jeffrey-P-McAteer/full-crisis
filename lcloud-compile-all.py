@@ -845,6 +845,9 @@ def guest_macos():
     if not os.path.exists(macos_workdir):
       time.sleep(0.2)
 
+  subp_env = dict(os.environ)
+  # ^ if we ever need to inject env vars, do it here
+
   # Step 0: Ensure build tools up-to-date -_-
   subprocess.run([
     'rustup', 'update'
