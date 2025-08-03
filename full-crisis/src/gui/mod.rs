@@ -1,15 +1,20 @@
 
 #![allow(unreachable_patterns, non_camel_case_types)]
 
+use iced::widget::Button;
+use iced::widget::Text;
+use iced::widget::text::Alignment;
 use iced::widget::Column;
 use iced::advanced::Widget;
+
+use iced::widget::row::Row as _;
 
 //use iced::highlighter;
 
 use iced::keyboard;
 use iced::widget::{
     self, Container, Image, button, center, center_x, column, container, horizontal_space,
-    pick_list, row, text, text_editor, toggler, tooltip,
+    pick_list, row, text, text_editor, toggler, tooltip, text_input,
 };
 use iced::{Center, Element, Fill, Font, Left, Length, Right, Task, Theme};
 
@@ -21,18 +26,33 @@ use std::sync::Arc;
 const SPLASH_PNG_BYTES: &[u8] = include_bytes!("../../../icon/full-crisis-splash.transparent.png");
 
 pub struct GameWindow {
-    pub game_state: crate::game::GameState,
+    // Settings grade data
     pub os_theme: crate::game::OSColorTheme,
+
+    // Current UI location data, high-level
+    pub game_state: crate::game::GameState,
+
+    // Current UI location data, low-level
+    pub new_game_player_name: String,
+    pub new_game_game_type: Option<NewGame_Type>,
 }
 
 #[derive(Debug, Clone)]
 pub enum GameMessage {
     Nop,
+
     // view_menu_screen states
     Menu_NewGameRequested,
+        Menu_NewGamePlayerNameAltered(String),
+        Menu_NewGameTypeWasAltered(NewGame_Type),
+        Menu_NewGameStartClicked,
+
     Menu_ContinueGameRequested,
+
     Menu_SettingsRequested,
+
     QuitGameRequested,
+
     // view_game_screen states
 }
 
@@ -54,8 +74,10 @@ impl GameWindow {
         (
 
             Self {
-                game_state: crate::game::GameState::new(),
                 os_theme: crate::OS_COLOR_THEME.get().unwrap_or(&crate::game::OSColorTheme::Light).clone(),
+                game_state: crate::game::GameState::new(),
+                new_game_player_name: String::new(),
+                new_game_game_type: None,
             },
             Task::batch([
                 /*Task::perform(
@@ -82,6 +104,19 @@ impl GameWindow {
                 }
                 Task::none()
             }
+            GameMessage::Menu_NewGamePlayerNameAltered(name) => {
+                self.new_game_player_name = name;
+                Task::none()
+            }
+            GameMessage::Menu_NewGameTypeWasAltered(game_type) => {
+                self.new_game_game_type = Some(game_type);
+                Task::none()
+            }
+            GameMessage::Menu_NewGameStartClicked => {
+                // TODO start the game
+                Task::none()
+            }
+
             GameMessage::Menu_ContinueGameRequested => {
                 if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                     *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::ContinueGame);
@@ -189,10 +224,10 @@ impl GameWindow {
             if let crate::game::ActiveEventLoop::WelcomeScreen(ref ws_area) = *evt_loop_val {
                 match ws_area {
                     crate::game::WelcomeScreenView::NewGame => {
-                        Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO new game UI"))
+                        self.build_new_game_ui()
                     }
                     crate::game::WelcomeScreenView::ContinueGame => {
-                        self.build_new_game_ui()
+                        Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO continue game UI"))
                     }
                     crate::game::WelcomeScreenView::Settings => {
                         Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO settings UI"))
@@ -216,9 +251,59 @@ impl GameWindow {
     // }
 
     pub fn build_new_game_ui<'a>(&self) -> Container<'a, GameMessage> {
+        // Player Name Row
+        let name_input = text_input("Enter name...", &self.new_game_player_name)
+            .on_input(GameMessage::Menu_NewGamePlayerNameAltered)
+            .padding(10)
+            .width(Length::Fill);
 
-        Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO new game UI"))
+        let name_row = row![
+                Text::new("Player Name:"), name_input
+            ]
+            .spacing(10)
+            ;//.align_items(Alignment::Center);
 
+        // Game Type Row
+        let game_type_picker = pick_list(
+            &NewGame_Type::ALL[..],
+            self.new_game_game_type,
+            GameMessage::Menu_NewGameTypeWasAltered,
+        )
+        .placeholder("Select game type")
+        .padding(10)
+        .width(Length::Fill);
+
+        let game_type_row = row![
+            Text::new("Game Type:"), game_type_picker,
+        ]
+            .spacing(10)
+            ;//.align_items(Alignment::Center);
+
+        // Go Button (aligned bottom-right)
+        let go_button = button(Text::new("Go"))
+            .on_press(GameMessage::Menu_NewGameStartClicked)
+            .padding(10)
+            ;//.style(theme::Button::Primary);
+
+        let layout = Column::new()
+            .spacing(20)
+            .padding(20)
+            .push(name_row)
+            .push(game_type_row)
+            .push(
+                Container::new(go_button)
+                    .align_x(iced::alignment::Horizontal::Right)
+                    .width(Length::Fill),
+            )
+            .height(Length::Fill)
+            ;//.align_items(Alignment::Start);
+
+        let self_theme = self.theme();
+        Container::<GameMessage, Theme, iced::Renderer>::new(layout)
+            .width(Length::Fixed(600.0))
+            .height(Length::Fixed(400.0))
+            .style(move |_theme| menu_right_box_style(&self_theme))
+            .padding(10)
     }
 
     // pub fn build_settings_ui<'a>(&self) -> Container<'a, GameMessage> {
@@ -233,6 +318,19 @@ async fn run_background_async_tasks() -> Result<(), crate::err::BoxError> {
 
     Ok(())
 }
+
+pub fn menu_right_box_style(theme: &Theme) -> iced::widget::container::Style {
+    let palette = theme.extended_palette();
+
+    iced::widget::container::Style {
+        background: Some(palette.background.weak.color.into()),
+        border: iced::border::rounded(12)
+            .color(palette.primary.weak.color)
+            .width(2),
+        ..iced::widget::container::Style::default()
+    }
+}
+
 
 /*
 fn action<'a, GameMessage: Clone + 'a>(
@@ -255,3 +353,25 @@ fn action<'a, GameMessage: Clone + 'a>(
     }
 }
 */
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NewGame_Type {
+    Type_A, Type_B, Type_C,
+}
+impl std::fmt::Display for NewGame_Type {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            NewGame_Type::Type_A => write!(f, "Type A"),
+            NewGame_Type::Type_B => write!(f, "Type B"),
+            NewGame_Type::Type_C => write!(f, "type C"),
+        }
+    }
+}
+impl NewGame_Type {
+    const ALL: [NewGame_Type; 3] = [
+        NewGame_Type::Type_A,
+        NewGame_Type::Type_B,
+        NewGame_Type::Type_C,
+    ];
+}
+
