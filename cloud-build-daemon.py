@@ -135,7 +135,7 @@ def set_sha_build_success(sha):
 
 def blink_cmd(*patterns):
   if os.path.exists('/blinker.py'):
-    subprocess.Popen(['uv', 'run', '/blinker.py'] + patterns)
+    subprocess.Popen(['uv', 'run', '/blinker.py'] + list(patterns))
 
 if __name__ == '__main__':
   start_time = time.time()
