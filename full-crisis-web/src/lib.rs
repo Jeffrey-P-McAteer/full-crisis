@@ -1,5 +1,6 @@
 use wasm_bindgen::prelude::*;
 
+// Responsible for 2.5mb less WASM code generated, TODO measure performance impact
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 

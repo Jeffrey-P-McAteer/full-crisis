@@ -20,17 +20,6 @@ use tokio::{
 
 pub async fn run() -> Result<(), full_crisis::err::BoxError> {
     let game = full_crisis::GAME.get().unwrap();
-    /*loop {
-      {
-        if *game.active_event_loop.read().await == full_crisis::game::ActiveEventLoop::Exit {
-            break;
-        }
-
-      }
-
-      // idk
-      tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
-    }*/
 
     enable_raw_mode().map_err(full_crisis::err::eloc!())?;
     let mut stdout = io::stdout();

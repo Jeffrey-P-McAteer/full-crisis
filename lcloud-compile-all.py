@@ -59,6 +59,8 @@ This script copies itself to targets and runs stages on those machines;
  - host is your machine
  - cloud is the machine running VMS, which you have SSH access to using PKI
  - guest-* are the guest machines, which have hardcoded credentials in this script.
+ - host-linux compiles for linux-x64 on your own machine
+ - host-wasm32 compiles for wasm32 on your own machine
 '''.strip())
   sys.exit(1)
 
@@ -748,15 +750,15 @@ def guest_win11():
   if not (path_rh is None) and os.path.exists(path_rh):
     resource_hacker_folders = [ os.path.dirname(path_rh) ] + resource_hacker_folders
 
+  full_crisis_exes = find_name_under(os.path.join(REPO_DIR, 'target', 'x86_64-pc-windows-gnu'), 'full-crisis.exe', max_recursion=2)
+  full_crisis_exes += find_name_under(os.path.join(REPO_DIR, 'target', 'x86_64-pc-windows-msvc'), 'full-crisis.exe', max_recursion=2)
+  full_crisis_exes = list(set(full_crisis_exes))
+
   if len(resource_hacker_folders) > 0:
     resource_hacker_exes = find_name_under(resource_hacker_folders[0], 'ResourceHacker.exe')
     if len(resource_hacker_exes) > 0:
       resource_hacker_exe = resource_hacker_exes[0]
       print(f'Found Resource Hacker at {resource_hacker_exe}')
-
-      full_crisis_exes = find_name_under(os.path.join(REPO_DIR, 'target', 'x86_64-pc-windows-gnu'), 'full-crisis.exe', max_recursion=2)
-      full_crisis_exes += find_name_under(os.path.join(REPO_DIR, 'target', 'x86_64-pc-windows-msvc'), 'full-crisis.exe', max_recursion=2)
-      full_crisis_exes = list(set(full_crisis_exes))
 
       for full_crisis_exe in full_crisis_exes:
         full_crisis_exe_with_icon = full_crisis_exe+'.icon.exe'
@@ -787,7 +789,42 @@ def guest_win11():
   else:
     print(f'resource_hacker_folders = {resource_hacker_folders}')
 
-  # TODO sign binaries!
+  # Sign binaries
+  try:
+    rootca_crt = os.path.join(REPO_DIR, 'rootca', 'rootca.crt')
+    rootca_key = os.path.join(REPO_DIR, 'rootca', 'rootca_key.key')
+    rootca_pfx = os.path.join(REPO_DIR, 'rootca', 'rootca.pfx')
+
+    windows_kits_folders = find_name_under(r'C:\Program Files', 'Windows Kits', max_recursion=1)
+    windows_kits_folders += find_name_under(r'C:\Program Files (x86)', 'Windows Kits', max_recursion=1)
+    windows_kits_folders += find_name_under(r'C:\Program Files', 'Microsoft Visual Studio', max_recursion=1)
+    windows_kits_folders += find_name_under(r'C:\Program Files (x86)', 'Microsoft Visual Studio', max_recursion=1)
+    signtool_exes = []
+    for folder in windows_kits_folders:
+      signtool_exes += find_name_under(folder, 'signtool.exe', max_recursion=12)
+      if len(signtool_exes) > 0:
+        break # Break on first exe found
+
+    print(f'signtool_exes = {signtool_exes}')
+    signtool_exe = signtool_exes[0] # Assume we found one
+    print(f'Signing with {signtool_exe}')
+
+    for full_crisis_exe in full_crisis_exes:
+      subprocess.run([
+        signtool_exe, 'sign',
+          '/f', rootca_pfx,
+          '/p', '',
+          '/tr', 'http://timestamp.digicert.com',
+          '/td', 'sha256',
+          '/fd', 'sha256',
+          # Optional info fields
+          '/d', 'Full Crisis Videogame',
+          '/du', 'https://full-crisis.jmcateer.com',
+          full_crisis_exe
+      ], cwd=windows_workdir, check=True)
+
+  except:
+    traceback.print_exc()
 
   print_duration(begin_s, 'took {}')
   print(f'Done!', flush=True)

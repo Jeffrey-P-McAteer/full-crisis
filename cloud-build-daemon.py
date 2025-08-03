@@ -153,12 +153,14 @@ if __name__ == '__main__':
 
   # At start-up we perform some long-term maitenence tasks which generally only need to happen once.
   root_ca_crt = os.path.join(REPO_DIR, 'rootca', 'rootca.crt')
-  if not os.path.exists(root_ca_crt):
+  root_ca_pfx = os.path.join(REPO_DIR, 'rootca', 'rootca.pfx')
+  if (not os.path.exists(root_ca_crt)) or (not os.path.exists(root_ca_pfx)):
     proc = subprocess.Popen(
         ['uv', 'run', 'rootca-mgmt.py'],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        cwd=REPO_DIR,
         text=True  # ensures string I/O instead of bytes
     )
     time.sleep(0.5)

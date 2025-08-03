@@ -11,6 +11,8 @@ import sys
 import subprocess
 import json
 import base64
+import shutil
+
 
 import OpenSSL
 import OpenSSL.crypto
@@ -49,6 +51,35 @@ def pki_and_cert_gen(config, priv_key_file, cert_file):
   with open(priv_key_file, 'w') as f:
     f.write(OpenSSL.crypto.dump_privatekey(OpenSSL.crypto.FILETYPE_PEM, k).decode("utf-8"))
 
+def create_pfx(crt_path, key_path, pfx_path):
+    if shutil.which('openssl'):
+      subprocess.run([
+        'openssl', 'pkcs12', '-export', '-out', pfx_path, '-inkey', key_path, '-in', crt_path, '-passout', 'pass:'
+      ], check=True)
+      print(f"PFX file written to: {pfx_path}")
+    else:
+      # TODO we know thisis broken
+
+      # Load the certificate
+      with open(crt_path, "rb") as f:
+          cert = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, f.read())
+
+      # Load the private key
+      with open(key_path, "rb") as f:
+          key = OpenSSL.crypto.load_privatekey(OpenSSL.crypto.FILETYPE_PEM, f.read())
+
+      # Create PKCS#12 object
+      p12 = OpenSSL.crypto.PKCS12()
+      p12.set_certificate(cert)
+      p12.set_privatekey(key)
+
+      # Export to .pfx (password-protected)
+      with open(pfx_path, "wb") as f:
+          f.write(p12.export())
+
+      print(f"PFX file written to: {pfx_path}")
+
+
 
 repo_dir = os.path.dirname(__file__)
 
@@ -58,6 +89,7 @@ os.makedirs(rootca_folder, exist_ok=True)
 
 rootca_priv_key_file = os.path.join(rootca_folder, 'rootca_key.key')
 rootca_cert_file = os.path.join(rootca_folder, 'rootca.crt')
+rootca_pfx_file = os.path.join(rootca_folder, 'rootca.pfx')
 if not os.path.exists(rootca_priv_key_file):
   # This isn't supposed to be secure, it's an anti-bot-parsing technique.
   rootca_priv_key_config = {
@@ -75,6 +107,11 @@ if not os.path.exists(rootca_priv_key_file):
   input(f'Creating {rootca_priv_key_file} with the following config. Press enter to continue, or ctrl+c to fix the config.\n{json.dumps(rootca_priv_key_config, indent=4)}')
 
   pki_and_cert_gen(rootca_priv_key_config, rootca_priv_key_file, rootca_cert_file)
+
+if not os.path.exists(rootca_pfx_file):
+  # Generate off rootca_cert_file and rootca_priv_key_file
+  create_pfx(rootca_cert_file, rootca_priv_key_file, rootca_pfx_file)
+
 
 # Still TODO: Generate an intermediate cert, sign by ^^ rootca, etc and use intermediate to sign binaries.
 #             For now, rootca == signing key because that's simple!
