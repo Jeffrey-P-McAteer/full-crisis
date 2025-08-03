@@ -133,6 +133,9 @@ def set_sha_build_success(sha):
     expire=CACHE_EXPIRE_S
   )
 
+def blink_cmd(*patterns):
+  if os.path.exists('/blinker.py'):
+    subprocess.Popen(['uv', 'run', '/blinker.py'] + patterns)
 
 if __name__ == '__main__':
   start_time = time.time()
@@ -199,10 +202,13 @@ if __name__ == '__main__':
       if get_sha_build_success(current_commit_hash):
         print(f'We have already built {current_commit_hash}.', flush=True)
       time.sleep(sleep_s)
+      blink_cmd('--------100')
       continue
 
     try:
       print(f'= = = = = = = Building {current_commit_hash} = = = = = = =')
+
+      blink_cmd('--------100', 'y750')
 
       # Run a build, only updating last_seen_commit_hash if we finish successfully. Otherwise, try again!
       if not os.path.exists(os.path.join(BUILD_DIR, '.git')):
@@ -273,12 +279,15 @@ if __name__ == '__main__':
         'uv', 'run', 'update-github-pages.py', 'noninteractive', # updates webpage w/ new build data
       ], check=True, cwd=BUILD_DIR)
 
+      blink_cmd('g750')
+
       last_seen_commit_hash = current_commit_hash
       zero_sha_build_failures(current_commit_hash)
       set_sha_build_success(current_commit_hash)
     except:
       traceback.print_exc()
       increase_sha_build_failures(current_commit_hash)
+      blink_cmd('r750')
 
 
 
