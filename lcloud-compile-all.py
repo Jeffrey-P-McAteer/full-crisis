@@ -51,7 +51,7 @@ if len(sys.argv) > 1:
 elif socket.gethostname().casefold() == 'azure-angel'.casefold():
   stage = 'host' # it's jeff's laptop
 
-if stage is None:
+if stage is None or stage == 'help' or stage == '-h' or stage == '--help':
   print(f'''
 Usage: uv run cloud-compile-all.py {"|".join(STAGES)}
 

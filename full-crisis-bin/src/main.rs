@@ -39,6 +39,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let _ = SYS_CFG.set(system::SystemConfig::new());
 
     full_crisis::init_global_vars();
+    // Use dark_light to detect OS theme
+    let _ = full_crisis::OS_COLOR_THEME.set(match dark_light::detect() {
+        Ok(dark_light::Mode::Dark) => full_crisis::game::OSColorTheme::Dark,
+        Ok(dark_light::Mode::Light) => full_crisis::game::OSColorTheme::Light,
+        _ => dark_light_fallback_theme_detections(),
+    });
+
+    if args.verbosity > 0 {
+        eprintln!("OS color theme = {:?} because dark_light::detect() = {:?}", full_crisis::OS_COLOR_THEME.get(), dark_light::detect());
+    }
 
     match args.command {
         Command::Gui => {
@@ -85,6 +95,38 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
+fn dark_light_fallback_theme_detections() -> full_crisis::game::OSColorTheme {
+    #[cfg(target_os = "linux")]
+    {
+        // If gimp is installed, read ~/.config/GIMP/3.0/theme.css to see if there is an import to a file /usr/share/gimp/3.0/themes/Default/gimp-dark.css
+        match file_contains(&[".config", "GIMP", "3.0", "theme.css",], "themes/Default/gimp-dark.css") {
+            Some(true) => return full_crisis::game::OSColorTheme::Dark,
+            Some(false) => return full_crisis::game::OSColorTheme::Light,
+            _ => { }
+        }
+    }
+
+    // TODO collect OS heuristics here.
+
+    full_crisis::game::OSColorTheme::Light
+}
+
+fn file_contains(home_dir_path_frags: &[&str], content: &str) -> Option<bool> {
+    if let Ok(Some(mut home_dir)) = homedir::my_home() {
+        for path_frag in home_dir_path_frags.iter() {
+            home_dir.push(path_frag);
+        }
+        let file_path = home_dir;
+        if file_path.exists() {
+            if let Ok(file_contents) = std::fs::read_to_string(&file_path) {
+                return Some(file_contents.contains(content))
+            }
+        }
+    }
+    None
+}
+
 
 fn hide_console_iff_windows() {
     #[cfg(target_os = "windows")]

@@ -28,10 +28,17 @@ pub mod gui;
 /// Contains host info such as config folders, language, etc. Items which the user can change but the game will not.
 
 pub static GAME: OnceCell<game::GameState> = OnceCell::new();
+pub static OS_COLOR_THEME: OnceCell<game::OSColorTheme> = OnceCell::new();
 
 pub fn init_global_vars() {
+
+  // TODO likely do not want to do this now, push down to web query of state or FS read op in bin
   if let Err(e) = GAME.set(game::GameState::new()) {
     println!("{:?}", e);
   }
+
+  // Cannot assign to OS_COLOR_THEME in any reasonable manner
+
+
 }
 

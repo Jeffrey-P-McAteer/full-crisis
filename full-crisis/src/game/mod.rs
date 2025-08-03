@@ -31,3 +31,15 @@ pub enum WelcomeScreenView {
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum GameView {}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum OSColorTheme {
+    Light,
+    Dark,
+}
+
+unsafe impl Sync for GameState {}
+unsafe impl Sync for OSColorTheme {}
+unsafe impl Sync for GameView {}
+unsafe impl Sync for WelcomeScreenView {}
+unsafe impl Sync for ActiveEventLoop {}

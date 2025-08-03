@@ -7,6 +7,14 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 #[wasm_bindgen(start)]
 pub fn start() -> Result<(), JsValue> {
     full_crisis::init_global_vars();
+
+    // Detect browser theme + store in variable
+    let _ = full_crisis::OS_COLOR_THEME.set(
+        if os_prefers_dark() { full_crisis::game::OSColorTheme::Dark }
+        else                 { full_crisis::game::OSColorTheme::Light }
+    );
+
+
     // Iced wants to own the GUI thread and insists on using the main thread; so we let it.
     iced::application(
         full_crisis::gui::GameWindow::new,
@@ -20,5 +28,16 @@ pub fn start() -> Result<(), JsValue> {
     .window(full_crisis::gui::GameWindow::make_window_settings())
     .run()
     .map_err(|e| JsValue::from_str(&format!("{:?}", e)))
+}
+
+
+// Expose a JS function to Rust using wasm-bindgen
+#[wasm_bindgen(inline_js = "
+export function os_prefers_dark() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+")]
+extern "C" {
+    pub fn os_prefers_dark() -> bool;
 }
 

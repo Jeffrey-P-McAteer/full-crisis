@@ -22,6 +22,7 @@ const SPLASH_PNG_BYTES: &[u8] = include_bytes!("../../../icon/full-crisis-splash
 
 pub struct GameWindow {
     pub game_state: crate::game::GameState,
+    pub os_theme: crate::game::OSColorTheme,
 }
 
 #[derive(Debug, Clone)]
@@ -51,14 +52,10 @@ impl GameWindow {
     }
     pub fn new() -> (Self, Task<GameMessage>) {
         (
+
             Self {
                 game_state: crate::game::GameState::new(),
-                /*file: None,
-                content: text_editor::Content::new(),
-                theme: highlighter::Theme::SolarizedDark,
-                word_wrap: true,
-                is_loading: true,
-                is_dirty: false,*/
+                os_theme: crate::OS_COLOR_THEME.get().unwrap_or(&crate::game::OSColorTheme::Light).clone(),
             },
             Task::batch([
                 /*Task::perform(
@@ -117,12 +114,12 @@ impl GameWindow {
     }
 
     pub fn theme(&self) -> Theme {
-        /*if self.theme.is_dark() {
+        if self.os_theme == crate::game::OSColorTheme::Dark {
             Theme::Dark
-        } else {
+        }
+        else {
             Theme::Light
-        }*/
-        Theme::Light
+        }
     }
 
     pub fn view_menu_screen(&self) -> Element<GameMessage> {
