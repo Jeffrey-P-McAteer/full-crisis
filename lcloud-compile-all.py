@@ -724,6 +724,10 @@ def cloud():
 
 def guest_win11():
   print(f'Running "guest-win11" stage on {socket.gethostname()}', flush=True)
+  # Step 0: Ensure build tools up-to-date -_-
+  subprocess.run([
+    'rustup', 'update'
+  ], cwd=windows_workdir, check=False, env=subp_env)
   # Step 1: Compile all .exe binaries
   begin_s = time.time()
   for target in ['x86_64-pc-windows-gnu', 'x86_64-pc-windows-msvc']:
@@ -840,6 +844,11 @@ def guest_macos():
   for _ in range(0, 10):
     if not os.path.exists(macos_workdir):
       time.sleep(0.2)
+
+  # Step 0: Ensure build tools up-to-date -_-
+  subprocess.run([
+    'rustup', 'update'
+  ], cwd=windows_workdir, check=False, env=subp_env)
 
   # Step 1: Compile for all targets
   mac_targets = ['x86_64-apple-darwin', 'aarch64-apple-darwin']
