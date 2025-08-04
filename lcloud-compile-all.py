@@ -851,7 +851,7 @@ def guest_macos():
   # Step 0: Ensure build tools up-to-date -_-
   subprocess.run([
     'rustup', 'update'
-  ], cwd=windows_workdir, check=False)
+  ], cwd=macos_workdir, check=False)
 
   # Step 1: Compile for all targets
   mac_targets = ['x86_64-apple-darwin', 'aarch64-apple-darwin']

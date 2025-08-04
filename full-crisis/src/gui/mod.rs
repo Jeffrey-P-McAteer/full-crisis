@@ -204,7 +204,7 @@ impl GameWindow {
             .width(Length::Fill);
 
         // UI consists of background image + foreground content
-        Container::<GameMessage, Theme, iced::Renderer>::new(
+        /*Container::<GameMessage, Theme, iced::Renderer>::new(
             Column::new()
                 .push(background)  // bottom layer
                 .push(Container::new(foreground_content)
@@ -214,6 +214,18 @@ impl GameWindow {
                         .align_y(Center)
                 ), // top layer
         )
+        .width(Length::Fill)
+        .height(Length::Fill)
+        .into()*/
+
+        iced::widget::stack![
+            background,
+            Container::new(foreground_content)
+                .width(Length::Fill)
+                .height(Length::Fill)
+                .align_x(Center)
+                .align_y(Center)
+        ]
         .width(Length::Fill)
         .height(Length::Fill)
         .into()
@@ -261,7 +273,7 @@ impl GameWindow {
                 Text::new("Player Name:"), name_input
             ]
             .spacing(10)
-            ;//.align_items(Alignment::Center);
+            .align_y(Center);
 
         // Game Type Row
         let game_type_picker = pick_list(
@@ -277,7 +289,7 @@ impl GameWindow {
             Text::new("Game Type:"), game_type_picker,
         ]
             .spacing(10)
-            ;//.align_items(Alignment::Center);
+            .align_y(Center);
 
         // Go Button (aligned bottom-right)
         let go_button = button(Text::new("Go"))
@@ -296,7 +308,7 @@ impl GameWindow {
                     .width(Length::Fill),
             )
             .height(Length::Fill)
-            ;//.align_items(Alignment::Start);
+            .align_x(Left);
 
         let self_theme = self.theme();
         Container::<GameMessage, Theme, iced::Renderer>::new(layout)
