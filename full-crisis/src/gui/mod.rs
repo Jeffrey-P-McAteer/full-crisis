@@ -113,7 +113,12 @@ impl GameWindow {
                 Task::none()
             }
             GameMessage::Menu_NewGameStartClicked => {
-                // TODO start the game
+                // TODO read UI input and record for start of game
+
+                if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
+                    *evt_loop_wguard = crate::game::ActiveEventLoop::ActiveGame(crate::game::GameView::FirstScene);
+                }
+
                 Task::none()
             }
 
@@ -144,8 +149,22 @@ impl GameWindow {
     }
 
     pub fn view(&self) -> Element<GameMessage> {
-        // TODO if/else for menu_screen and game_screen
-        self.view_menu_screen()
+        if let Ok(evt_loop_rguard) = self.game_state.active_event_loop.read() {
+            match evt_loop_rguard.clone() {
+                crate::game::ActiveEventLoop::WelcomeScreen(welcome_screen_state) => {
+                    self.view_menu_screen()
+                }
+                crate::game::ActiveEventLoop::ActiveGame(game_view_state) => {
+                    text(format!("TODO write UI for ActiveGame({:?})", game_view_state)).into()
+                }
+                crate::game::ActiveEventLoop::Exit => {
+                    text("Exiting...").into()
+                }
+            }
+        }
+        else {
+            text("Error, cannot read game_state.active_event_loop").into()
+        }
     }
 
     pub fn theme(&self) -> Theme {
@@ -202,21 +221,6 @@ impl GameWindow {
         let foreground_content = row![buttons, right_panel]
             .height(Length::Fill)
             .width(Length::Fill);
-
-        // UI consists of background image + foreground content
-        /*Container::<GameMessage, Theme, iced::Renderer>::new(
-            Column::new()
-                .push(background)  // bottom layer
-                .push(Container::new(foreground_content)
-                        .width(Length::Fill)
-                        .height(Length::Fill)
-                        .align_x(Center)
-                        .align_y(Center)
-                ), // top layer
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .into()*/
 
         iced::widget::stack![
             background,

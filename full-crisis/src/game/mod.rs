@@ -14,14 +14,14 @@ impl GameState {
 }
 
 /// This tracks what event loop should be running
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ActiveEventLoop {
     WelcomeScreen(WelcomeScreenView),
     ActiveGame(GameView),
     Exit,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum WelcomeScreenView {
     Empty,
     NewGame,
@@ -29,8 +29,10 @@ pub enum WelcomeScreenView {
     Settings,
 }
 
-#[derive(Debug, PartialEq, Eq)]
-pub enum GameView {}
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum GameView {
+    FirstScene
+}
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum OSColorTheme {
