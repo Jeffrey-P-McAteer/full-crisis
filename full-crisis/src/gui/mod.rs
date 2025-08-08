@@ -268,7 +268,7 @@ impl GameWindow {
                         self.build_new_game_ui()
                     }
                     crate::game::WelcomeScreenView::ContinueGame => {
-                        Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO continue game UI"))
+                        self.build_continue_game_ui()
                     }
                     crate::game::WelcomeScreenView::Settings => {
                         Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO settings UI"))
@@ -287,9 +287,48 @@ impl GameWindow {
         }
     }
 
-    // pub fn build_continue_ui<'a>(&self) -> Container<'a, GameMessage> {
-    //     Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO continue UI"))
-    // }
+    pub fn build_continue_game_ui<'a>(&self) -> Container<'a, GameMessage> {
+        // TODO replace w/ dynamic list of game names
+        let game_type_picker = pick_list(
+            &NewGame_Type::ALL[..],
+            self.new_game_game_type,
+            GameMessage::Menu_NewGameTypeWasAltered,
+        )
+        .placeholder("Select game type")
+        .padding(10)
+        .width(Length::Fill);
+
+        let game_type_row = row![
+            Text::new("Saved Game:"), game_type_picker,
+        ]
+            .spacing(10)
+            .align_y(Center);
+
+        // Go Button (aligned bottom-right)
+        let go_button = button(Text::new("Play"))
+            .on_press(GameMessage::Menu_NewGameStartClicked)
+            .padding(10)
+            ;//.style(theme::Button::Primary);
+
+        let layout = Column::new()
+            .spacing(20)
+            .padding(20)
+            .push(game_type_row)
+            .push(
+                Container::new(go_button)
+                    .align_x(iced::alignment::Horizontal::Right)
+                    .width(Length::Fill),
+            )
+            .height(Length::Fill)
+            .align_x(Left);
+
+        let self_theme = self.theme();
+        Container::<GameMessage, Theme, iced::Renderer>::new(layout)
+            .width(Length::Fixed(600.0))
+            .height(Length::Fixed(400.0))
+            .style(move |_theme| menu_right_box_style(&self_theme))
+            .padding(10)
+    }
 
     pub fn build_new_game_ui<'a>(&self) -> Container<'a, GameMessage> {
         // Player Name Row
