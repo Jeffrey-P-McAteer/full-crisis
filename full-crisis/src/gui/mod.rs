@@ -2,12 +2,14 @@
 #![allow(unreachable_patterns, non_camel_case_types)]
 
 use iced::widget::Button;
+use iced::widget::Space;
 use iced::widget::Text;
 use iced::widget::text::Alignment;
 use iced::widget::Column;
+use iced::widget::Row;
 use iced::advanced::Widget;
 
-use iced::widget::row::Row as _;
+//use iced::widget::row::Row as _;
 
 //use iced::highlighter;
 
@@ -215,12 +217,34 @@ impl GameWindow {
         let right_panel = container(self.build_menu_screen_right_ui())
             .width(Length::Fill)
             .align_x(Center)
-            .align_y(Center);
+            //.align_y(Center)
+            .center_y(iced::Length::Fill);
 
 
         let foreground_content = row![buttons, right_panel]
             .height(Length::Fill)
             .width(Length::Fill);
+
+        let foreground_content = Column::new()
+            .height(Length::Fill)
+            .width(Length::Fill)
+            .align_x(iced::alignment::Horizontal::Center)
+            .push(Space::with_height(Length::Fill))
+            .push(
+                foreground_content
+            )
+            .push(Space::with_height(Length::Fill));
+
+        let foreground_content = Row::new()
+            .height(Length::Fill)
+            .width(Length::Fill)
+            .align_y(iced::alignment::Vertical::Center)
+            .push(Space::with_height(Length::Fill))
+            .push(
+                foreground_content
+            )
+            .push(Space::with_height(Length::Fill));
+
 
         iced::widget::stack![
             background,
