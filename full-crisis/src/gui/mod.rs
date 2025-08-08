@@ -216,7 +216,7 @@ impl GameWindow {
             .align_x(Center)
             .align_y(Center);*/
         let right_panel = container(self.build_menu_screen_right_ui())
-            .width(Length::Shrink)
+            .width(Length::Fixed(680.0f32))
             .align_x(Center)
             //.align_y(Center)
             .center_y(iced::Length::Shrink);
