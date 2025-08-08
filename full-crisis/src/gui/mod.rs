@@ -207,7 +207,8 @@ impl GameWindow {
         .spacing(10)
         .width(240)
         .padding(10)
-        .align_x(Center);
+        .align_x(Center)
+        .width(Length::Fixed(186.0f32));
 
         // TODO swap out w/ button state
         /*let right_panel = container(text("Select an option"))
@@ -215,19 +216,19 @@ impl GameWindow {
             .align_x(Center)
             .align_y(Center);*/
         let right_panel = container(self.build_menu_screen_right_ui())
-            .width(Length::Fill)
+            .width(Length::Shrink)
             .align_x(Center)
             //.align_y(Center)
-            .center_y(iced::Length::Fill);
+            .center_y(iced::Length::Shrink);
 
 
         let foreground_content = row![buttons, right_panel]
             .height(Length::Fill)
-            .width(Length::Fill);
+            .width(Length::Shrink);
 
         let foreground_content = Column::new()
             .height(Length::Fill)
-            .width(Length::Fill)
+            .width(Length::Shrink)
             .align_x(iced::alignment::Horizontal::Center)
             .push(Space::with_height(Length::Fill))
             .push(
@@ -237,7 +238,7 @@ impl GameWindow {
 
         let foreground_content = Row::new()
             .height(Length::Fill)
-            .width(Length::Fill)
+            .width(Length::Shrink)
             .align_y(iced::alignment::Vertical::Center)
             .push(Space::with_height(Length::Fill))
             .push(
