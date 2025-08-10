@@ -22,10 +22,7 @@ use once_cell::sync::OnceCell;
 
 /// cli-based console UI to play the game with
 mod cli;
-/// Contains host info such as config folders, language, etc. Items which the user can change but the game will not.
-mod system;
 
-pub static SYS_CFG: OnceCell<system::SystemConfig> = OnceCell::new();
 pub static CLI_ARGS: OnceCell<Args> = OnceCell::new();
 
 // TODO move beyond hello world
@@ -36,7 +33,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Store some globals for the cli + gui methods to reference
     let _ = CLI_ARGS.set(args.clone());
-    let _ = SYS_CFG.set(system::SystemConfig::new());
 
     full_crisis::init_global_vars();
     // Use dark_light to detect OS theme
