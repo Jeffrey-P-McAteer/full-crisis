@@ -36,7 +36,9 @@ pub struct GameWindow {
 
     // Current UI location data, low-level
     pub new_game_player_name: String,
-    pub new_game_game_type: Option<String>,
+    pub new_game_game_template: Option<String>,
+
+    pub continue_game_game_choice: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -46,10 +48,11 @@ pub enum GameMessage {
     // view_menu_screen states
     Menu_NewGameRequested,
         Menu_NewGamePlayerNameAltered(String),
-        Menu_NewGameTypeWasAltered(String),
+        Menu_NewGameTemplateChoiceAltered(String),
         Menu_NewGameStartClicked,
 
     Menu_ContinueGameRequested,
+        Menu_ContinueGameChoiceAltered(String),
 
     Menu_SettingsRequested,
 
@@ -79,7 +82,8 @@ impl GameWindow {
                 os_theme: crate::OS_COLOR_THEME.get().unwrap_or(&crate::game::OSColorTheme::Light).clone(),
                 game_state: crate::game::GameState::new(),
                 new_game_player_name: String::new(),
-                new_game_game_type: None,
+                new_game_game_template: None,
+                continue_game_game_choice: None,
             },
             Task::batch([
                 /*Task::perform(
@@ -110,8 +114,8 @@ impl GameWindow {
                 self.new_game_player_name = name;
                 Task::none()
             }
-            GameMessage::Menu_NewGameTypeWasAltered(game_type) => {
-                self.new_game_game_type = Some(game_type);
+            GameMessage::Menu_NewGameTemplateChoiceAltered(game_template) => {
+                self.new_game_game_template = Some(game_template);
                 Task::none()
             }
             GameMessage::Menu_NewGameStartClicked => {
@@ -130,6 +134,11 @@ impl GameWindow {
                 }
                 Task::none()
             }
+            GameMessage::Menu_ContinueGameChoiceAltered(game_name) => {
+                self.continue_game_game_choice = Some(game_name);
+                Task::none()
+            }
+
             GameMessage::Menu_SettingsRequested => {
                 if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                     *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::Settings);
@@ -153,7 +162,7 @@ impl GameWindow {
     pub fn view(&self) -> Element<GameMessage> {
         if let Ok(evt_loop_rguard) = self.game_state.active_event_loop.read() {
             match evt_loop_rguard.clone() {
-                crate::game::ActiveEventLoop::WelcomeScreen(welcome_screen_state) => {
+                crate::game::ActiveEventLoop::WelcomeScreen(_welcome_screen_state) => {
                     self.view_menu_screen()
                 }
                 crate::game::ActiveEventLoop::ActiveGame(game_view_state) => {
@@ -292,10 +301,10 @@ impl GameWindow {
         let saved_games = crate::crisis::get_saved_crisis_names();
         let game_type_picker = pick_list(
             saved_games,
-            self.new_game_game_type.clone(),
-            GameMessage::Menu_NewGameTypeWasAltered,
+            self.continue_game_game_choice.clone(),
+            GameMessage::Menu_ContinueGameChoiceAltered,
         )
-        .placeholder("Select game type")
+        .placeholder("Select game")
         .padding(10)
         .width(Length::Fill);
 
@@ -348,8 +357,8 @@ impl GameWindow {
         let crisis_names = crate::crisis::get_crisis_names();
         let game_type_picker = pick_list(
             crisis_names,
-            self.new_game_game_type.clone(),
-            GameMessage::Menu_NewGameTypeWasAltered,
+            self.new_game_game_template.clone(),
+            GameMessage::Menu_NewGameTemplateChoiceAltered,
         )
         .placeholder("Select game type")
         .padding(10)
