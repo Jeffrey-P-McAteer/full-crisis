@@ -1740,7 +1740,6 @@ dependencies = [
  "iced_aw",
  "iced_renderer 0.13.0",
  "once_cell",
- "rand",
  "rust-embed",
  "rust_iso639",
  "twox-hash",
