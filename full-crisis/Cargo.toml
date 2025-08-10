@@ -11,6 +11,9 @@ crate-type = ["lib"]
 [dependencies]
 rust_iso639 = "0.0.3"
 
+# Used to embed all ./playable-crises/
+rust-embed="8.7.2"
+
 # Yay global variables
 once_cell = "1.21.3"
 

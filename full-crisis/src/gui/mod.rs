@@ -36,7 +36,7 @@ pub struct GameWindow {
 
     // Current UI location data, low-level
     pub new_game_player_name: String,
-    pub new_game_game_type: Option<NewGame_Type>,
+    pub new_game_game_type: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -46,7 +46,7 @@ pub enum GameMessage {
     // view_menu_screen states
     Menu_NewGameRequested,
         Menu_NewGamePlayerNameAltered(String),
-        Menu_NewGameTypeWasAltered(NewGame_Type),
+        Menu_NewGameTypeWasAltered(String),
         Menu_NewGameStartClicked,
 
     Menu_ContinueGameRequested,
@@ -289,9 +289,10 @@ impl GameWindow {
 
     pub fn build_continue_game_ui<'a>(&self) -> Container<'a, GameMessage> {
         // TODO replace w/ dynamic list of game names
+        let saved_games = crate::crisis::get_saved_crisis_names();
         let game_type_picker = pick_list(
-            &NewGame_Type::ALL[..],
-            self.new_game_game_type,
+            saved_games,
+            self.new_game_game_type.clone(),
             GameMessage::Menu_NewGameTypeWasAltered,
         )
         .placeholder("Select game type")
@@ -344,9 +345,10 @@ impl GameWindow {
             .align_y(Center);
 
         // Game Type Row
+        let crisis_names = crate::crisis::get_crisis_names();
         let game_type_picker = pick_list(
-            &NewGame_Type::ALL[..],
-            self.new_game_game_type,
+            crisis_names,
+            self.new_game_game_type.clone(),
             GameMessage::Menu_NewGameTypeWasAltered,
         )
         .placeholder("Select game type")

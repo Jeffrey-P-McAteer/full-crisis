@@ -1,4 +1,4 @@
-#![allow(unused_imports,dead_code)]
+#![allow(unused_imports,dead_code,non_camel_case_types)]
 /**
  *  full-crisis - An emergency-response simulator videogame
  *  Copyright (C) 2025  Jeffrey McAteer <jeffrey@jmcateer.com>
@@ -25,7 +25,9 @@ pub mod err;
 pub mod game;
 /// iced-based native UI for all major platforms
 pub mod gui;
-/// Contains host info such as config folders, language, etc. Items which the user can change but the game will not.
+/// Contains the actual crisis file data and structures read by other modules
+pub mod crisis;
+
 
 pub static GAME: OnceCell<game::GameState> = OnceCell::new();
 pub static OS_COLOR_THEME: OnceCell<game::OSColorTheme> = OnceCell::new();
