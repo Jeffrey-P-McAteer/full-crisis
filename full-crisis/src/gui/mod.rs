@@ -198,7 +198,8 @@ impl GameWindow {
             .center_x(Length::Fill)
             .center_y(Length::Fill);
 
-        //let buttons: iced::widget::Column<'_, GameMessage, Theme, iced::Renderer> = column![
+        let num_times_run = crate::storage::get_attr("run-times").unwrap_or_else(|| "First Run!".to_string());
+
         let buttons = column![
             button(text("Continue Game"))
                 .on_press(GameMessage::Menu_ContinueGameRequested)
@@ -211,6 +212,8 @@ impl GameWindow {
                 .width(Length::Fill),
             button(text("Quit Game"))
                 .on_press(GameMessage::QuitGameRequested)
+                .width(Length::Fill),
+            text(format!("Run: {}", num_times_run))
                 .width(Length::Fill),
         ]
         .spacing(10)

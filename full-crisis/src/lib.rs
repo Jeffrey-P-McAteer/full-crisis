@@ -29,6 +29,18 @@ pub mod gui;
 pub mod crisis;
 
 
+#[cfg(target_arch = "wasm32")]
+mod wasm32_storage;
+#[cfg(not(target_arch = "wasm32"))]
+mod native_storage;
+
+#[cfg(target_arch = "wasm32")]
+use wasm32_storage as storage;
+#[cfg(not(target_arch = "wasm32"))]
+use native_storage as storage;
+
+
+
 pub static GAME: OnceCell<game::GameState> = OnceCell::new();
 pub static OS_COLOR_THEME: OnceCell<game::OSColorTheme> = OnceCell::new();
 
@@ -41,6 +53,9 @@ pub fn init_global_vars() {
 
   // Cannot assign to OS_COLOR_THEME in any reasonable manner
 
+  // Increment run number every time we start; TODO put more than proof-of-concept data here!
+  let last_run_val = crate::storage::get_attr("run-times").unwrap_or_else(|| "0".to_string());
+  let last_run_num = last_run_val.parse::<i32>().unwrap_or(0);
+  crate::storage::set_attr("run-times", &format!("{}", last_run_num+1))
 
 }
-
