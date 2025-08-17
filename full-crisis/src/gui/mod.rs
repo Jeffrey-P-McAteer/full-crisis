@@ -24,6 +24,7 @@ use std::ffi;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
+use serde::{Serialize, Deserialize};
 // Immutable global data
 const SPLASH_PNG_BYTES: &[u8] = include_bytes!("../../../icon/full-crisis-splash.transparent.png");
 
@@ -46,7 +47,7 @@ pub struct GameWindow {
     pub settings_autosave: bool,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum DifficultyLevel {
     Easy,
     Medium,
@@ -69,6 +70,23 @@ impl DifficultyLevel {
         DifficultyLevel::Medium,
         DifficultyLevel::Hard,
     ];
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GameSettings {
+    pub game_save_folder: String,
+    pub difficulty_level: DifficultyLevel,
+    pub autosave: bool,
+}
+
+impl Default for GameSettings {
+    fn default() -> Self {
+        Self {
+            game_save_folder: String::from("./saves"),
+            difficulty_level: DifficultyLevel::Medium,
+            autosave: true,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -95,6 +113,19 @@ pub enum GameMessage {
 }
 
 impl GameWindow {
+    fn save_settings(&self) {
+        let settings = GameSettings {
+            game_save_folder: self.settings_game_save_folder.clone(),
+            difficulty_level: self.settings_difficulty_level,
+            autosave: self.settings_autosave,
+        };
+        crate::native_storage::set_struct("game_settings", &settings);
+    }
+
+    fn load_settings() -> GameSettings {
+        crate::native_storage::get_struct("game_settings").unwrap_or_default()
+    }
+
     pub fn make_app_settings() -> iced::Settings {
         iced::Settings {
             ..Default::default()
@@ -109,6 +140,7 @@ impl GameWindow {
         }
     }
     pub fn new() -> (Self, Task<GameMessage>) {
+        let loaded_settings = Self::load_settings();
         (
 
             Self {
@@ -117,9 +149,9 @@ impl GameWindow {
                 new_game_player_name: String::new(),
                 new_game_game_template: None,
                 continue_game_game_choice: None,
-                settings_game_save_folder: String::from("./saves"),
-                settings_difficulty_level: DifficultyLevel::Medium,
-                settings_autosave: true,
+                settings_game_save_folder: loaded_settings.game_save_folder,
+                settings_difficulty_level: loaded_settings.difficulty_level,
+                settings_autosave: loaded_settings.autosave,
             },
             Task::batch([
                 /*Task::perform(
@@ -184,16 +216,19 @@ impl GameWindow {
             GameMessage::Menu_SettingsGameSaveFolderChanged(folder_path) => {
                 eprintln!("Settings: Game Save Folder changed to: {}", folder_path);
                 self.settings_game_save_folder = folder_path;
+                self.save_settings();
                 Task::none()
             }
             GameMessage::Menu_SettingsDifficultyLevelChanged(difficulty) => {
                 eprintln!("Settings: Difficulty Level changed to: {:?}", difficulty);
                 self.settings_difficulty_level = difficulty;
+                self.save_settings();
                 Task::none()
             }
             GameMessage::Menu_SettingsAutosaveToggled(enabled) => {
                 eprintln!("Settings: Autosave toggled to: {}", enabled);
                 self.settings_autosave = enabled;
+                self.save_settings();
                 Task::none()
             }
             GameMessage::QuitGameRequested => {
