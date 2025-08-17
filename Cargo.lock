@@ -1742,6 +1742,8 @@ dependencies = [
  "once_cell",
  "rust-embed",
  "rust_iso639",
+ "serde",
+ "serde_json",
  "twox-hash",
  "wasm-bindgen",
 ]
