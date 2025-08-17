@@ -39,6 +39,36 @@ pub struct GameWindow {
     pub new_game_game_template: Option<String>,
 
     pub continue_game_game_choice: Option<String>,
+
+    // Settings UI data
+    pub settings_game_save_folder: String,
+    pub settings_difficulty_level: DifficultyLevel,
+    pub settings_autosave: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DifficultyLevel {
+    Easy,
+    Medium,
+    Hard,
+}
+
+impl std::fmt::Display for DifficultyLevel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            DifficultyLevel::Easy => write!(f, "Easy"),
+            DifficultyLevel::Medium => write!(f, "Medium"),
+            DifficultyLevel::Hard => write!(f, "Hard"),
+        }
+    }
+}
+
+impl DifficultyLevel {
+    const ALL: [DifficultyLevel; 3] = [
+        DifficultyLevel::Easy,
+        DifficultyLevel::Medium,
+        DifficultyLevel::Hard,
+    ];
 }
 
 #[derive(Debug, Clone)]
@@ -55,6 +85,9 @@ pub enum GameMessage {
         Menu_ContinueGameChoiceAltered(String),
 
     Menu_SettingsRequested,
+        Menu_SettingsGameSaveFolderChanged(String),
+        Menu_SettingsDifficultyLevelChanged(DifficultyLevel),
+        Menu_SettingsAutosaveToggled(bool),
 
     QuitGameRequested,
 
@@ -84,6 +117,9 @@ impl GameWindow {
                 new_game_player_name: String::new(),
                 new_game_game_template: None,
                 continue_game_game_choice: None,
+                settings_game_save_folder: String::from("./saves"),
+                settings_difficulty_level: DifficultyLevel::Medium,
+                settings_autosave: true,
             },
             Task::batch([
                 /*Task::perform(
@@ -143,6 +179,21 @@ impl GameWindow {
                 if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                     *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::Settings);
                 }
+                Task::none()
+            }
+            GameMessage::Menu_SettingsGameSaveFolderChanged(folder_path) => {
+                eprintln!("Settings: Game Save Folder changed to: {}", folder_path);
+                self.settings_game_save_folder = folder_path;
+                Task::none()
+            }
+            GameMessage::Menu_SettingsDifficultyLevelChanged(difficulty) => {
+                eprintln!("Settings: Difficulty Level changed to: {:?}", difficulty);
+                self.settings_difficulty_level = difficulty;
+                Task::none()
+            }
+            GameMessage::Menu_SettingsAutosaveToggled(enabled) => {
+                eprintln!("Settings: Autosave toggled to: {}", enabled);
+                self.settings_autosave = enabled;
                 Task::none()
             }
             GameMessage::QuitGameRequested => {
@@ -283,7 +334,7 @@ impl GameWindow {
                         self.build_continue_game_ui()
                     }
                     crate::game::WelcomeScreenView::Settings => {
-                        Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO settings UI"))
+                        self.build_settings_ui()
                     }
                     _ => {
                         Container::<GameMessage, Theme, iced::Renderer>::new(text("Select from left menu"))
@@ -400,9 +451,62 @@ impl GameWindow {
             .padding(10)
     }
 
-    // pub fn build_settings_ui<'a>(&self) -> Container<'a, GameMessage> {
-    //     Container::<GameMessage, Theme, iced::Renderer>::new(text("TODO settings UI"))
-    // }
+    pub fn build_settings_ui<'a>(&self) -> Container<'a, GameMessage> {
+        // Game Save Folder Row
+        let save_folder_input = text_input("Enter save folder path...", &self.settings_game_save_folder)
+            .on_input(GameMessage::Menu_SettingsGameSaveFolderChanged)
+            .padding(10)
+            .width(Length::Fill);
+
+        let save_folder_row = row![
+            Text::new("Game Save Folder:"), save_folder_input
+        ]
+        .spacing(10)
+        .align_y(Center);
+
+        // Difficulty Level Row
+        let difficulty_picker = pick_list(
+            &DifficultyLevel::ALL[..],
+            Some(self.settings_difficulty_level),
+            GameMessage::Menu_SettingsDifficultyLevelChanged,
+        )
+        .placeholder("Select difficulty")
+        .padding(10)
+        .width(Length::Fill);
+
+        let difficulty_row = row![
+            Text::new("Difficulty Level:"), difficulty_picker,
+        ]
+        .spacing(10)
+        .align_y(Center);
+
+        // Autosave Row
+        let autosave_toggle = toggler(self.settings_autosave)
+            .on_toggle(GameMessage::Menu_SettingsAutosaveToggled)
+            .width(Length::Shrink);
+
+        let autosave_row = row![
+            Text::new("Autosave:"), autosave_toggle,
+        ]
+        .spacing(10)
+        .align_y(Center);
+
+        let layout = Column::new()
+            .spacing(20)
+            .padding(20)
+            .push(save_folder_row)
+            .push(difficulty_row)
+            .push(autosave_row)
+            .height(Length::Fill)
+            .align_x(Left);
+
+        let self_theme = self.theme();
+        Container::<GameMessage, Theme, iced::Renderer>::new(layout)
+            .width(Length::Fixed(600.0))
+            .height(Length::Fixed(400.0))
+            .style(move |_theme| menu_right_box_style(&self_theme))
+            .padding(10)
+    }
 
 
 }
