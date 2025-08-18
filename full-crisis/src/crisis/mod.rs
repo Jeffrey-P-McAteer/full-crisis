@@ -161,12 +161,23 @@ pub fn get_random_character_name(crisis: &CrisisDefinition, character_type: Opti
 }
 
 pub fn get_scene_text(scene: &CrisisScene, language: &str, character_name: &str) -> String {
-    let text = scene.text.get(language)
-        .or_else(|| scene.text.get("eng"))
+    let fallback_chain = crate::language::get_language_fallback_chain(language);
+    
+    let text = fallback_chain.iter()
+        .find_map(|lang| scene.text.get(lang))
         .unwrap_or(&"Missing text".to_string())
         .clone();
     
     text.replace("{character_name}", character_name)
+}
+
+pub fn get_localized_text(text_map: &std::collections::HashMap<String, String>, language: &str) -> String {
+    let fallback_chain = crate::language::get_language_fallback_chain(language);
+    
+    fallback_chain.iter()
+        .find_map(|lang| text_map.get(lang))
+        .unwrap_or(&"Missing text".to_string())
+        .clone()
 }
 
 

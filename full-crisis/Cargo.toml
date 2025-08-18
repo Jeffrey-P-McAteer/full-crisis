@@ -10,6 +10,7 @@ crate-type = ["lib"]
 
 [dependencies]
 rust_iso639 = "0.0.3"
+isolang = "2.4"
 
 # Used to embed all ./playable-crises/
 rust-embed="8.7.2"
@@ -45,9 +46,10 @@ features = ["tabs"]
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = { version = "0.2" }
 getrandom = { version = "0.2", features = ["js"] }
-web-sys = { version = "0.3", features = ["console"] }
+web-sys = { version = "0.3", features = ["console", "Navigator", "Window", "Location"] }
 
-# Override for web to use js random backends
+# Override for desktop to use system locale detection
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 directories = { version = "5.0" }
+sys-locale = "0.3"
 

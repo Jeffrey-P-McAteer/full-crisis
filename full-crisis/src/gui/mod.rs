@@ -68,6 +68,7 @@ impl GameWindow {
                 settings_game_save_folder: loaded_settings.game_save_folder,
                 settings_difficulty_level: loaded_settings.difficulty_level,
                 settings_autosave: loaded_settings.autosave,
+                settings_language: loaded_settings.language,
                 game_text_input: String::new(),
                 player_cash: 1000,
                 player_health: 100,
@@ -112,14 +113,15 @@ impl GameWindow {
                 if let Some(ref template_name) = self.new_game_game_template {
                     if let Ok(crisis) = crate::crisis::load_crisis(template_name) {
                         let character_name = if self.new_game_player_name.is_empty() {
-                            crate::crisis::get_random_character_name(&crisis, None, &crisis.story.default_language)
+                            crate::crisis::get_random_character_name(&crisis, None, &self.settings_language)
                         } else {
                             self.new_game_player_name.clone()
                         };
                         
+                        let user_language = self.settings_language.clone();
                         let mut story_state = crate::crisis::GameState::new(
                             crisis.metadata.id.clone(),
-                            crisis.story.default_language.clone(),
+                            user_language.clone(),
                         );
                         story_state.current_scene = crisis.story.starting_scene.clone();
                         story_state.character_name = character_name;
@@ -167,6 +169,12 @@ impl GameWindow {
             GameMessage::Menu_SettingsAutosaveToggled(enabled) => {
                 eprintln!("Settings: Autosave toggled to: {}", enabled);
                 self.settings_autosave = enabled;
+                self.save_settings();
+                Task::none()
+            }
+            GameMessage::Menu_SettingsLanguageChanged(language) => {
+                eprintln!("Settings: Language changed to: {}", language);
+                self.settings_language = language;
                 self.save_settings();
                 Task::none()
             }
@@ -372,11 +380,8 @@ impl GameWindow {
     
     fn render_story_scene(&self, crisis: &crate::crisis::CrisisDefinition, story_state: &crate::crisis::GameState) -> Element<'_, GameMessage> {
         if let Some(current_scene) = crisis.scenes.get(&story_state.current_scene) {
-            // Crisis title
-            let title = crisis.name.get(&story_state.language)
-                .or_else(|| crisis.name.get("eng"))
-                .unwrap_or(&"Unknown Crisis".to_string())
-                .clone();
+            // Crisis title using fallback mechanism
+            let title = crate::crisis::get_localized_text(&crisis.name, &story_state.language);
             
             // Character name display
             let character_info = text(format!("Playing as: {}", story_state.character_name))
@@ -407,10 +412,7 @@ impl GameWindow {
                 );
             } else {
                 for (index, choice) in current_scene.choices.iter().enumerate() {
-                    let choice_text = choice.text.get(&story_state.language)
-                        .or_else(|| choice.text.get("eng"))
-                        .unwrap_or(&"Unknown choice".to_string())
-                        .clone();
+                    let choice_text = crate::crisis::get_localized_text(&choice.text, &story_state.language);
                     
                     // Check if choice is available based on requirements
                     let mut available = true;

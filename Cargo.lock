@@ -1740,12 +1740,14 @@ dependencies = [
  "iced 0.14.0-dev",
  "iced_aw",
  "iced_renderer 0.13.0",
+ "isolang",
  "once_cell",
  "rand",
  "rust-embed",
  "rust_iso639",
  "serde",
  "serde_json",
+ "sys-locale",
  "toml 0.8.23",
  "twox-hash",
  "wasm-bindgen",
@@ -2876,6 +2878,15 @@ name = "is_terminal_polyfill"
 version = "1.70.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7943c866cc5cd64cbc25b2e01621d07fa8eb2a1a23160ee81ce38704e97b8ecf"
+
+[[package]]
+name = "isolang"
+version = "2.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fe50d48c77760c55188549098b9a7f6e37ae980c586a24693d6b01c3b2010c3c"
+dependencies = [
+ "phf",
+]
 
 [[package]]
 name = "itertools"

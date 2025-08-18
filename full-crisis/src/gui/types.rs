@@ -31,6 +31,7 @@ pub struct GameSettings {
     pub game_save_folder: String,
     pub difficulty_level: DifficultyLevel,
     pub autosave: bool,
+    pub language: String,
 }
 
 impl Default for GameSettings {
@@ -39,6 +40,7 @@ impl Default for GameSettings {
             game_save_folder: String::from("./saves"),
             difficulty_level: DifficultyLevel::Medium,
             autosave: true,
+            language: crate::language::detect_system_language(),
         }
     }
 }
@@ -52,6 +54,7 @@ pub struct GameWindow {
     pub settings_game_save_folder: String,
     pub settings_difficulty_level: DifficultyLevel,
     pub settings_autosave: bool,
+    pub settings_language: String,
     pub game_text_input: String,
     pub player_cash: i32,
     pub player_health: i32,
@@ -73,6 +76,7 @@ pub enum GameMessage {
         Menu_SettingsGameSaveFolderChanged(String),
         Menu_SettingsDifficultyLevelChanged(DifficultyLevel),
         Menu_SettingsAutosaveToggled(bool),
+        Menu_SettingsLanguageChanged(String),
     QuitGameRequested,
     Game_TextInputChanged(String),
     Game_TextInputSubmitted,

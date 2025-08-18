@@ -6,6 +6,7 @@ impl GameWindow {
             game_save_folder: self.settings_game_save_folder.clone(),
             difficulty_level: self.settings_difficulty_level,
             autosave: self.settings_autosave,
+            language: self.settings_language.clone(),
         };
         crate::storage::set_struct("game_settings", &settings);
     }

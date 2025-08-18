@@ -27,6 +27,8 @@ pub mod game;
 pub mod gui;
 /// Contains the actual crisis file data and structures read by other modules
 pub mod crisis;
+/// Language detection and management utilities
+pub mod language;
 
 
 #[cfg(target_arch = "wasm32")]

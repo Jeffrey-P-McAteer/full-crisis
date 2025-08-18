@@ -163,12 +163,38 @@ impl GameWindow {
         .spacing(10)
         .align_y(Center);
 
+        let available_languages = crate::language::get_available_languages();
+        let language_options: Vec<String> = available_languages.iter().map(|(code, name)| format!("{} ({})", name, code)).collect();
+        let current_language_display = available_languages.iter()
+            .find(|(code, _)| code == &self.settings_language)
+            .map(|(code, name)| format!("{} ({})", name, code))
+            .unwrap_or_else(|| format!("Unknown ({})", self.settings_language));
+
+        let language_picker = pick_list(
+            language_options,
+            Some(current_language_display),
+            |selected| {
+                let lang_code = selected.split(" (").last().unwrap_or("eng").trim_end_matches(')').to_string();
+                GameMessage::Menu_SettingsLanguageChanged(lang_code)
+            },
+        )
+        .placeholder("Select language")
+        .padding(10)
+        .width(Length::Fill);
+
+        let language_row = row![
+            Text::new("Language:"), language_picker,
+        ]
+        .spacing(10)
+        .align_y(Center);
+
         let layout = iced::widget::Column::new()
             .spacing(20)
             .padding(20)
             .push(save_folder_row)
             .push(difficulty_row)
             .push(autosave_row)
+            .push(language_row)
             .height(Length::Fill)
             .align_x(Left);
 
