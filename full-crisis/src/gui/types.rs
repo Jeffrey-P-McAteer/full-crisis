@@ -1,5 +1,4 @@
 use serde::{Serialize, Deserialize};
-use iced::{Center, Element, Fill, Length, Task, Theme};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum DifficultyLevel {
@@ -62,10 +61,6 @@ pub struct GameWindow {
     pub settings_difficulty_level: DifficultyLevel,
     pub settings_autosave: bool,
     pub settings_language: String,
-    pub game_text_input: String,
-    pub player_cash: i32,
-    pub player_health: i32,
-    pub player_popularity: i32,
     pub current_crisis: Option<crate::crisis::CrisisDefinition>,
     pub story_state: Option<crate::crisis::GameState>,
 }
@@ -85,31 +80,7 @@ pub enum GameMessage {
         Menu_SettingsAutosaveToggled(bool),
         Menu_SettingsLanguageChanged(String),
     QuitGameRequested,
-    Game_TextInputChanged(String),
-    Game_TextInputSubmitted,
     Game_ChoiceSelected(usize),
     Game_RestartRequested,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum NewGame_Type {
-    Type_A, Type_B, Type_C,
-}
-
-impl std::fmt::Display for NewGame_Type {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            NewGame_Type::Type_A => write!(f, "Type A"),
-            NewGame_Type::Type_B => write!(f, "Type B"),
-            NewGame_Type::Type_C => write!(f, "type C"),
-        }
-    }
-}
-
-impl NewGame_Type {
-    pub const ALL: [NewGame_Type; 3] = [
-        NewGame_Type::Type_A,
-        NewGame_Type::Type_B,
-        NewGame_Type::Type_C,
-    ];
-}

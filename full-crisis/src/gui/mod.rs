@@ -9,30 +9,14 @@ use types::*;
 // Re-export key types for public use
 pub use types::{GameWindow, GameMessage, DifficultyLevel, GameSettings};
 
-use iced::widget::Button;
 use iced::widget::Space;
-use iced::widget::Text;
-use iced::widget::text::Alignment;
 use iced::widget::Column;
 use iced::widget::Row;
-use iced::advanced::Widget;
-
-//use iced::widget::row::Row as _;
-
-//use iced::highlighter;
-
-use iced::keyboard;
 use iced::widget::{
-    self, Container, Image, button, center, center_x, column, container, horizontal_space,
-    pick_list, row, text, text_editor, toggler, tooltip, text_input,
+    self, Container, Image, button, center_x, column, container, horizontal_space,
+    pick_list, row, text, toggler, text_input,
 };
-use iced::{Center, Element, Fill, Font, Left, Length, Right, Task, Theme};
-
-use std::ffi;
-use std::io;
-use std::path::{Path, PathBuf};
-use std::sync::Arc;
-use serde::{Serialize, Deserialize};
+use iced::{Center, Element, Length, Task, Theme};
 // Immutable global data
 const SPLASH_PNG_BYTES: &[u8] = include_bytes!("../../../icon/full-crisis-splash.transparent.png");
 
@@ -69,25 +53,10 @@ impl GameWindow {
                 settings_difficulty_level: loaded_settings.difficulty_level,
                 settings_autosave: loaded_settings.autosave,
                 settings_language: loaded_settings.language,
-                game_text_input: String::new(),
-                player_cash: 1000,
-                player_health: 100,
-                player_popularity: 50,
                 current_crisis: None,
                 story_state: None,
             },
             Task::batch([
-                /*Task::perform(
-                    load_file(format!(
-                        "{}/src/main.rs",
-                        env!("CARGO_MANIFEST_DIR")
-                    )),
-                    Message::FileOpened,
-                ),*/
-                Task::perform(
-                    run_background_async_tasks(),
-                    |_| GameMessage::Nop, // _wierd_, why?
-                ),
                 widget::focus_next(),
             ]),
         )
@@ -183,15 +152,6 @@ impl GameWindow {
 
                 iced::window::get_latest().and_then(iced::window::close).chain(iced::exit())
                 // ^ this exit assumes a single window exists, if we have 2+ we will need to iterate, close them all, and then call iced::exit()
-            }
-            GameMessage::Game_TextInputChanged(input) => {
-                self.game_text_input = input;
-                Task::none()
-            }
-            GameMessage::Game_TextInputSubmitted => {
-                eprintln!("Player submitted: {}", self.game_text_input);
-                self.game_text_input.clear();
-                Task::none()
             }
             GameMessage::Game_ChoiceSelected(choice_index) => {
                 if let (Some(crisis), Some(story_state)) = (&self.current_crisis, &mut self.story_state) {
@@ -303,15 +263,9 @@ impl GameWindow {
         .align_x(Center)
         .width(Length::Fixed(186.0f32));
 
-        // TODO swap out w/ button state
-        /*let right_panel = container(text("Select an option"))
-            .width(Length::Fill)
-            .align_x(Center)
-            .align_y(Center);*/
         let right_panel = container(self.build_menu_screen_right_ui())
             .width(Length::Fixed(680.0f32))
             .align_x(Center)
-            //.align_y(Center)
             .center_y(iced::Length::Shrink);
 
 
@@ -534,11 +488,6 @@ impl GameWindow {
 
 }
 
-async fn run_background_async_tasks() -> Result<(), crate::err::BoxError> {
-    eprintln!("TODO run_background_async_tasks");
-
-    Ok(())
-}
 
 pub fn menu_right_box_style(theme: &Theme) -> iced::widget::container::Style {
     let palette = theme.extended_palette();
@@ -553,26 +502,5 @@ pub fn menu_right_box_style(theme: &Theme) -> iced::widget::container::Style {
 }
 
 
-/*
-fn action<'a, GameMessage: Clone + 'a>(
-    content: impl Into<Element<'a, GameMessage>>,
-    label: &'a str,
-    on_press: Option<GameMessage>,
-) -> Element<'a, GameMessage> {
-    let action = button(center_x(content).width(30));
-
-    if let Some(on_press) = on_press {
-        tooltip(
-            action.on_press(on_press),
-            label,
-            tooltip::Position::FollowCursor,
-        )
-        .style(container::rounded_box)
-        .into()
-    } else {
-        action.style(button::secondary).into()
-    }
-}
-*/
 
 

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use rand::prelude::*;
 
 #[derive(rust_embed::Embed)]
-#[folder = "../playable-crises/"]
+#[folder = "$CARGO_MANIFEST_DIR/../playable-crises/"]
 struct _Interior_PlayableCrises;
 
 pub struct PlayableCrises;

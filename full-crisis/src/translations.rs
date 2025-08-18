@@ -34,16 +34,11 @@ pub enum TranslationKey {
     // Game Interface
     WhatDoYouChoose,
     PlayingAs,
-    CommandInput,
-    TypeYourCommand,
-    Character,
-    ReadyForAdventure,
     LoadingCrisis,
     ReturnToMenu,
     End,
     SceneNotFound,
     RequirementsNotMet,
-    Variables,
     
     // Difficulty Levels
     Easy,
@@ -51,14 +46,6 @@ pub enum TranslationKey {
     Hard,
     
     // Generic
-    Loading,
-    Error,
-    Unknown,
-    RestartGame,
-    
-    // File operations
-    NoSavedGames,
-    NoCrisesAvailable,
     SelectFromLeftMenu,
 }
 
