@@ -29,6 +29,8 @@ pub mod gui;
 pub mod crisis;
 /// Language detection and management utilities
 pub mod language;
+/// Central translation system for GUI elements
+pub mod translations;
 
 
 #[cfg(target_arch = "wasm32")]

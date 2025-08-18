@@ -8,13 +8,20 @@ pub enum DifficultyLevel {
     Hard,
 }
 
+impl DifficultyLevel {
+    pub fn to_translated_string(&self, language: &str) -> String {
+        match self {
+            DifficultyLevel::Easy => crate::translations::t(crate::translations::TranslationKey::Easy, language),
+            DifficultyLevel::Medium => crate::translations::t(crate::translations::TranslationKey::Medium, language),
+            DifficultyLevel::Hard => crate::translations::t(crate::translations::TranslationKey::Hard, language),
+        }
+    }
+}
+
 impl std::fmt::Display for DifficultyLevel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            DifficultyLevel::Easy => write!(f, "Easy"),
-            DifficultyLevel::Medium => write!(f, "Medium"),
-            DifficultyLevel::Hard => write!(f, "Hard"),
-        }
+        // Fallback to English for Display trait
+        write!(f, "{}", self.to_translated_string("eng"))
     }
 }
 

@@ -280,17 +280,18 @@ impl GameWindow {
 
         let num_times_run = crate::storage::get_attr("run-times").unwrap_or_else(|| "First Run!".to_string());
 
+        let user_language = &self.settings_language;
         let buttons = column![
-            button(text("Continue Game"))
+            button(text(crate::translations::t(crate::translations::TranslationKey::ContinueGame, user_language)))
                 .on_press(GameMessage::Menu_ContinueGameRequested)
                 .width(Length::Fill),
-            button(text("New Game"))
+            button(text(crate::translations::t(crate::translations::TranslationKey::NewGame, user_language)))
                 .on_press(GameMessage::Menu_NewGameRequested)
                 .width(Length::Fill),
-            button(text("Settings"))
+            button(text(crate::translations::t(crate::translations::TranslationKey::Settings, user_language)))
                 .on_press(GameMessage::Menu_SettingsRequested)
                 .width(Length::Fill),
-            button(text("Quit Game"))
+            button(text(crate::translations::t(crate::translations::TranslationKey::QuitGame, user_language)))
                 .on_press(GameMessage::QuitGameRequested)
                 .width(Length::Fill),
             text(format!("Run: {}", num_times_run))
@@ -362,8 +363,8 @@ impl GameWindow {
         } else {
             container(
                 column![
-                    text("Loading crisis...").size(20),
-                    button(text("Return to Menu"))
+                    text(crate::translations::t(crate::translations::TranslationKey::LoadingCrisis, &self.settings_language)).size(20),
+                    button(text(crate::translations::t(crate::translations::TranslationKey::ReturnToMenu, &self.settings_language)))
                         .on_press(GameMessage::Game_RestartRequested)
                         .padding(10)
                 ]
@@ -384,7 +385,11 @@ impl GameWindow {
             let title = crate::crisis::get_localized_text(&crisis.name, &story_state.language);
             
             // Character name display
-            let character_info = text(format!("Playing as: {}", story_state.character_name))
+            let mut vars = std::collections::HashMap::new();
+            vars.insert("character_name".to_string(), story_state.character_name.clone());
+            let character_info = text(
+                crate::translations::t_vars(crate::translations::TranslationKey::PlayingAs, &story_state.language, &vars)
+            )
                 .size(16)
                 .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
             
@@ -401,8 +406,8 @@ impl GameWindow {
                 // End scene - no choices available
                 choices_column = choices_column.push(
                     column![
-                        text("--- END ---").size(20).align_x(Center),
-                        button(text("Return to Menu"))
+                        text(crate::translations::t(crate::translations::TranslationKey::End, &story_state.language)).size(20).align_x(Center),
+                        button(text(crate::translations::t(crate::translations::TranslationKey::ReturnToMenu, &story_state.language)))
                             .on_press(GameMessage::Game_RestartRequested)
                             .padding(10)
                             .width(Length::Fill)
@@ -436,7 +441,8 @@ impl GameWindow {
                             .padding(15)
                             .width(Length::Fill)
                     } else {
-                        button(text(format!("{} (Requirements not met)", choice_text)))
+                        button(text(format!("{} {}", choice_text, 
+                            crate::translations::t(crate::translations::TranslationKey::RequirementsNotMet, &story_state.language))))
                             .padding(15)
                             .width(Length::Fill)
                             .style(move |theme: &Theme, _status| {
@@ -479,7 +485,7 @@ impl GameWindow {
                                     ..iced::widget::container::Style::default()
                                 }
                             }),
-                        text("What do you choose?").size(18).align_x(Center),
+                        text(crate::translations::t(crate::translations::TranslationKey::WhatDoYouChoose, &story_state.language)).size(18).align_x(Center),
                         choices_column,
                         if !variables_text.is_empty() {
                             text(variables_text.clone()).size(12).color(iced::Color::from_rgb(0.5, 0.5, 0.5))
@@ -505,8 +511,12 @@ impl GameWindow {
         } else {
             container(
                 column![
-                    text(format!("Scene '{}' not found!", story_state.current_scene)).size(20),
-                    button(text("Return to Menu"))
+                    text(format!("{} '{}' {}", 
+                        crate::translations::t(crate::translations::TranslationKey::SceneNotFound, &story_state.language).replace("!", ""),
+                        story_state.current_scene,
+                        "!"
+                    )).size(20),
+                    button(text(crate::translations::t(crate::translations::TranslationKey::ReturnToMenu, &story_state.language)))
                         .on_press(GameMessage::Game_RestartRequested)
                         .padding(10)
                 ]

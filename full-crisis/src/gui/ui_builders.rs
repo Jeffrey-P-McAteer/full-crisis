@@ -19,37 +19,46 @@ impl GameWindow {
                         self.build_settings_ui()
                     }
                     _ => {
-                        Container::<GameMessage, Theme, iced::Renderer>::new(text("Select from left menu"))
+                        Container::<GameMessage, Theme, iced::Renderer>::new(text(
+                            crate::translations::t(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
+                        ))
                     }
                 }
             }
             else {
-                Container::<GameMessage, Theme, iced::Renderer>::new(text("Select from left menu"))
+                Container::<GameMessage, Theme, iced::Renderer>::new(text(
+                    crate::translations::t(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
+                ))
             }
         }
         else {
-            Container::<GameMessage, Theme, iced::Renderer>::new(text("Select from left menu"))
+            Container::<GameMessage, Theme, iced::Renderer>::new(text(
+                crate::translations::t(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
+            ))
         }
     }
 
-    pub fn build_continue_game_ui<'a>(&self) -> Container<'a, GameMessage> {
+    pub fn build_continue_game_ui(&self) -> Container<'_, GameMessage> {
+        let user_language = &self.settings_language;
+        
         let saved_games = crate::crisis::get_saved_crisis_names();
         let game_type_picker = pick_list(
             saved_games,
             self.continue_game_game_choice.clone(),
             GameMessage::Menu_ContinueGameChoiceAltered,
         )
-        .placeholder("Select game")
+        .placeholder(crate::translations::t(crate::translations::TranslationKey::SelectGame, user_language))
         .padding(10)
         .width(Length::Fill);
 
         let game_type_row = row![
-            Text::new("Saved Game:"), game_type_picker,
+            Text::new(crate::translations::t(crate::translations::TranslationKey::SavedGame, user_language)), 
+            game_type_picker,
         ]
             .spacing(10)
             .align_y(Center);
 
-        let go_button = button(Text::new("Play"))
+        let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Play, user_language)))
             .on_press(GameMessage::Menu_NewGameStartClicked)
             .padding(10);
 
@@ -73,14 +82,20 @@ impl GameWindow {
             .padding(10)
     }
 
-    pub fn build_new_game_ui<'a>(&self) -> Container<'a, GameMessage> {
-        let name_input = text_input("Enter name...", &self.new_game_player_name)
+    pub fn build_new_game_ui(&self) -> Container<'_, GameMessage> {
+        let user_language = &self.settings_language;
+        
+        let name_input = text_input(
+            &crate::translations::t(crate::translations::TranslationKey::EnterName, user_language), 
+            &self.new_game_player_name
+        )
             .on_input(GameMessage::Menu_NewGamePlayerNameAltered)
             .padding(10)
             .width(Length::Fill);
 
         let name_row = row![
-                Text::new("Player Name:"), name_input
+                Text::new(crate::translations::t(crate::translations::TranslationKey::PlayerName, user_language)), 
+                name_input
             ]
             .spacing(10)
             .align_y(Center);
@@ -91,17 +106,18 @@ impl GameWindow {
             self.new_game_game_template.clone(),
             GameMessage::Menu_NewGameTemplateChoiceAltered,
         )
-        .placeholder("Select game type")
+        .placeholder(crate::translations::t(crate::translations::TranslationKey::SelectGameType, user_language))
         .padding(10)
         .width(Length::Fill);
 
         let game_type_row = row![
-            Text::new("Game Type:"), game_type_picker,
+            Text::new(crate::translations::t(crate::translations::TranslationKey::GameType, user_language)), 
+            game_type_picker,
         ]
             .spacing(10)
             .align_y(Center);
 
-        let go_button = button(Text::new("Go"))
+        let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Go, user_language)))
             .on_press(GameMessage::Menu_NewGameStartClicked)
             .padding(10);
 
@@ -126,29 +142,59 @@ impl GameWindow {
             .padding(10)
     }
 
-    pub fn build_settings_ui<'a>(&self) -> Container<'a, GameMessage> {
-        let save_folder_input = text_input("Enter save folder path...", &self.settings_game_save_folder)
+    pub fn build_settings_ui(&self) -> Container<'_, GameMessage> {
+        let user_language = &self.settings_language;
+        
+        // Pre-translate all strings to avoid lifetime issues
+        let save_folder_placeholder = crate::translations::t(crate::translations::TranslationKey::EnterSaveFolderPath, user_language);
+        let save_folder_label = crate::translations::t(crate::translations::TranslationKey::GameSaveFolder, user_language);
+        let difficulty_label = crate::translations::t(crate::translations::TranslationKey::DifficultyLevel, user_language);
+        let difficulty_placeholder = crate::translations::t(crate::translations::TranslationKey::SelectDifficulty, user_language);
+        let autosave_label = crate::translations::t(crate::translations::TranslationKey::Autosave, user_language);
+        let language_label = crate::translations::t(crate::translations::TranslationKey::Language, user_language);
+        let language_placeholder = crate::translations::t(crate::translations::TranslationKey::SelectLanguage, user_language);
+        
+        let save_folder_input = text_input(
+            &save_folder_placeholder, 
+            &self.settings_game_save_folder
+        )
             .on_input(GameMessage::Menu_SettingsGameSaveFolderChanged)
             .padding(10)
             .width(Length::Fill);
 
         let save_folder_row = row![
-            Text::new("Game Save Folder:"), save_folder_input
+            Text::new(save_folder_label), 
+            save_folder_input
         ]
         .spacing(10)
         .align_y(Center);
 
+        // Create difficulty options with translations
+        let difficulty_options: Vec<String> = DifficultyLevel::ALL.iter()
+            .map(|d| d.to_translated_string(user_language))
+            .collect();
+        let current_difficulty_display = self.settings_difficulty_level.to_translated_string(user_language);
+        
         let difficulty_picker = pick_list(
-            &DifficultyLevel::ALL[..],
-            Some(self.settings_difficulty_level),
-            GameMessage::Menu_SettingsDifficultyLevelChanged,
+            difficulty_options,
+            Some(current_difficulty_display),
+            |selected| {
+                // Map back from translated string to enum
+                for difficulty in &DifficultyLevel::ALL {
+                    if difficulty.to_translated_string(user_language) == selected {
+                        return GameMessage::Menu_SettingsDifficultyLevelChanged(*difficulty);
+                    }
+                }
+                GameMessage::Menu_SettingsDifficultyLevelChanged(DifficultyLevel::Medium)
+            },
         )
-        .placeholder("Select difficulty")
+        .placeholder(&difficulty_placeholder)
         .padding(10)
         .width(Length::Fill);
 
         let difficulty_row = row![
-            Text::new("Difficulty Level:"), difficulty_picker,
+            Text::new(difficulty_label), 
+            difficulty_picker,
         ]
         .spacing(10)
         .align_y(Center);
@@ -158,7 +204,8 @@ impl GameWindow {
             .width(Length::Shrink);
 
         let autosave_row = row![
-            Text::new("Autosave:"), autosave_toggle,
+            Text::new(autosave_label), 
+            autosave_toggle,
         ]
         .spacing(10)
         .align_y(Center);
@@ -178,12 +225,13 @@ impl GameWindow {
                 GameMessage::Menu_SettingsLanguageChanged(lang_code)
             },
         )
-        .placeholder("Select language")
+        .placeholder(&language_placeholder)
         .padding(10)
         .width(Length::Fill);
 
         let language_row = row![
-            Text::new("Language:"), language_picker,
+            Text::new(language_label), 
+            language_picker,
         ]
         .spacing(10)
         .align_y(Center);
