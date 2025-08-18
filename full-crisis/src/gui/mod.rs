@@ -45,6 +45,12 @@ pub struct GameWindow {
     pub settings_game_save_folder: String,
     pub settings_difficulty_level: DifficultyLevel,
     pub settings_autosave: bool,
+
+    // Game screen data
+    pub game_text_input: String,
+    pub player_cash: i32,
+    pub player_health: i32,
+    pub player_popularity: i32,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -110,6 +116,8 @@ pub enum GameMessage {
     QuitGameRequested,
 
     // view_game_screen states
+    Game_TextInputChanged(String),
+    Game_TextInputSubmitted,
 }
 
 impl GameWindow {
@@ -152,6 +160,10 @@ impl GameWindow {
                 settings_game_save_folder: loaded_settings.game_save_folder,
                 settings_difficulty_level: loaded_settings.difficulty_level,
                 settings_autosave: loaded_settings.autosave,
+                game_text_input: String::new(),
+                player_cash: 1000,
+                player_health: 100,
+                player_popularity: 50,
             },
             Task::batch([
                 /*Task::perform(
@@ -237,6 +249,15 @@ impl GameWindow {
                 iced::window::get_latest().and_then(iced::window::close).chain(iced::exit())
                 // ^ this exit assumes a single window exists, if we have 2+ we will need to iterate, close them all, and then call iced::exit()
             }
+            GameMessage::Game_TextInputChanged(input) => {
+                self.game_text_input = input;
+                Task::none()
+            }
+            GameMessage::Game_TextInputSubmitted => {
+                eprintln!("Player submitted: {}", self.game_text_input);
+                self.game_text_input.clear();
+                Task::none()
+            }
             GameMessage::Nop => {
                 eprintln!("Recieved a GameMessage::Nop");
                 Task::none()
@@ -252,7 +273,7 @@ impl GameWindow {
                     self.view_menu_screen()
                 }
                 crate::game::ActiveEventLoop::ActiveGame(game_view_state) => {
-                    text(format!("TODO write UI for ActiveGame({:?})", game_view_state)).into()
+                    self.view_game_screen()
                 }
                 crate::game::ActiveEventLoop::Exit => {
                     text("Exiting...").into()
@@ -541,6 +562,98 @@ impl GameWindow {
             .height(Length::Fixed(400.0))
             .style(move |_theme| menu_right_box_style(&self_theme))
             .padding(10)
+    }
+
+    pub fn view_game_screen(&self) -> Element<GameMessage> {
+        // Stats bar at the top
+        let cash_stat: Row<GameMessage> = row![
+            text("💰"), 
+            text(format!("{}", self.player_cash))
+        ].spacing(5).align_y(Center);
+
+        let health_stat: Row<GameMessage> = row![
+            text("❤️"), 
+            text(format!("{}", self.player_health))
+        ].spacing(5).align_y(Center);
+
+        let popularity_stat: Row<GameMessage> = row![
+            text("⭐"), 
+            text(format!("{}", self.player_popularity))
+        ].spacing(5).align_y(Center);
+
+        let stats_bar = row![
+            cash_stat,
+            horizontal_space().width(30),
+            health_stat,
+            horizontal_space().width(30),
+            popularity_stat,
+        ]
+        .padding(20)
+        .align_y(Center)
+        .width(Length::Fill);
+
+        // Text input area on the left
+        let text_input_area = text_input("Type your command...", &self.game_text_input)
+            .on_input(GameMessage::Game_TextInputChanged)
+            .on_submit(GameMessage::Game_TextInputSubmitted)
+            .padding(10)
+            .width(Length::Fill);
+
+        let text_input_container = container(
+            column![
+                text("Command Input:").size(16),
+                text_input_area
+            ]
+            .spacing(10)
+        )
+        .padding(20)
+        .width(Length::FillPortion(2))
+        .height(Length::Fill);
+
+        // Character display on the right
+        let character_display = container(
+            column![
+                text("Character").size(20).align_x(Center),
+                container(text("🧙‍♂️").size(80))
+                    .center_x(Length::Fill)
+                    .center_y(Length::Fill),
+                text("Ready for adventure!").align_x(Center)
+            ]
+            .spacing(20)
+            .align_x(Center)
+        )
+        .padding(20)
+        .width(Length::FillPortion(1))
+        .height(Length::Fill)
+        .center_x(Length::Fill);
+
+        // Main game layout
+        let game_content = column![
+            container(stats_bar)
+                .style(|theme| {
+                    let palette = theme.extended_palette();
+                    iced::widget::container::Style {
+                        background: Some(palette.background.weak.color.into()),
+                        border: iced::border::rounded(8)
+                            .color(palette.primary.weak.color)
+                            .width(1),
+                        ..iced::widget::container::Style::default()
+                    }
+                }),
+            row![
+                text_input_container,
+                character_display
+            ]
+            .height(Length::Fill)
+        ]
+        .height(Length::Fill)
+        .width(Length::Fill);
+
+        container(game_content)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .padding(10)
+            .into()
     }
 
 
