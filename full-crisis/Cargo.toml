@@ -12,7 +12,9 @@ crate-type = ["lib"]
 isolang = "2.4"
 
 # Used to embed all ./playable-crises/
-rust-embed = { version = "8.7.2", features = ["interpolate-folder-path"] }
+#rust-embed = { version = "8.7.2", features = ["interpolate-folder-path"] }
+rust-embed = { git = "https://github.com/Jeffrey-P-McAteer/rust-embed.git", features = ["interpolate-folder-path"] }
+
 
 # Yay global variables
 once_cell = "1.21.3"
