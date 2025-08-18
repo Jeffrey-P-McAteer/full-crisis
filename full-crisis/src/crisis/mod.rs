@@ -65,6 +65,8 @@ pub struct CrisisScene {
     #[serde(default)]
     pub choices: Vec<CrisisChoice>,
     pub continue_in_subfolder: Option<String>,
+    pub background_image: Option<String>,
+    pub speaking_character_image: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

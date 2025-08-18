@@ -41,6 +41,8 @@ variables = ["available_trucks", "response_time", "caller_panic_level", "fire_se
 [scenes.incoming_call]
 text.eng = "{character_name}, you're working the night shift at Central Emergency Dispatch. It's 2:47 AM when your console lights up with an incoming 911 call. You have 12 fire trucks available across the city. The caller sounds panicked: 'Help! There's a fire at my apartment building! I think it's spreading!'"
 text.spa = "{character_name}, estás trabajando el turno nocturno en Despacho Central de Emergencias. Son las 2:47 AM cuando tu consola se ilumina con una llamada entrante al 911. Tienes 12 camiones de bomberos disponibles en la ciudad. La persona que llama suena en pánico: '¡Ayuda! ¡Hay un incendio en mi edificio de apartamentos! ¡Creo que se está extendiendo!'"
+background_image = "Fire_Dispatch/dispatch_center_background.png"
+speaking_character_image = "Fire_Dispatch/panicked_caller_character.png"
 
 [[scenes.incoming_call.choices]]
 text.eng = "Ask for specific location and floor"
@@ -60,6 +62,8 @@ leads_to = "assess_casualties"
 [scenes.gather_details]
 text.eng = "Caller: 'It's the Riverside Apartments on Oak Street! Third floor, but the smoke is getting thicker. I can see flames from the window!' You note this is a 6-story building with 48 units. Your database shows it's an older building without modern fire suppression systems."
 text.spa = "Llamador: '¡Son los Apartamentos Riverside en Oak Street! Tercer piso, ¡pero el humo se está espesando. ¡Puedo ver llamas desde la ventana!' Notas que es un edificio de 6 pisos con 48 unidades. Tu base de datos muestra que es un edificio antiguo sin sistemas modernos de supresión de incendios."
+background_image = "Fire_Dispatch/apartment_fire_background.png"
+speaking_character_image = "Fire_Dispatch/frightened_caller_character.png"
 
 [[scenes.gather_details.choices]]
 text.eng = "Send standard response - 2 fire trucks"

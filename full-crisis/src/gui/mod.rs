@@ -335,10 +335,25 @@ impl GameWindow {
     
     fn render_story_scene(&self, crisis: &crate::crisis::CrisisDefinition, story_state: &crate::crisis::GameState) -> Element<'_, GameMessage> {
         if let Some(current_scene) = crisis.scenes.get(&story_state.current_scene) {
-            // Crisis title using fallback mechanism
+            // Create background image if specified
+            let background_layer = if let Some(ref bg_path) = current_scene.background_image {
+                if let Some(bg_file) = crate::crisis::PlayableCrises::get(bg_path) {
+                    let bg_handle = iced::widget::image::Handle::from_bytes(bg_file.data.as_ref().to_vec());
+                    let bg_img = Image::<iced::widget::image::Handle>::new(bg_handle)
+                        .width(Length::Fill)
+                        .height(Length::Fill);
+                    Some(Container::<GameMessage, Theme, iced::Renderer>::new(bg_img)
+                        .width(Length::Fill)
+                        .height(Length::Fill))
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+
+            // Game data at center-top
             let title = crate::crisis::get_localized_text(&crisis.name, &story_state.language);
-            
-            // Character name display
             let mut vars = std::collections::HashMap::new();
             vars.insert("character_name".to_string(), story_state.character_name.clone());
             let character_info = text(
@@ -347,33 +362,76 @@ impl GameWindow {
                 .size(16)
                 .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
             
-            // Scene text
-            let scene_text = crate::crisis::get_scene_text(current_scene, &story_state.language, &story_state.character_name);
-            let story_text = text(scene_text.clone())
-                .size(18)
-                .wrapping(iced::widget::text::Wrapping::Word);
+            let mut variables_text = String::new();
+            if !story_state.variables.is_empty() {
+                variables_text = format!("Variables: {:?}", story_state.variables);
+            }
             
-            // Choices
+            let top_data = container(
+                column![
+                    text(title.clone()).size(24).align_x(Center),
+                    character_info.align_x(Center),
+                    if !variables_text.is_empty() {
+                        text(variables_text.clone()).size(12).color(iced::Color::from_rgb(0.5, 0.5, 0.5))
+                    } else {
+                        text("")
+                    }
+                ]
+                .spacing(5)
+                .align_x(Center)
+            )
+            .width(Length::Fill)
+            .align_x(Center)
+            .padding(20);
+
+            // Story text in center
+            let scene_text = crate::crisis::get_scene_text(current_scene, &story_state.language, &story_state.character_name);
+            let story_text_display = container(
+                container(
+                    text(scene_text.clone())
+                        .size(18)
+                        .wrapping(iced::widget::text::Wrapping::Word)
+                )
+                .padding(20)
+                .style(move |theme: &Theme| {
+                    let palette = theme.extended_palette();
+                    iced::widget::container::Style {
+                        background: Some(palette.background.weak.color.into()),
+                        border: iced::border::rounded(8)
+                            .color(palette.primary.weak.color)
+                            .width(1),
+                        ..iced::widget::container::Style::default()
+                    }
+                })
+            )
+            .width(Length::Fill)
+            .max_width(600)
+            .align_x(Center)
+            .padding(20);
+
+            // User choices at lower-left
             let mut choices_column = column![].spacing(10);
             
             if current_scene.choices.is_empty() {
-                // End scene - no choices available
                 choices_column = choices_column.push(
                     column![
-                        text(crate::translations::t(crate::translations::TranslationKey::End, &story_state.language)).size(20).align_x(Center),
+                        text(crate::translations::t(crate::translations::TranslationKey::End, &story_state.language)).size(20),
                         button(text(crate::translations::t(crate::translations::TranslationKey::ReturnToMenu, &story_state.language)))
                             .on_press(GameMessage::Game_RestartRequested)
                             .padding(10)
-                            .width(Length::Fill)
+                            .width(Length::Fixed(200.0))
                     ]
-                    .spacing(20)
-                    .align_x(Center)
+                    .spacing(10)
                 );
             } else {
+                choices_column = choices_column.push(
+                    text(crate::translations::t(crate::translations::TranslationKey::WhatDoYouChoose, &story_state.language))
+                        .size(16)
+                );
+                
                 for (index, choice) in current_scene.choices.iter().enumerate() {
                     let choice_text = crate::crisis::get_localized_text(&choice.text, &story_state.language);
                     
-                    // Check if choice is available based on requirements
                     let mut available = true;
                     if let Some(ref requirements) = choice.requires {
                         for (var, required_value) in requirements {
@@ -392,13 +450,13 @@ impl GameWindow {
                     let choice_button = if available {
                         button(text(choice_text.clone()))
                             .on_press(GameMessage::Game_ChoiceSelected(index))
-                            .padding(15)
-                            .width(Length::Fill)
+                            .padding(10)
+                            .width(Length::Fixed(300.0))
                     } else {
                         button(text(format!("{} {}", choice_text, 
                             crate::translations::t(crate::translations::TranslationKey::RequirementsNotMet, &story_state.language))))
-                            .padding(15)
-                            .width(Length::Fill)
+                            .padding(10)
+                            .width(Length::Fixed(300.0))
                             .style(move |theme: &Theme, _status| {
                                 let palette = theme.extended_palette();
                                 iced::widget::button::Style {
@@ -416,52 +474,66 @@ impl GameWindow {
                 }
             }
             
-            // Variables display (for debugging/game state)
-            let mut variables_text = String::new();
-            if !story_state.variables.is_empty() {
-                variables_text = format!("Variables: {:?}", story_state.variables);
-            }
-            
-            let main_content = column![
-                text(title.clone()).size(24).align_x(Center),
-                character_info.align_x(Center),
-                container(
-                    column![
-                        container(story_text)
-                            .padding(20)
-                            .style(move |theme: &Theme| {
-                                let palette = theme.extended_palette();
-                                iced::widget::container::Style {
-                                    background: Some(palette.background.weak.color.into()),
-                                    border: iced::border::rounded(8)
-                                        .color(palette.primary.weak.color)
-                                        .width(1),
-                                    ..iced::widget::container::Style::default()
-                                }
-                            }),
-                        text(crate::translations::t(crate::translations::TranslationKey::WhatDoYouChoose, &story_state.language)).size(18).align_x(Center),
-                        choices_column,
-                        if !variables_text.is_empty() {
-                            text(variables_text.clone()).size(12).color(iced::Color::from_rgb(0.5, 0.5, 0.5))
-                        } else {
-                            text("")
-                        }
-                    ]
-                    .spacing(20)
-                )
-                .padding(20)
+            let choices_container = container(choices_column)
+                .width(Length::Fixed(320.0))
+                .padding(20);
+
+            // Speaking character at lower-right
+            let character_display = if let Some(ref char_path) = current_scene.speaking_character_image {
+                if let Some(char_file) = crate::crisis::PlayableCrises::get(char_path) {
+                    let char_handle = iced::widget::image::Handle::from_bytes(char_file.data.as_ref().to_vec());
+                    let char_img = Image::<iced::widget::image::Handle>::new(char_handle)
+                        .width(Length::Fixed(200.0))
+                        .height(Length::Fixed(300.0));
+                    container(char_img)
+                        .width(Length::Fixed(220.0))
+                        .padding(20)
+                } else {
+                    container(Space::with_width(Length::Fixed(220.0)))
+                }
+            } else {
+                container(Space::with_width(Length::Fixed(220.0)))
+            };
+
+            // Bottom row with choices on left and character on right
+            let bottom_row = row![
+                choices_container,
+                horizontal_space(),
+                character_display
             ]
-            .spacing(15)
-            .max_width(800)
-            .align_x(Center);
-            
-            container(main_content)
-                .center_x(Length::Fill)
-                .center_y(Length::Fill)
+            .align_y(iced::alignment::Vertical::Bottom)
+            .width(Length::Fill);
+
+            // Main layout: top data, center story, bottom choices+character
+            let main_layout = column![
+                top_data,
+                container(story_text_display)
+                    .width(Length::Fill)
+                    .height(Length::Fill)
+                    .align_x(Center)
+                    .align_y(iced::alignment::Vertical::Center),
+                bottom_row
+            ]
+            .width(Length::Fill)
+            .height(Length::Fill);
+
+            // Stack background and foreground if background exists
+            if let Some(background) = background_layer {
+                iced::widget::stack![
+                    background,
+                    Container::new(main_layout)
+                        .width(Length::Fill)
+                        .height(Length::Fill)
+                ]
                 .width(Length::Fill)
                 .height(Length::Fill)
-                .padding(20)
                 .into()
+            } else {
+                Container::new(main_layout)
+                    .width(Length::Fill)
+                    .height(Length::Fill)
+                    .into()
+            }
         } else {
             container(
                 column![
