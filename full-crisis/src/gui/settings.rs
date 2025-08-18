@@ -7,10 +7,10 @@ impl GameWindow {
             difficulty_level: self.settings_difficulty_level,
             autosave: self.settings_autosave,
         };
-        crate::native_storage::set_struct("game_settings", &settings);
+        crate::storage::set_struct("game_settings", &settings);
     }
 
     pub fn load_settings() -> GameSettings {
-        crate::native_storage::get_struct("game_settings").unwrap_or_default()
+        crate::storage::get_struct("game_settings").unwrap_or_default()
     }
 }

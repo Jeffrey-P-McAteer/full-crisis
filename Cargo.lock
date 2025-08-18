@@ -1736,6 +1736,7 @@ name = "full_crisis"
 version = "0.1.2"
 dependencies = [
  "directories 5.0.1",
+ "getrandom 0.2.16",
  "iced 0.14.0-dev",
  "iced_aw",
  "iced_renderer 0.13.0",
@@ -1746,6 +1747,7 @@ dependencies = [
  "serde_json",
  "twox-hash",
  "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]
@@ -1908,8 +1910,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "335ff9f135e4384c8150d6f27c6daed433577f86b4750418338c01a1a2528592"
 dependencies = [
  "cfg-if 1.0.1",
+ "js-sys",
  "libc",
  "wasi 0.11.1+wasi-snapshot-preview1",
+ "wasm-bindgen",
 ]
 
 [[package]]
