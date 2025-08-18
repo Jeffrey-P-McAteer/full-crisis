@@ -31,7 +31,9 @@ pub enum WelcomeScreenView {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum GameView {
-    FirstScene
+    StoryScene,
+    GameOver,
+    Victory,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]

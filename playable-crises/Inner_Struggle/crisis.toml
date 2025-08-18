@@ -1,0 +1,147 @@
+# Inner Struggle Crisis - Personal Battle Story
+
+[metadata]
+id = "inner_struggle"
+version = "1.0"
+author = "Crisis Game System"
+description_key = "inner_struggle_desc"
+
+[name]
+eng = "Inner Struggle"
+spa = "Lucha Interior"
+
+[description]
+eng = "Face a deeply personal crisis that tests your character, relationships, and core values. Choose your character's background and navigate their most challenging moment."
+spa = "Enfrenta una crisis profundamente personal que pone a prueba tu carácter, relaciones y valores fundamentales. Elige el trasfondo de tu personaje y navega su momento más desafiante."
+
+[character_names]
+# Student characters
+student_male_eng = ["Alex Chen", "Marcus Williams", "Jordan López", "Tyler Johnson", "Cameron Park"]
+student_female_eng = ["Emma Rodriguez", "Sofia Patel", "Maya Thompson", "Isabella Davis", "Zoe Martinez"]
+student_male_spa = ["Diego Morales", "Sebastián García", "Mateo Fernández", "Lucas Herrera", "Pablo Ruiz"]
+student_female_spa = ["Valentina Castro", "Camila Vargas", "Isabella Santos", "Sofía Mendoza", "Andrea Torres"]
+
+# Parent characters  
+parent_male_eng = ["David Mitchell", "Robert Hayes", "Michael Foster", "James Wilson", "Thomas Brown"]
+parent_female_eng = ["Sarah Johnson", "Lisa Anderson", "Jennifer Kim", "Amanda White", "Rachel Green"]
+parent_male_spa = ["Carlos González", "Miguel Torres", "Roberto Silva", "Antonio López", "Fernando Díaz"]
+parent_female_spa = ["María Rodríguez", "Carmen Martínez", "Ana Herrera", "Elena Morales", "Patricia Vega"]
+
+# Professional characters
+professional_male_eng = ["Dr. Steven Clark", "Attorney Mark Davis", "Manager Kevin Taylor", "Director Chris Moore", "Executive Paul Lee"]
+professional_female_eng = ["Dr. Nicole Garcia", "Attorney Jessica Wright", "Manager Ashley Miller", "Director Monica Hall", "Executive Linda Young"]
+professional_male_spa = ["Dr. Rafael Jiménez", "Abogado Luis Ramírez", "Gerente Eduardo Sandoval", "Director Andrés Delgado", "Ejecutivo Jorge Castillo"]
+professional_female_spa = ["Dra. Claudia Medina", "Abogada Rosa Aguilar", "Gerente Lucia Herrera", "Directora Diana Moreno", "Ejecutiva Adriana Peña"]
+
+[story]
+starting_scene = "character_selection"
+default_language = "eng"
+
+[mechanics]
+time_limit_minutes = 20
+save_progress = true
+allow_restart = true
+track_decisions = true
+
+[conditions]
+variables = ["self_confidence", "relationship_trust", "moral_integrity", "character_type"]
+
+[conditions.choice_effects]
+"choose_student" = { character_type = "student" }
+"choose_parent" = { character_type = "parent" }
+"choose_professional" = { character_type = "professional" }
+
+[scenes.character_selection]
+text.eng = "Choose your character's life situation to begin your personal crisis story:"
+text.spa = "Elige la situación de vida de tu personaje para comenzar tu historia de crisis personal:"
+
+[[scenes.character_selection.choices]]
+text.eng = "College student facing academic and social pressures"
+text.spa = "Estudiante universitario enfrentando presiones académicas y sociales"
+leads_to = "student_crisis"
+character_type = "student"
+
+[[scenes.character_selection.choices]]
+text.eng = "Parent dealing with family responsibilities and personal dreams"
+text.spa = "Padre/madre lidiando con responsabilidades familiares y sueños personales"
+leads_to = "parent_crisis"
+character_type = "parent"
+
+[[scenes.character_selection.choices]]
+text.eng = "Professional confronting ethical dilemmas at work"
+text.spa = "Profesional confrontando dilemas éticos en el trabajo"
+leads_to = "professional_crisis"
+character_type = "professional"
+
+[scenes.student_crisis]
+text.eng = "You are {character_name}, a third-year college student. It's finals week and you're failing your most important class - the one required for your major. Your parents have sacrificed everything to pay for your education. Last night, you found out your roommate has been selling copies of exams. They've offered to sell you tomorrow's final exam answers for $200."
+text.spa = "Eres {character_name}, estudiante universitario de tercer año. Es la semana de finales y estás reprobando tu clase más importante - la requerida para tu carrera. Tus padres han sacrificado todo para pagar tu educación. Anoche descubriste que tu compañero de cuarto ha estado vendiendo copias de exámenes. Te han ofrecido venderte las respuestas del examen final de mañana por $200."
+
+[[scenes.student_crisis.choices]]
+text.eng = "Buy the exam answers to guarantee passing"
+text.spa = "Comprar las respuestas del examen para garantizar aprobar"
+leads_to = "student_cheating_path"
+
+[[scenes.student_crisis.choices]]
+text.eng = "Refuse and study all night, risking failure"
+text.spa = "Rechazar y estudiar toda la noche, arriesgando reprobar"
+leads_to = "student_honest_path"
+
+[[scenes.student_crisis.choices]]
+text.eng = "Report your roommate to the administration"
+text.spa = "Reportar a tu compañero de cuarto a la administración"
+leads_to = "student_whistleblower_path"
+
+[scenes.parent_crisis]
+text.eng = "You are {character_name}, a single parent of two young children. You've been working double shifts at a factory job to make ends meet. Today, you received an acceptance letter to nursing school - your lifelong dream. But it would mean quitting your job, taking out massive student loans, and having less time with your children for the next three years. Your kids are already struggling with you being away so much."
+text.spa = "Eres {character_name}, padre/madre soltero/a de dos niños pequeños. Has estado trabajando turnos dobles en una fábrica para llegar a fin de mes. Hoy recibiste una carta de aceptación a la escuela de enfermería - tu sueño de toda la vida. Pero significaría renunciar a tu trabajo, sacar préstamos estudiantiles masivos, y tener menos tiempo con tus hijos por los próximos tres años. Tus hijos ya están luchando con que estés ausente tanto."
+
+[[scenes.parent_crisis.choices]]
+text.eng = "Pursue your nursing dream despite the sacrifices"
+text.spa = "Perseguir tu sueño de enfermería a pesar de los sacrificios"
+leads_to = "parent_dream_path"
+
+[[scenes.parent_crisis.choices]]
+text.eng = "Stay in current job to provide stability for your children"
+text.spa = "Quedarte en el trabajo actual para proveer estabilidad a tus hijos"
+leads_to = "parent_stability_path"
+
+[[scenes.parent_crisis.choices]]
+text.eng = "Look for a compromise solution"
+text.spa = "Buscar una solución de compromiso"
+leads_to = "parent_compromise_path"
+
+[scenes.professional_crisis]
+text.eng = "You are {character_name}, a mid-level manager at a pharmaceutical company. You've discovered that your company is knowingly selling a medication with serious unreported side effects to increase quarterly profits. Your boss has made it clear that whistleblowers don't have a future at the company. You have a mortgage, two kids in college, and this job supports your elderly parents' medical expenses."
+text.spa = "Eres {character_name}, gerente de nivel medio en una compañía farmacéutica. Has descubierto que tu compañía está vendiendo a sabiendas un medicamento con efectos secundarios serios no reportados para aumentar las ganancias trimestrales. Tu jefe ha dejado claro que los denunciantes no tienen futuro en la compañía. Tienes una hipoteca, dos hijos en la universidad, y este trabajo mantiene los gastos médicos de tus padres ancianos."
+
+[[scenes.professional_crisis.choices]]
+text.eng = "Report the company to regulatory authorities"
+text.spa = "Reportar la compañía a las autoridades reguladoras"
+leads_to = "professional_whistleblower_path"
+
+[[scenes.professional_crisis.choices]]
+text.eng = "Stay quiet to protect your family's financial security"
+text.spa = "Quedarte callado para proteger la seguridad financiera de tu familia"
+leads_to = "professional_silence_path"
+
+[[scenes.professional_crisis.choices]]
+text.eng = "Try to work within the system to fix the problem"
+text.spa = "Tratar de trabajar dentro del sistema para arreglar el problema"
+leads_to = "professional_internal_path"
+
+[scenes.student_honest_path]
+text.eng = "You spend the entire night studying, surviving on coffee and determination. When you sit for the exam, you realize you know more than you thought. The questions are challenging, but you can answer most of them. Walking out, you feel a deep sense of pride regardless of the grade. Two weeks later, you discover you passed with a C+. Your professor notes your improvement and offers to help you with future coursework."
+text.spa = "Pasas toda la noche estudiando, sobreviviendo con café y determinación. Cuando te sientas para el examen, te das cuenta de que sabes más de lo que pensabas. Las preguntas son desafiantes, pero puedes responder la mayoría. Al salir, sientes un profundo orgullo sin importar la calificación. Dos semanas después, descubres que aprobaste con C+. Tu profesor nota tu mejora y se ofrece a ayudarte con cursos futuros."
+
+[scenes.student_cheating_path]
+text.eng = "You buy the answers and ace the exam, but the guilt eats at you. Every time someone congratulates you on your success, you feel like a fraud. Months later, when applying for internships, you struggle with imposter syndrome. You got through the class, but you never learned the material you'll need for your career. The easy path led to harder challenges later."
+text.spa = "Compras las respuestas y superas el examen, pero la culpa te consume. Cada vez que alguien te felicita por tu éxito, te sientes como un fraude. Meses después, al aplicar para prácticas profesionales, luchas con el síndrome del impostor. Pasaste la clase, pero nunca aprendiste el material que necesitarás para tu carrera. El camino fácil llevó a desafíos más difíciles después."
+
+[scenes.parent_dream_path]
+text.eng = "You enroll in nursing school and arrange childcare with your sister. The next three years are the hardest of your life - studying after putting kids to bed, working weekend shifts as a nursing aide, surviving on 4 hours of sleep. But graduation day arrives, and your children watch proudly as you receive your RN degree. Your new career provides better income and health benefits, and you become a role model showing your kids that dreams are worth pursuing."
+text.spa = "Te inscribes en la escuela de enfermería y arreglas cuidado infantil con tu hermana. Los próximos tres años son los más difíciles de tu vida - estudiando después de acostar a los niños, trabajando turnos de fin de semana como auxiliar de enfermería, sobreviviendo con 4 horas de sueño. Pero llega el día de graduación, y tus hijos te miran con orgullo mientras recibes tu título de enfermería. Tu nueva carrera provee mejor ingreso y beneficios de salud, y te conviertes en un modelo a seguir mostrando a tus hijos que los sueños valen la pena perseguir."
+
+[scenes.professional_whistleblower_path]
+text.eng = "You report the company to the FDA and provide documentation of the cover-up. You're fired within a week, and the company's legal team tries to destroy your reputation. The financial strain on your family is enormous. However, six months later, the medication is recalled and congressional hearings begin. You testify before Congress, and while your old career is over, you're offered a position with a patient advocacy group. You sleep well at night knowing you put public safety over personal comfort."
+text.spa = "Reportas la compañía a la FDA y proporcionas documentación del encubrimiento. Te despiden en una semana, y el equipo legal de la compañía trata de destruir tu reputación. La tensión financiera en tu familia es enorme. Sin embargo, seis meses después, el medicamento es retirado del mercado y comienzan audiencias del congreso. Testificas ante el Congreso, y mientras tu antigua carrera terminó, te ofrecen una posición con un grupo de defensa de pacientes. Duermes bien por la noche sabiendo que pusiste la seguridad pública sobre la comodidad personal."

@@ -56,6 +56,8 @@ pub struct GameWindow {
     pub player_cash: i32,
     pub player_health: i32,
     pub player_popularity: i32,
+    pub current_crisis: Option<crate::crisis::CrisisDefinition>,
+    pub story_state: Option<crate::crisis::GameState>,
 }
 
 #[derive(Debug, Clone)]
@@ -74,6 +76,8 @@ pub enum GameMessage {
     QuitGameRequested,
     Game_TextInputChanged(String),
     Game_TextInputSubmitted,
+    Game_ChoiceSelected(usize),
+    Game_RestartRequested,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

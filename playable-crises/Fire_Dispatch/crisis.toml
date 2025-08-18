@@ -1,0 +1,150 @@
+# Fire Dispatch Crisis - Emergency Dispatcher Story
+
+[metadata]
+id = "fire_dispatch"
+version = "1.0"
+author = "Crisis Game System"
+description_key = "fire_dispatch_desc"
+
+[name]
+eng = "Emergency Dispatch"
+spa = "Despacho de Emergencia"
+
+[description]
+eng = "You are an emergency dispatcher receiving urgent fire calls. Every decision affects response times and lives at stake."
+spa = "Eres un despachador de emergencias recibiendo llamadas urgentes de incendio. Cada decisión afecta los tiempos de respuesta y las vidas en riesgo."
+
+[character_names]
+male_eng = ["Dispatcher Tom Wilson", "Dispatcher Mark Stevens", "Dispatcher Alex Rodriguez", "Dispatcher Kevin Park", "Dispatcher Chris Thompson"]
+female_eng = ["Dispatcher Sarah Miller", "Dispatcher Jessica Brown", "Dispatcher Ashley Davis", "Dispatcher Nicole Garcia", "Dispatcher Amanda Wright"]
+male_spa = ["Despachador Carlos Mendoza", "Despachador Luis Jiménez", "Despachador Rafael Torres", "Despachador Eduardo Ramírez", "Despachador Andrés Morales"]
+female_spa = ["Despachadora Patricia Vega", "Despachadora Monica Delgado", "Despachadora Claudia Sandoval", "Despachadora Rosa Martinez", "Despachadora Lucia Herrera"]
+
+[story]
+starting_scene = "incoming_call"
+default_language = "eng"
+
+[mechanics]
+time_limit_minutes = 10
+save_progress = true
+allow_restart = true
+track_decisions = true
+
+[conditions]
+variables = ["available_trucks", "response_time", "caller_panic_level", "fire_severity"]
+
+[conditions.choice_effects]
+"send_one_truck" = { available_trucks = -1 }
+"send_three_trucks" = { available_trucks = -3 }
+"full_response" = { available_trucks = -5 }
+
+[scenes.incoming_call]
+text.eng = "{character_name}, you're working the night shift at Central Emergency Dispatch. It's 2:47 AM when your console lights up with an incoming 911 call. You have 12 fire trucks available across the city. The caller sounds panicked: 'Help! There's a fire at my apartment building! I think it's spreading!'"
+text.spa = "{character_name}, estás trabajando el turno nocturno en Despacho Central de Emergencias. Son las 2:47 AM cuando tu consola se ilumina con una llamada entrante al 911. Tienes 12 camiones de bomberos disponibles en la ciudad. La persona que llama suena en pánico: '¡Ayuda! ¡Hay un incendio en mi edificio de apartamentos! ¡Creo que se está extendiendo!'"
+
+[[scenes.incoming_call.choices]]
+text.eng = "Ask for specific location and floor"
+text.spa = "Preguntar por ubicación específica y piso"
+leads_to = "gather_details"
+
+[[scenes.incoming_call.choices]]
+text.eng = "Immediately dispatch one fire truck"
+text.spa = "Despachar inmediatamente un camión de bomberos"
+leads_to = "quick_dispatch"
+
+[[scenes.incoming_call.choices]]
+text.eng = "Ask about number of people potentially trapped"
+text.spa = "Preguntar sobre número de personas potencialmente atrapadas"
+leads_to = "assess_casualties"
+
+[scenes.gather_details]
+text.eng = "Caller: 'It's the Riverside Apartments on Oak Street! Third floor, but the smoke is getting thicker. I can see flames from the window!' You note this is a 6-story building with 48 units. Your database shows it's an older building without modern fire suppression systems."
+text.spa = "Llamador: '¡Son los Apartamentos Riverside en Oak Street! Tercer piso, ¡pero el humo se está espesando. ¡Puedo ver llamas desde la ventana!' Notas que es un edificio de 6 pisos con 48 unidades. Tu base de datos muestra que es un edificio antiguo sin sistemas modernos de supresión de incendios."
+
+[[scenes.gather_details.choices]]
+text.eng = "Send standard response - 2 fire trucks"
+text.spa = "Enviar respuesta estándar - 2 camiones de bomberos"
+leads_to = "standard_response"
+
+[[scenes.gather_details.choices]]
+text.eng = "Send enhanced response - 4 trucks plus rescue unit"
+text.spa = "Enviar respuesta mejorada - 4 camiones más unidad de rescate"
+leads_to = "enhanced_response"
+
+[[scenes.gather_details.choices]]
+text.eng = "Send full alarm - 6 trucks, 2 rescue units, ambulances"
+text.spa = "Enviar alarma completa - 6 camiones, 2 unidades de rescate, ambulancias"
+leads_to = "full_alarm"
+
+[scenes.quick_dispatch]
+text.eng = "You dispatch Engine 7, the closest unit, which is 4 minutes away. As you're sending them, another call comes in: 'This is Engine 12, we're seeing heavy smoke from the Riverside Apartments while passing by. This looks bigger than a single unit can handle.'"
+text.spa = "Despachas Bomba 7, la unidad más cercana, que está a 4 minutos. Mientras los envías, llega otra llamada: 'Habla Bomba 12, estamos viendo humo denso de los Apartamentos Riverside mientras pasamos. Esto parece más grande de lo que una sola unidad puede manejar.'"
+
+[[scenes.quick_dispatch.choices]]
+text.eng = "Send additional trucks immediately"
+text.spa = "Enviar camiones adicionales inmediatamente"
+leads_to = "reinforcements"
+
+[[scenes.quick_dispatch.choices]]
+text.eng = "Wait for Engine 7's assessment"
+text.spa = "Esperar evaluación de Bomba 7"
+leads_to = "wait_assessment"
+
+[scenes.assess_casualties]
+text.eng = "Caller: 'I don't know! It's late, most people should be sleeping. There are families with kids here. Oh God, I can hear someone screaming from down the hall!' The urgency in their voice increases. You can hear smoke alarms blaring in the background."
+text.spa = "Llamador: '¡No sé! Es tarde, la mayoría de la gente debería estar durmiendo. Hay familias con niños aquí. ¡Dios mío, puedo escuchar a alguien gritando desde el pasillo!' La urgencia en su voz aumenta. Puedes escuchar alarmas de humo sonando de fondo."
+
+[[scenes.assess_casualties.choices]]
+text.eng = "Dispatch maximum response - all available units"
+text.spa = "Despachar respuesta máxima - todas las unidades disponibles"
+leads_to = "maximum_response"
+
+[[scenes.assess_casualties.choices]]
+text.eng = "Send major response but keep some units for other calls"
+text.spa = "Enviar respuesta mayor pero mantener algunas unidades para otras llamadas"
+leads_to = "balanced_response"
+
+[scenes.standard_response]
+text.eng = "You dispatch Engines 7 and 12 with Ladder 3. Total response time: 6 minutes. The crews arrive to find a working fire on the third floor with smoke showing from multiple windows. The incident commander radios: 'We need more resources - this is extending to the fourth floor.'"
+text.spa = "Despachas Bombas 7 y 12 con Escalera 3. Tiempo total de respuesta: 6 minutos. Las cuadrillas llegan para encontrar un incendio activo en el tercer piso con humo visible desde múltiples ventanas. El comandante del incidente radía: 'Necesitamos más recursos - esto se está extendiendo al cuarto piso.'"
+
+[[scenes.standard_response.choices]]
+text.eng = "Send additional units and call second alarm"
+text.spa = "Enviar unidades adicionales y llamar segunda alarma"
+leads_to = "second_alarm"
+
+[[scenes.standard_response.choices]]
+text.eng = "Send just two more trucks"
+text.spa = "Enviar solo dos camiones más"
+leads_to = "limited_backup"
+
+[scenes.enhanced_response]
+text.eng = "Your enhanced response arrives in waves: first units in 5 minutes, full response assembled in 8 minutes. The incident commander reports: 'Good call, dispatch. We have fire on floors 3 and 4, with multiple residents evacuated safely. We're getting ahead of this with the resources we have.'"
+text.spa = "Tu respuesta mejorada llega en oleadas: primeras unidades en 5 minutos, respuesta completa en 8 minutos. El comandante del incidente reporta: 'Buena decisión, despacho. Tenemos fuego en pisos 3 y 4, con múltiples residentes evacuados de forma segura. Estamos controlando esto con los recursos que tenemos.'"
+
+[[scenes.enhanced_response.choices]]
+text.eng = "Maintain current response level"
+text.spa = "Mantener nivel de respuesta actual"
+leads_to = "controlled_situation"
+
+[[scenes.enhanced_response.choices]]
+text.eng = "Send additional ambulances for smoke inhalation"
+text.spa = "Enviar ambulancias adicionales por inhalación de humo"
+leads_to = "medical_support"
+
+[scenes.controlled_situation]
+text.eng = "Your decision proves correct. The fire is contained to two floors with no casualties. 23 residents are evacuated safely, and the fire is under control within 45 minutes. The incident commander commends your resource allocation: 'Perfect response level - we had exactly what we needed.'"
+text.spa = "Tu decisión resulta correcta. El incendio se contiene en dos pisos sin víctimas. 23 residentes son evacuados de forma segura, y el incendio está bajo control en 45 minutos. El comandante del incidente elogia tu asignación de recursos: 'Nivel de respuesta perfecto - teníamos exactamente lo que necesitábamos.'"
+
+[scenes.maximum_response]
+text.eng = "You send everything: 8 fire trucks, 3 ladder companies, 4 rescue units, and 6 ambulances. The massive response overwhelms the small fire, which is quickly controlled. However, this leaves only 4 trucks available citywide, and two other fires start during the incident."
+text.spa = "Envías todo: 8 camiones de bomberos, 3 compañías de escaleras, 4 unidades de rescate y 6 ambulancias. La respuesta masiva abruma al incendio pequeño, que se controla rápidamente. Sin embargo, esto deja solo 4 camiones disponibles en toda la ciudad, y otros dos incendios comienzan durante el incidente."
+
+[[scenes.maximum_response.choices]]
+text.eng = "Deal with resource shortage for other calls"
+text.spa = "Lidiar con escasez de recursos para otras llamadas"
+leads_to = "resource_crisis"
+
+[scenes.resource_crisis]
+text.eng = "The other fires prove more serious due to delayed response from your resource shortage. While the apartment fire had no casualties, the warehouse fire across town spreads unchecked for 15 minutes, causing major property damage. You learn the hard lesson of balancing immediate response with citywide coverage."
+text.spa = "Los otros incendios resultan más serios debido a la respuesta tardía por tu escasez de recursos. Mientras que el incendio del apartamento no tuvo víctimas, el incendio del almacén al otro lado de la ciudad se extiende sin control por 15 minutos, causando daños importantes a la propiedad. Aprendes la dura lección de equilibrar la respuesta inmediata con la cobertura de toda la ciudad."

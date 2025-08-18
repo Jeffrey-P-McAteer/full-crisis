@@ -72,6 +72,8 @@ impl GameWindow {
                 player_cash: 1000,
                 player_health: 100,
                 player_popularity: 50,
+                current_crisis: None,
+                story_state: None,
             },
             Task::batch([
                 /*Task::perform(
@@ -107,12 +109,29 @@ impl GameWindow {
                 Task::none()
             }
             GameMessage::Menu_NewGameStartClicked => {
-                // TODO read UI input and record for start of game
-
-                if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
-                    *evt_loop_wguard = crate::game::ActiveEventLoop::ActiveGame(crate::game::GameView::FirstScene);
+                if let Some(ref template_name) = self.new_game_game_template {
+                    if let Ok(crisis) = crate::crisis::load_crisis(template_name) {
+                        let character_name = if self.new_game_player_name.is_empty() {
+                            crate::crisis::get_random_character_name(&crisis, None, &crisis.story.default_language)
+                        } else {
+                            self.new_game_player_name.clone()
+                        };
+                        
+                        let mut story_state = crate::crisis::GameState::new(
+                            crisis.metadata.id.clone(),
+                            crisis.story.default_language.clone(),
+                        );
+                        story_state.current_scene = crisis.story.starting_scene.clone();
+                        story_state.character_name = character_name;
+                        
+                        self.current_crisis = Some(crisis);
+                        self.story_state = Some(story_state);
+                        
+                        if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
+                            *evt_loop_wguard = crate::game::ActiveEventLoop::ActiveGame(crate::game::GameView::StoryScene);
+                        }
+                    }
                 }
-
                 Task::none()
             }
 
@@ -164,6 +183,44 @@ impl GameWindow {
             GameMessage::Game_TextInputSubmitted => {
                 eprintln!("Player submitted: {}", self.game_text_input);
                 self.game_text_input.clear();
+                Task::none()
+            }
+            GameMessage::Game_ChoiceSelected(choice_index) => {
+                if let (Some(crisis), Some(story_state)) = (&self.current_crisis, &mut self.story_state) {
+                    if let Some(current_scene) = crisis.scenes.get(&story_state.current_scene) {
+                        if let Some(choice) = current_scene.choices.get(choice_index) {
+                            // Apply choice effects
+                            if let Some(ref choice_effects) = crisis.conditions.choice_effects {
+                                if let Some(effects) = choice_effects.get(&choice.leads_to) {
+                                    for (var, value) in effects {
+                                        *story_state.variables.entry(var.clone()).or_insert(0) += value;
+                                    }
+                                }
+                            }
+                            
+                            // Move to next scene
+                            story_state.current_scene = choice.leads_to.clone();
+                            
+                            // Handle character type selection
+                            if let Some(ref char_type) = choice.character_type {
+                                story_state.character_type = Some(char_type.clone());
+                                story_state.character_name = crate::crisis::get_random_character_name(
+                                    crisis, 
+                                    Some(char_type), 
+                                    &story_state.language
+                                );
+                            }
+                        }
+                    }
+                }
+                Task::none()
+            }
+            GameMessage::Game_RestartRequested => {
+                if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
+                    *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::Empty);
+                }
+                self.current_crisis = None;
+                self.story_state = None;
                 Task::none()
             }
             GameMessage::Nop => {
@@ -292,95 +349,174 @@ impl GameWindow {
 
 
     pub fn view_game_screen(&self) -> Element<'_, GameMessage> {
-        // Stats bar at the top
-        let cash_stat: Row<GameMessage> = row![
-            text("💰"), 
-            text(format!("{}", self.player_cash))
-        ].spacing(5).align_y(Center);
-
-        let health_stat: Row<GameMessage> = row![
-            text("❤️"), 
-            text(format!("{}", self.player_health))
-        ].spacing(5).align_y(Center);
-
-        let popularity_stat: Row<GameMessage> = row![
-            text("⭐"), 
-            text(format!("{}", self.player_popularity))
-        ].spacing(5).align_y(Center);
-
-        let stats_bar: Row<GameMessage> = row![
-            cash_stat,
-            horizontal_space().width(30),
-            health_stat,
-            horizontal_space().width(30),
-            popularity_stat,
-        ]
-        .padding(20)
-        .align_y(Center)
-        .width(Length::Fill);
-
-        // Text input area on the left
-        let text_input_area = text_input("Type your command...", &self.game_text_input)
-            .on_input(GameMessage::Game_TextInputChanged)
-            .on_submit(GameMessage::Game_TextInputSubmitted)
-            .padding(10)
-            .width(Length::Fill);
-
-        let text_input_container = container(
-            column![
-                text("Command Input:").size(16),
-                text_input_area
-            ]
-            .spacing(10)
-        )
-        .padding(20)
-        .width(Length::FillPortion(2))
-        .height(Length::Fill);
-
-        // Character display on the right
-        let character_display = container(
-            column![
-                text("Character").size(20).align_x(Center),
-                container(text("🧙‍♂️").size(80))
-                    .center_x(Length::Fill)
-                    .center_y(Length::Fill),
-                text("Ready for adventure!").align_x(Center)
-            ]
-            .spacing(20)
-            .align_x(Center)
-        )
-        .padding(20)
-        .width(Length::FillPortion(1))
-        .height(Length::Fill)
-        .center_x(Length::Fill);
-
-        // Main game layout
-        let game_content = column![
-            container(stats_bar)
-                .style(|theme| {
-                    let palette = theme.extended_palette();
-                    iced::widget::container::Style {
-                        background: Some(palette.background.weak.color.into()),
-                        border: iced::border::rounded(8)
-                            .color(palette.primary.weak.color)
-                            .width(1),
-                        ..iced::widget::container::Style::default()
-                    }
-                }),
-            row![
-                text_input_container,
-                character_display
-            ]
-            .height(Length::Fill)
-        ]
-        .height(Length::Fill)
-        .width(Length::Fill);
-
-        container(game_content)
+        if let (Some(crisis), Some(story_state)) = (&self.current_crisis, &self.story_state) {
+            self.render_story_scene(crisis, story_state)
+        } else {
+            container(
+                column![
+                    text("Loading crisis...").size(20),
+                    button(text("Return to Menu"))
+                        .on_press(GameMessage::Game_RestartRequested)
+                        .padding(10)
+                ]
+                .spacing(20)
+                .align_x(Center)
+            )
+            .center_x(Length::Fill)
+            .center_y(Length::Fill)
             .width(Length::Fill)
             .height(Length::Fill)
-            .padding(10)
             .into()
+        }
+    }
+    
+    fn render_story_scene(&self, crisis: &crate::crisis::CrisisDefinition, story_state: &crate::crisis::GameState) -> Element<'_, GameMessage> {
+        if let Some(current_scene) = crisis.scenes.get(&story_state.current_scene) {
+            // Crisis title
+            let title = crisis.name.get(&story_state.language)
+                .or_else(|| crisis.name.get("eng"))
+                .unwrap_or(&"Unknown Crisis".to_string())
+                .clone();
+            
+            // Character name display
+            let character_info = text(format!("Playing as: {}", story_state.character_name))
+                .size(16)
+                .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
+            
+            // Scene text
+            let scene_text = crate::crisis::get_scene_text(current_scene, &story_state.language, &story_state.character_name);
+            let story_text = text(scene_text.clone())
+                .size(18)
+                .wrapping(iced::widget::text::Wrapping::Word);
+            
+            // Choices
+            let mut choices_column = column![].spacing(10);
+            
+            if current_scene.choices.is_empty() {
+                // End scene - no choices available
+                choices_column = choices_column.push(
+                    column![
+                        text("--- END ---").size(20).align_x(Center),
+                        button(text("Return to Menu"))
+                            .on_press(GameMessage::Game_RestartRequested)
+                            .padding(10)
+                            .width(Length::Fill)
+                    ]
+                    .spacing(20)
+                    .align_x(Center)
+                );
+            } else {
+                for (index, choice) in current_scene.choices.iter().enumerate() {
+                    let choice_text = choice.text.get(&story_state.language)
+                        .or_else(|| choice.text.get("eng"))
+                        .unwrap_or(&"Unknown choice".to_string())
+                        .clone();
+                    
+                    // Check if choice is available based on requirements
+                    let mut available = true;
+                    if let Some(ref requirements) = choice.requires {
+                        for (var, required_value) in requirements {
+                            if let Some(current_value) = story_state.variables.get(var) {
+                                if current_value < required_value {
+                                    available = false;
+                                    break;
+                                }
+                            } else {
+                                available = false;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    let choice_button = if available {
+                        button(text(choice_text.clone()))
+                            .on_press(GameMessage::Game_ChoiceSelected(index))
+                            .padding(15)
+                            .width(Length::Fill)
+                    } else {
+                        button(text(format!("{} (Requirements not met)", choice_text)))
+                            .padding(15)
+                            .width(Length::Fill)
+                            .style(move |theme: &Theme, _status| {
+                                let palette = theme.extended_palette();
+                                iced::widget::button::Style {
+                                    background: Some(palette.background.weak.color.into()),
+                                    text_color: palette.background.strong.text,
+                                    border: iced::border::rounded(4)
+                                        .color(palette.background.strong.color)
+                                        .width(1),
+                                    ..iced::widget::button::Style::default()
+                                }
+                            })
+                    };
+                    
+                    choices_column = choices_column.push(choice_button);
+                }
+            }
+            
+            // Variables display (for debugging/game state)
+            let mut variables_text = String::new();
+            if !story_state.variables.is_empty() {
+                variables_text = format!("Variables: {:?}", story_state.variables);
+            }
+            
+            let main_content = column![
+                text(title.clone()).size(24).align_x(Center),
+                character_info.align_x(Center),
+                container(
+                    column![
+                        container(story_text)
+                            .padding(20)
+                            .style(move |theme: &Theme| {
+                                let palette = theme.extended_palette();
+                                iced::widget::container::Style {
+                                    background: Some(palette.background.weak.color.into()),
+                                    border: iced::border::rounded(8)
+                                        .color(palette.primary.weak.color)
+                                        .width(1),
+                                    ..iced::widget::container::Style::default()
+                                }
+                            }),
+                        text("What do you choose?").size(18).align_x(Center),
+                        choices_column,
+                        if !variables_text.is_empty() {
+                            text(variables_text.clone()).size(12).color(iced::Color::from_rgb(0.5, 0.5, 0.5))
+                        } else {
+                            text("")
+                        }
+                    ]
+                    .spacing(20)
+                )
+                .padding(20)
+            ]
+            .spacing(15)
+            .max_width(800)
+            .align_x(Center);
+            
+            container(main_content)
+                .center_x(Length::Fill)
+                .center_y(Length::Fill)
+                .width(Length::Fill)
+                .height(Length::Fill)
+                .padding(20)
+                .into()
+        } else {
+            container(
+                column![
+                    text(format!("Scene '{}' not found!", story_state.current_scene)).size(20),
+                    button(text("Return to Menu"))
+                        .on_press(GameMessage::Game_RestartRequested)
+                        .padding(10)
+                ]
+                .spacing(20)
+                .align_x(Center)
+            )
+            .center_x(Length::Fill)
+            .center_y(Length::Fill)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .into()
+        }
     }
 
 

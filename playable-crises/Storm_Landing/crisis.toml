@@ -1,0 +1,135 @@
+# Storm Landing Crisis - Airline Pilot Story
+
+[metadata]
+id = "storm_landing"
+version = "1.0"
+author = "Crisis Game System"
+description_key = "storm_landing_desc"
+
+[name]
+eng = "Storm Landing"
+spa = "Aterrizaje en Tormenta"
+
+[description]
+eng = "You are an airline pilot attempting to land in severe weather conditions with limited fuel and visibility."
+spa = "Eres un piloto de aerolínea intentando aterrizar en condiciones climáticas severas con combustible y visibilidad limitados."
+
+[character_names]
+male_eng = ["Captain James Mitchell", "Captain Robert Hayes", "Captain Michael Torres", "Captain David Chen", "Captain William Brooks"]
+female_eng = ["Captain Sarah Johnson", "Captain Lisa Rodriguez", "Captain Jennifer Kim", "Captain Amanda Foster", "Captain Rachel Morgan"]
+male_spa = ["Capitán Santiago Morales", "Capitán Miguel Fernández", "Capitán Carlos Ruiz", "Capitán Antonio López", "Capitán Roberto Silva"]
+female_spa = ["Capitana María González", "Capitana Carmen Herrera", "Capitana Ana Martínez", "Capitana Elena Vargas", "Capitana Isabel Castro"]
+
+[story]
+starting_scene = "approaching_storm"
+default_language = "eng"
+
+[mechanics]
+time_limit_minutes = 15
+save_progress = true
+allow_restart = true
+track_decisions = true
+
+[conditions]
+variables = ["fuel_level", "visibility", "passenger_panic", "crew_confidence"]
+
+[conditions.choice_effects]
+"continue_approach" = { fuel_level = -1 }
+"request_alternate" = { fuel_level = -2 }
+"emergency_landing" = { passenger_panic = 1 }
+
+[scenes.approaching_storm]
+text.eng = "Captain {character_name}, you're piloting Flight 447 with 180 passengers aboard. The storm ahead is intensifying, visibility is dropping to near zero, and you have just enough fuel for one landing attempt. Your co-pilot looks concerned as lightning flashes outside."
+text.spa = "Capitán {character_name}, estás pilotando el Vuelo 447 con 180 pasajeros a bordo. La tormenta que tienes delante se está intensificando, la visibilidad está bajando casi a cero, y tienes combustible suficiente para un solo intento de aterrizaje. Tu copiloto se ve preocupado mientras los relámpagos destellan afuera."
+
+[[scenes.approaching_storm.choices]]
+text.eng = "Continue approach to the original destination"
+text.spa = "Continuar aproximación al destino original"
+leads_to = "continue_approach"
+
+[[scenes.approaching_storm.choices]]
+text.eng = "Request alternate airport clearance"
+text.spa = "Solicitar autorización a aeropuerto alternativo"
+leads_to = "alternate_request"
+
+[[scenes.approaching_storm.choices]]
+text.eng = "Declare emergency and attempt immediate landing"
+text.spa = "Declarar emergencia e intentar aterrizaje inmediato"
+leads_to = "emergency_declaration"
+
+[scenes.continue_approach]
+text.eng = "You push forward through the storm. The aircraft shakes violently as you descend through the clouds. At 500 feet, you still can't see the runway. Your instruments show you're on course, but the crosswinds are severe."
+text.spa = "Sigues adelante a través de la tormenta. La aeronave se sacude violentamente mientras desciendes a través de las nubes. A 500 pies, aún no puedes ver la pista. Tus instrumentos muestran que estás en curso, pero los vientos cruzados son severos."
+
+[[scenes.continue_approach.choices]]
+text.eng = "Trust instruments and continue landing"
+text.spa = "Confiar en los instrumentos y continuar aterrizaje"
+leads_to = "instrument_landing"
+
+[[scenes.continue_approach.choices]]
+text.eng = "Go around and try alternate airport"
+text.spa = "Dar la vuelta e intentar aeropuerto alternativo"
+leads_to = "go_around"
+
+[scenes.alternate_request]
+text.eng = "ATC responds: 'Flight 447, nearest alternate is 45 miles southeast. Weather there is marginal but improving. You have priority clearance.' Your fuel gauge shows this will be very close."
+text.spa = "ATC responde: 'Vuelo 447, el alternativo más cercano está a 45 millas al sureste. El clima allí es marginal pero mejorando. Tienes autorización prioritaria.' Tu indicador de combustible muestra que será muy justo."
+
+[[scenes.alternate_request.choices]]
+text.eng = "Proceed to alternate airport"
+text.spa = "Proceder al aeropuerto alternativo"
+leads_to = "alternate_approach"
+
+[[scenes.alternate_request.choices]]
+text.eng = "Change mind and attempt original airport"
+text.spa = "Cambiar de opinión e intentar aeropuerto original"
+leads_to = "return_original"
+
+[scenes.emergency_declaration]
+text.eng = "You key the radio: 'Mayday, mayday, Flight 447 declaring emergency. 180 souls on board, low fuel, requesting immediate landing clearance.' ATC clears all traffic and gives you priority approach. The cabin crew prepares passengers for emergency landing."
+text.spa = "Presionas la radio: 'Mayday, mayday, Vuelo 447 declarando emergencia. 180 almas a bordo, poco combustible, solicitando autorización inmediata de aterrizaje.' ATC despeja todo el tráfico y te da aproximación prioritaria. La tripulación de cabina prepara a los pasajeros para aterrizaje de emergencia."
+
+[[scenes.emergency_declaration.choices]]
+text.eng = "Attempt landing with emergency services ready"
+text.spa = "Intentar aterrizaje con servicios de emergencia listos"
+leads_to = "emergency_landing"
+
+[scenes.instrument_landing]
+text.eng = "You commit to the instrument approach. At 200 feet, you catch a glimpse of runway lights through the rain. The aircraft is being pushed sideways by crosswinds, but you're aligned with the centerline."
+text.spa = "Te comprometes con la aproximación por instrumentos. A 200 pies, vislumbras las luces de la pista a través de la lluvia. La aeronave está siendo empujada lateralmente por vientos cruzados, pero estás alineado con la línea central."
+
+[[scenes.instrument_landing.choices]]
+text.eng = "Land immediately"
+text.spa = "Aterrizar inmediatamente"
+leads_to = "successful_landing"
+
+[[scenes.instrument_landing.choices]]
+text.eng = "Go around for another attempt"
+text.spa = "Dar la vuelta para otro intento"
+leads_to = "final_attempt"
+
+[scenes.successful_landing]
+text.eng = "With steady hands, you guide the aircraft down through the turbulence. The wheels touch down hard but safely on the rain-soaked runway. You apply reverse thrust and brakes as the passengers burst into applause. You've successfully saved everyone aboard."
+text.spa = "Con manos firmes, guías la aeronave hacia abajo a través de la turbulencia. Las ruedas tocan el suelo fuertemente pero de forma segura en la pista empapada por la lluvia. Aplicas reversa y frenos mientras los pasajeros estallan en aplausos. Has salvado exitosamente a todos a bordo."
+
+[scenes.go_around]
+text.eng = "You execute a go-around, but your fuel is now critically low. ATC advises the alternate airport is your only option, but it's questionable if you have enough fuel to make it there."
+text.spa = "Ejecutas una pasada, pero tu combustible ahora está críticamente bajo. ATC te informa que el aeropuerto alternativo es tu única opción, pero es cuestionable si tienes suficiente combustible para llegar allí."
+
+[[scenes.go_around.choices]]
+text.eng = "Risk the flight to alternate airport"
+text.spa = "Arriesgar el vuelo al aeropuerto alternativo"
+leads_to = "fuel_emergency"
+
+[scenes.fuel_emergency]
+text.eng = "You're running on fumes as you approach the alternate airport. The weather is better here, but you have only minutes of fuel remaining. This is your final approach - there are no second chances."
+text.spa = "Estás volando con vapores mientras te acercas al aeropuerto alternativo. El clima es mejor aquí, pero solo tienes minutos de combustible restante. Esta es tu aproximación final - no hay segundas oportunidades."
+
+[[scenes.fuel_emergency.choices]]
+text.eng = "Execute perfect landing"
+text.spa = "Ejecutar aterrizaje perfecto"
+leads_to = "narrow_escape"
+
+[scenes.narrow_escape]
+text.eng = "With masterful skill, you bring the aircraft down smoothly on the alternate runway. The engines flame out just as you clear the active runway. Emergency vehicles surround the aircraft, but everyone is safe. It was the closest call of your career."
+text.spa = "Con habilidad magistral, llevas la aeronave suavemente a la pista alternativa. Los motores se apagan justo cuando liberas la pista activa. Vehículos de emergencia rodean la aeronave, pero todos están a salvo. Fue la llamada más cercana de tu carrera."
