@@ -581,7 +581,7 @@ impl GameWindow {
             text(format!("{}", self.player_popularity))
         ].spacing(5).align_y(Center);
 
-        let stats_bar = row![
+        let stats_bar: Row<GameMessage> = row![
             cash_stat,
             horizontal_space().width(30),
             health_stat,
