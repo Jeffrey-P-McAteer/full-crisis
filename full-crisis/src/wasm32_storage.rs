@@ -17,7 +17,7 @@ unsafe extern "C" {
 }
 
 pub fn get_attr(name: &str) -> Option<String> {
-    let result = unsafe { js_get_attr(name) };
+    let result = js_get_attr(name);
     if result.is_empty() {
         None
     } else {
@@ -26,7 +26,7 @@ pub fn get_attr(name: &str) -> Option<String> {
 }
 
 pub fn set_attr(name: &str, value: &str) {
-    unsafe { js_set_attr(name, value) }
+    js_set_attr(name, value)
 }
 
 pub fn get_struct<T>(name: &str) -> Option<T> 

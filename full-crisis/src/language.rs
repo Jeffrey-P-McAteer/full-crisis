@@ -64,14 +64,13 @@ fn detect_browser_language() -> String {
         }
         
         // Try to get languages from navigator.languages
-        if let Ok(languages) = navigator.languages() {
-            if languages.length() > 0 {
-                if let Some(first_lang) = languages.get(0).as_string() {
-                    let lang_code = parse_language_tag(&first_lang);
-                    let converted = convert_language_code(&lang_code);
-                    eprintln!("Browser languages[0] detected: {} -> {}", first_lang, converted);
-                    return converted;
-                }
+        let languages = navigator.languages();
+        if languages.length() > 0 {
+            if let Some(first_lang) = languages.get(0).as_string() {
+                let lang_code = parse_language_tag(&first_lang);
+                let converted = convert_language_code(&lang_code);
+                eprintln!("Browser languages[0] detected: {} -> {}", first_lang, converted);
+                return converted;
             }
         }
     }
