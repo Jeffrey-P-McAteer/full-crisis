@@ -50,7 +50,7 @@ def count_sloc_for_languages(folder):
   languages_sloc = collections.defaultdict(int)
 
   for dirent in os.listdir(folder):
-    if dirent.casefold() == 'target'.casefold():
+    if dirent.casefold() == 'target'.casefold() or dirent.casefold() == 'playable-crises'.casefold():
       continue # Ignore this/these
 
     dirent_path = os.path.join(folder, dirent)
@@ -66,6 +66,18 @@ def count_sloc_for_languages(folder):
         languages_sloc['toml'] += linecount_file(dirent_path)
 
   return languages_sloc
+
+def count_sloc_for_folder(folder, extensions):
+  folder_sloc = 0
+  for dirent in os.listdir(folder):
+    dirent_path = os.path.join(folder, dirent)
+    if os.path.isdir(dirent_path):
+      folder_sloc += count_sloc_for_folder(dirent_path, extensions)
+    else:
+      if any( dirent_path.casefold().endswith(ext.casefold()) for ext in extensions ):
+        folder_sloc += linecount_file(dirent_path)
+  return folder_sloc
+
 
 repo_dir = os.path.dirname(__file__)
 kpis_json_file = os.path.join(repo_dir, 'kpis.json')
@@ -83,6 +95,10 @@ if not WRITING_KPI_GRAPHS or not os.path.exists(kpis_json_file) or abs(time.time
   print(f'Recording new data to {kpis_json_file}')
 
   current_sloc = count_sloc_for_languages(repo_dir)
+  current_sloc['story-lines'] = count_sloc_for_folder(
+    os.path.join(repo_dir, 'playable-crises'),
+    ['.toml', '.txt']
+  )
 
   repo_kpis['sloc'][build_timestamp] = current_sloc
 
