@@ -132,7 +132,11 @@ if WRITING_KPI_GRAPHS:
   lang_colors_i = 0
 
   #kpi_wh = (1920, 1200)
-  kpi_wh = (1920/2, 1200/2)
+
+  ss = 0.75 # Size scale
+  kpi_wh = (1920 * ss, 1080 * ss)
+  kpi_wh = (int(kpi_wh[0]), int(kpi_wh[1]))
+
   fig, ax = matplotlib.pyplot.subplots(sharey=True)
   fig.set_size_inches((kpi_wh[0] / fig.get_dpi(), kpi_wh[1] / fig.get_dpi()))
   ax.plot_date(sloc_x, sloc_y_total, linestyle='solid', label='Total', color='#202020')
