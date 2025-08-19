@@ -20,7 +20,7 @@ html, body, canvas {
   <body>
     <script type="module">
       import init from "./full_crisis_web.js";
-      console.error(init('./full_crisis_web_bg.wasm'));
+      init('./full_crisis_web_bg.wasm').catch(console.error);
     </script>
   </body>
 </html>
