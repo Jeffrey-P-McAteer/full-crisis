@@ -229,11 +229,11 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
 
       <header>Download <img src="full-crisis-icon.transparent.128.png" style="border-radius:6pt;"/> </header>
       <pre id="build-message">{build_message}</pre>
-      <a class="dl win mobile-light-bordered-text" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64 ({render_file_size(td, 'full-crisis.x86_64-pc-windows-gnu.exe')})</a>
-      <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.x86_64-apple-darwin.dmg">MacOS x64 ({render_file_size(td, 'Full-Crisis.x86_64-apple-darwin.dmg')})</a>
-      <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.aarch64-apple-darwin.dmg">MacOS ARM ({render_file_size(td, 'Full-Crisis.aarch64-apple-darwin.dmg')})</a>
-      <a class="dl linux mobile-light-bordered-text" href="full-crisis.x86_64-unknown-linux-gnu">Linux x64 ({render_file_size(td, 'full-crisis.x86_64-unknown-linux-gnu')})</a>
-      <a class="dl noapp mobile-light-bordered-text" href="wasm32/index.html">Play on the Web ({render_file_size(td, 'wasm32')})</a>
+      <a class="dl win mobile-light-bordered-text" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64 <br/><span class="tiny-text">({render_file_size(td, 'full-crisis.x86_64-pc-windows-gnu.exe')})</span></a>
+      <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.x86_64-apple-darwin.dmg">MacOS x64 <br/><span class="tiny-text">({render_file_size(td, 'Full-Crisis.x86_64-apple-darwin.dmg')})</span></a>
+      <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.aarch64-apple-darwin.dmg">MacOS ARM <br/><span class="tiny-text">({render_file_size(td, 'Full-Crisis.aarch64-apple-darwin.dmg')})</span></a>
+      <a class="dl linux mobile-light-bordered-text" href="full-crisis.x86_64-unknown-linux-gnu">Linux x64 <br/><span class="tiny-text">({render_file_size(td, 'full-crisis.x86_64-unknown-linux-gnu')})</span></a>
+      <a class="dl noapp mobile-light-bordered-text" href="wasm32/index.html">Play on the Web <br/><span class="tiny-text">({render_file_size(td, 'wasm32')})</span></a>
 
       <header>Code</header>
       <p>
@@ -310,7 +310,7 @@ main {
   font-family: Arial, sans-serif;
   font-size: 1.8em;
   color: #3E124A;
-  width: 740pt;
+  width: 780pt;
   position: absolute;
   top: 60pt;
   left: 0;
@@ -332,7 +332,7 @@ a.dl {
   text-decoration: inherit;
   font-size: 1.12em;
   padding: 28pt 12pt;
-  padding-left: 94pt;
+  padding-left: 148pt;
   margin: 8pt 16pt;
   border: 3pt solid #4D4B17;
   background-color: #4D4B17;
@@ -367,6 +367,10 @@ a.noapp {
   background-image: url("web_globe_icon.png");
   background-color: #ffa700;
   border-color: #ffa700;
+}
+
+span.tiny-text {
+  font-size: 0.62em;
 }
 
 img.kpi-chart {
