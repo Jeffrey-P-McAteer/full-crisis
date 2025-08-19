@@ -581,6 +581,9 @@ impl GameWindow {
     
     fn render_story_scene(&self, crisis: &crate::crisis::CrisisDefinition, story_state: &crate::crisis::GameState) -> Element<'_, GameMessage> {
         if let Some(current_scene) = crisis.scenes.get(&story_state.current_scene) {
+            // Track image loading errors
+            let mut error_messages = Vec::new();
+            
             // Create background image if specified
             let background_layer = if let Some(ref bg_path) = current_scene.background_image {
                 if let Some(bg_file) = crate::crisis::PlayableCrises::get(bg_path) {
@@ -612,6 +615,7 @@ impl GameWindow {
                     .width(Length::Fill)
                     .height(Length::Fill))
                 } else {
+                    error_messages.push(format!("Background image not found: {}", bg_path));
                     None
                 }
             } else {
@@ -792,6 +796,7 @@ impl GameWindow {
                         .padding(20)
                         .align_x(Center)
                 } else {
+                    error_messages.push(format!("Character image not found: {}", char_path));
                     container(Space::with_width(Length::Fill))
                 }
             } else {
@@ -810,13 +815,42 @@ impl GameWindow {
                 .width(Length::Fill)
                 .height(Length::Fill);
 
-            // Main layout: top data, then bottom row with story/choices/character
-            let main_layout = column![
-                top_data,
-                bottom_row
-            ]
-            .width(Length::Fill)
-            .height(Length::Fill);
+            // Create main layout with optional error display
+            let main_layout = if !error_messages.is_empty() {
+                let error_text = error_messages.join("; ");
+                let error_display = container(
+                    text(format!("Image Loading Errors: {}", error_text))
+                        .size(12)
+                        .color(iced::Color::from_rgb(0.8, 0.2, 0.2))
+                        .wrapping(iced::widget::text::Wrapping::Word)
+                )
+                .width(Length::Fill)
+                .padding(10)
+                .style(move |_theme: &Theme| {
+                    iced::widget::container::Style {
+                        background: Some(iced::Color::from_rgba(0.8, 0.2, 0.2, 0.1).into()),
+                        border: iced::border::rounded(4)
+                            .color(iced::Color::from_rgb(0.8, 0.2, 0.2))
+                            .width(1),
+                        ..iced::widget::container::Style::default()
+                    }
+                });
+
+                column![
+                    top_data,
+                    bottom_row,
+                    error_display
+                ]
+                .width(Length::Fill)
+                .height(Length::Fill)
+            } else {
+                column![
+                    top_data,
+                    bottom_row
+                ]
+                .width(Length::Fill)
+                .height(Length::Fill)
+            };
 
             // Stack background and foreground if background exists
             if let Some(background) = background_layer {
