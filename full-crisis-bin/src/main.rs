@@ -33,6 +33,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Store some globals for the cli + gui methods to reference
     let _ = CLI_ARGS.set(args.clone());
+    let _ = full_crisis::VERBOSITY.set(args.verbosity);
 
     full_crisis::init_global_vars();
     // Use dark_light to detect OS theme

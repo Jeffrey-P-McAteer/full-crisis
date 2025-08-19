@@ -46,10 +46,6 @@ track_decisions = true
 [conditions]
 variables = ["self_confidence", "relationship_trust", "moral_integrity", "character_type"]
 
-[conditions.choice_effects]
-"choose_student" = { character_type = "student" }
-"choose_parent" = { character_type = "parent" }
-"choose_professional" = { character_type = "professional" }
 
 [scenes.character_selection]
 text.eng = "Choose your character's life situation to begin your personal crisis story:"

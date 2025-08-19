@@ -79,28 +79,63 @@ impl GameWindow {
                 Task::none()
             }
             GameMessage::Menu_NewGameStartClicked => {
+                let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
+                if *verbosity > 0 {
+                    eprintln!("[VERBOSE] Menu_NewGameStartClicked: template_name={:?}", self.new_game_game_template);
+                }
+                
                 if let Some(ref template_name) = self.new_game_game_template {
-                    if let Ok(crisis) = crate::crisis::load_crisis(template_name) {
-                        let character_name = if self.new_game_player_name.is_empty() {
-                            crate::crisis::get_random_character_name(&crisis, None, &self.settings_language)
-                        } else {
-                            self.new_game_player_name.clone()
-                        };
-                        
-                        let user_language = self.settings_language.clone();
-                        let mut story_state = crate::crisis::GameState::new(
-                            crisis.metadata.id.clone(),
-                            user_language.clone(),
-                        );
-                        story_state.current_scene = crisis.story.starting_scene.clone();
-                        story_state.character_name = character_name;
-                        
-                        self.current_crisis = Some(crisis);
-                        self.story_state = Some(story_state);
-                        
-                        if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
-                            *evt_loop_wguard = crate::game::ActiveEventLoop::ActiveGame(crate::game::GameView::StoryScene);
+                    match crate::crisis::load_crisis(template_name) {
+                        Ok(crisis) => {
+                            if *verbosity > 0 {
+                                eprintln!("[VERBOSE] Menu_NewGameStartClicked: Crisis loaded successfully");
+                            }
+                            
+                            let character_name = if self.new_game_player_name.is_empty() {
+                                crate::crisis::get_random_character_name(&crisis, None, &self.settings_language)
+                            } else {
+                                self.new_game_player_name.clone()
+                            };
+                            
+                            if *verbosity > 0 {
+                                eprintln!("[VERBOSE] Menu_NewGameStartClicked: Character name: {}", character_name);
+                            }
+                            
+                            let user_language = self.settings_language.clone();
+                            let mut story_state = crate::crisis::GameState::new(
+                                crisis.metadata.id.clone(),
+                                user_language.clone(),
+                            );
+                            story_state.current_scene = crisis.story.starting_scene.clone();
+                            story_state.character_name = character_name;
+                            
+                            if *verbosity > 0 {
+                                eprintln!("[VERBOSE] Menu_NewGameStartClicked: Starting scene: {}", story_state.current_scene);
+                            }
+                            
+                            self.current_crisis = Some(crisis);
+                            self.story_state = Some(story_state);
+                            
+                            if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
+                                *evt_loop_wguard = crate::game::ActiveEventLoop::ActiveGame(crate::game::GameView::StoryScene);
+                                if *verbosity > 0 {
+                                    eprintln!("[VERBOSE] Menu_NewGameStartClicked: Successfully switched to ActiveGame state");
+                                }
+                            } else {
+                                if *verbosity > 0 {
+                                    eprintln!("[VERBOSE] Menu_NewGameStartClicked: Failed to acquire event loop write lock");
+                                }
+                            }
                         }
+                        Err(e) => {
+                            if *verbosity > 0 {
+                                eprintln!("[VERBOSE] Menu_NewGameStartClicked: Failed to load crisis: {}", e);
+                            }
+                        }
+                    }
+                } else {
+                    if *verbosity > 0 {
+                        eprintln!("[VERBOSE] Menu_NewGameStartClicked: No template selected");
                     }
                 }
                 Task::none()

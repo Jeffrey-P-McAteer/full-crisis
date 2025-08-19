@@ -47,6 +47,7 @@ use native_storage as storage;
 
 pub static GAME: OnceCell<game::GameState> = OnceCell::new();
 pub static OS_COLOR_THEME: OnceCell<game::OSColorTheme> = OnceCell::new();
+pub static VERBOSITY: OnceCell<u8> = OnceCell::new();
 
 pub fn init_global_vars() {
 
