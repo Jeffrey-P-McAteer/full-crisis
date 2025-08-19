@@ -38,6 +38,7 @@ pub struct GameSettings {
     pub difficulty_level: DifficultyLevel,
     pub autosave: bool,
     pub language: String,
+    pub last_username: String,
 }
 
 impl Default for GameSettings {
@@ -47,6 +48,7 @@ impl Default for GameSettings {
             difficulty_level: DifficultyLevel::Medium,
             autosave: true,
             language: crate::language::detect_system_language(),
+            last_username: String::new(),
         }
     }
 }

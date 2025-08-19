@@ -7,6 +7,7 @@ impl GameWindow {
             difficulty_level: self.settings_difficulty_level,
             autosave: self.settings_autosave,
             language: self.settings_language.clone(),
+            last_username: self.new_game_player_name.clone(),
         };
         crate::storage::set_struct("game_settings", &settings);
     }

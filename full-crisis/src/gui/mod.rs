@@ -46,7 +46,7 @@ impl GameWindow {
             Self {
                 os_theme: crate::OS_COLOR_THEME.get().unwrap_or(&crate::game::OSColorTheme::Light).clone(),
                 game_state: crate::game::GameState::new(),
-                new_game_player_name: String::new(),
+                new_game_player_name: loaded_settings.last_username,
                 new_game_game_template: None,
                 continue_game_game_choice: None,
                 settings_game_save_folder: loaded_settings.game_save_folder,
@@ -74,6 +74,7 @@ impl GameWindow {
             }
             GameMessage::Menu_NewGamePlayerNameAltered(name) => {
                 self.new_game_player_name = name;
+                self.save_settings();
                 Task::none()
             }
             GameMessage::Menu_NewGameTemplateChoiceAltered(game_template) => {
@@ -237,8 +238,12 @@ impl GameWindow {
         
         let elapsed = start_time.elapsed();
         let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
-        if *verbosity >= 2 {
+        if *verbosity >= 3 {
+            // -vvv: Show all timings
             eprintln!("[TIMING] GameWindow::update() took {:?}", elapsed);
+        } else if *verbosity >= 2 && elapsed.as_millis() > 10 {
+            // -vv: Show only timings > 10ms
+            eprintln!("[TIMING] GameWindow::update() took {:?} (>10ms)", elapsed);
         }
         
         result
@@ -266,8 +271,12 @@ impl GameWindow {
         
         let elapsed = start_time.elapsed();
         let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
-        if *verbosity >= 2 {
+        if *verbosity >= 3 {
+            // -vvv: Show all timings
             eprintln!("[TIMING] GameWindow::view() took {:?}", elapsed);
+        } else if *verbosity >= 2 && elapsed.as_millis() > 10 {
+            // -vv: Show only timings > 10ms
+            eprintln!("[TIMING] GameWindow::view() took {:?} (>10ms)", elapsed);
         }
         
         result
