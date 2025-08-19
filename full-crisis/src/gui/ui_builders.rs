@@ -4,6 +4,9 @@ use iced::widget::{
 };
 use iced::{Center, Element, Length, Left, Theme};
 
+pub const MAIN_MENU_RIGHT_WIDTH_PX: f32 = 720.0;
+pub const MAIN_MENU_HEIGHT_PX: f32 = 400.0;
+
 impl GameWindow {
     pub fn build_menu_screen_right_ui(&self) -> Container<'_, GameMessage> {
         if let Ok(evt_loop_val) = self.game_state.active_event_loop.try_read() {
@@ -76,8 +79,8 @@ impl GameWindow {
 
         let self_theme = self.theme();
         Container::<GameMessage, Theme, iced::Renderer>::new(layout)
-            .width(Length::Fixed(600.0))
-            .height(Length::Fixed(400.0))
+            .width(Length::Fixed(MAIN_MENU_RIGHT_WIDTH_PX))
+            .height(Length::Fixed(MAIN_MENU_HEIGHT_PX))
             .style(move |_theme| super::menu_right_box_style(&self_theme))
             .padding(10)
     }
@@ -136,8 +139,8 @@ impl GameWindow {
 
         let self_theme = self.theme();
         Container::<GameMessage, Theme, iced::Renderer>::new(layout)
-            .width(Length::Fixed(600.0))
-            .height(Length::Fixed(400.0))
+            .width(Length::Fixed(MAIN_MENU_RIGHT_WIDTH_PX))
+            .height(Length::Fixed(MAIN_MENU_HEIGHT_PX))
             .style(move |_theme| super::menu_right_box_style(&self_theme))
             .padding(10)
     }
@@ -248,8 +251,8 @@ impl GameWindow {
 
         let self_theme = self.theme();
         Container::<GameMessage, Theme, iced::Renderer>::new(layout)
-            .width(Length::Fixed(600.0))
-            .height(Length::Fixed(400.0))
+            .width(Length::Fixed(MAIN_MENU_RIGHT_WIDTH_PX))
+            .height(Length::Fixed(MAIN_MENU_HEIGHT_PX))
             .style(move |_theme| super::menu_right_box_style(&self_theme))
             .padding(10)
     }

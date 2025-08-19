@@ -450,7 +450,7 @@ impl GameWindow {
         .width(Length::Fixed(186.0f32));
 
         let right_panel = container(self.build_menu_screen_right_ui())
-            .width(Length::Fixed(680.0f32))
+            .width(Length::Fixed(760.0f32))
             .align_x(Center)
             .center_y(iced::Length::Shrink);
 
