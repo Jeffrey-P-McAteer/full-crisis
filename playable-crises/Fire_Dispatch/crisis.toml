@@ -83,6 +83,7 @@ leads_to = "full_alarm"
 [scenes.quick_dispatch]
 text.eng = "You dispatch Engine 7, the closest unit, which is 4 minutes away. As you're sending them, another call comes in: 'This is Engine 12, we're seeing heavy smoke from the Riverside Apartments while passing by. This looks bigger than a single unit can handle.'"
 text.spa = "Despachas Bomba 7, la unidad más cercana, que está a 4 minutos. Mientras los envías, llega otra llamada: 'Habla Bomba 12, estamos viendo humo denso de los Apartamentos Riverside mientras pasamos. Esto parece más grande de lo que una sola unidad puede manejar.'"
+speaking_character_image = "Fire_Dispatch/alarmed-firefighter.png"
 
 [[scenes.quick_dispatch.choices]]
 text.eng = "Send additional trucks immediately"
@@ -111,6 +112,7 @@ leads_to = "balanced_response"
 [scenes.standard_response]
 text.eng = "You dispatch Engines 7 and 12 with Ladder 3. Total response time: 6 minutes. The crews arrive to find a working fire on the third floor with smoke showing from multiple windows. The incident commander radios: 'We need more resources - this is extending to the fourth floor.'"
 text.spa = "Despachas Bombas 7 y 12 con Escalera 3. Tiempo total de respuesta: 6 minutos. Las cuadrillas llegan para encontrar un incendio activo en el tercer piso con humo visible desde múltiples ventanas. El comandante del incidente radía: 'Necesitamos más recursos - esto se está extendiendo al cuarto piso.'"
+speaking_character_image = "Fire_Dispatch/alarmed-firefighter.png"
 
 [[scenes.standard_response.choices]]
 text.eng = "Send additional units and call second alarm"
@@ -125,6 +127,7 @@ leads_to = "limited_backup"
 [scenes.enhanced_response]
 text.eng = "Your enhanced response arrives in waves: first units in 5 minutes, full response assembled in 8 minutes. The incident commander reports: 'Good call, dispatch. We have fire on floors 3 and 4, with multiple residents evacuated safely. We're getting ahead of this with the resources we have.'"
 text.spa = "Tu respuesta mejorada llega en oleadas: primeras unidades en 5 minutos, respuesta completa en 8 minutos. El comandante del incidente reporta: 'Buena decisión, despacho. Tenemos fuego en pisos 3 y 4, con múltiples residentes evacuados de forma segura. Estamos controlando esto con los recursos que tenemos.'"
+speaking_character_image = "Fire_Dispatch/alarmed-firefighter.png"
 
 [[scenes.enhanced_response.choices]]
 text.eng = "Maintain current response level"
@@ -139,6 +142,7 @@ leads_to = "medical_support"
 [scenes.controlled_situation]
 text.eng = "Your decision proves correct. The fire is contained to two floors with no casualties. 23 residents are evacuated safely, and the fire is under control within 45 minutes. The incident commander commends your resource allocation: 'Perfect response level - we had exactly what we needed.'"
 text.spa = "Tu decisión resulta correcta. El incendio se contiene en dos pisos sin víctimas. 23 residentes son evacuados de forma segura, y el incendio está bajo control en 45 minutos. El comandante del incidente elogia tu asignación de recursos: 'Nivel de respuesta perfecto - teníamos exactamente lo que necesitábamos.'"
+speaking_character_image = "Fire_Dispatch/alarmed-firefighter.png"
 
 [scenes.maximum_response]
 text.eng = "You send everything: 8 fire trucks, 3 ladder companies, 4 rescue units, and 6 ambulances. The massive response overwhelms the small fire, which is quickly controlled. However, this leaves only 4 trucks available citywide, and two other fires start during the incident."
