@@ -57,6 +57,7 @@ impl GameWindow {
                 settings_language: loaded_settings.language,
                 current_crisis: None,
                 story_state: None,
+                choice_text_inputs: std::collections::HashMap::new(),
             },
             Task::batch([
                 widget::focus_next(),
@@ -339,6 +340,89 @@ impl GameWindow {
                 }
                 Task::none()
             }
+            GameMessage::Game_TextInputChanged(choice_index, value) => {
+                self.choice_text_inputs.insert(choice_index, value);
+                Task::none()
+            }
+            GameMessage::Game_TextInputSubmitted(choice_index, value) => {
+                let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
+                
+                if let (Some(crisis), Some(story_state)) = (&self.current_crisis, &mut self.story_state) {
+                    if let Some(current_scene) = crisis.scenes.get(&story_state.current_scene) {
+                        if let Some(choice) = current_scene.choices.get(choice_index) {
+                            if let Some(ref text_input) = choice.text_input {
+                                // Validate and store the input
+                                let validated_value = match text_input.input_type {
+                                    crate::crisis::TextInputType::Text => {
+                                        if let Some(min_len) = text_input.min_length {
+                                            if value.len() < min_len {
+                                                return Task::none(); // Don't proceed if validation fails
+                                            }
+                                        }
+                                        if let Some(max_len) = text_input.max_length {
+                                            if value.len() > max_len {
+                                                return Task::none(); // Don't proceed if validation fails
+                                            }
+                                        }
+                                        value.clone()
+                                    }
+                                    crate::crisis::TextInputType::Number => {
+                                        if let Ok(num) = value.parse::<i32>() {
+                                            if let Some(min_val) = text_input.min_value {
+                                                if num < min_val {
+                                                    return Task::none();
+                                                }
+                                            }
+                                            if let Some(max_val) = text_input.max_value {
+                                                if num > max_val {
+                                                    return Task::none();
+                                                }
+                                            }
+                                            value.clone()
+                                        } else {
+                                            return Task::none(); // Invalid number
+                                        }
+                                    }
+                                };
+                                
+                                // Store the text input in the game state
+                                story_state.text_inputs.insert(text_input.variable_name.clone(), validated_value);
+                                
+                                if *verbosity > 0 {
+                                    eprintln!("[VERBOSE] Text input submitted: {} = {}", text_input.variable_name, value);
+                                }
+                            }
+                            
+                            // Apply choice effects (same as regular choice)
+                            if let Some(ref choice_effects) = crisis.conditions.choice_effects {
+                                if let Some(effects) = choice_effects.get(&choice.leads_to) {
+                                    for (var, value) in effects {
+                                        *story_state.variables.entry(var.clone()).or_insert(0) += value;
+                                    }
+                                }
+                            }
+                            
+                            // Move to next scene
+                            story_state.current_scene = choice.leads_to.clone();
+                            
+                            // Handle character type selection
+                            if let Some(ref char_type) = choice.character_type {
+                                story_state.character_type = Some(char_type.clone());
+                                story_state.character_name = crate::crisis::get_random_character_name(
+                                    crisis, 
+                                    Some(char_type), 
+                                    &story_state.language
+                                );
+                            }
+                            
+                            // Clear text inputs for the new scene
+                            self.choice_text_inputs.clear();
+                        }
+                    }
+                }
+                
+                Task::none()
+            }
             GameMessage::Game_RestartRequested => {
                 if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                     *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::Empty);
@@ -382,6 +466,7 @@ impl GameWindow {
                 self.story_state = None;
                 self.new_game_game_template = None;
                 self.new_game_selected_description = None;
+                self.choice_text_inputs.clear();
                 
                 Task::none()
             }
@@ -401,6 +486,7 @@ impl GameWindow {
                 self.story_state = None;
                 self.new_game_game_template = None;
                 self.new_game_selected_description = None;
+                self.choice_text_inputs.clear();
                 
                 Task::none()
             }
@@ -688,7 +774,7 @@ impl GameWindow {
                 .padding(20);
 
             // Story text and choices in left column (60% width)
-            let scene_text = crate::crisis::get_scene_text(current_scene, &story_state.language, &story_state.character_name);
+            let scene_text = crate::crisis::get_scene_text_with_substitutions(current_scene, &story_state.language, &story_state.character_name, &story_state.text_inputs);
             let story_text_display = container(
                 container(
                     text(scene_text.clone())
@@ -748,30 +834,79 @@ impl GameWindow {
                         }
                     }
                     
-                    let choice_button = if available {
-                        button(text(choice_text.clone()))
-                            .on_press(GameMessage::Game_ChoiceSelected(index))
-                            .padding(10)
-                            .width(Length::Fill)
+                    // Check if this choice has text input
+                    if let Some(ref text_input) = choice.text_input {
+                        let placeholder_text = if let Some(ref placeholder) = text_input.placeholder {
+                            crate::crisis::get_localized_text(placeholder, &story_state.language)
+                        } else {
+                            match text_input.input_type {
+                                crate::crisis::TextInputType::Text => "Enter text...".to_string(),
+                                crate::crisis::TextInputType::Number => "Enter number...".to_string(),
+                            }
+                        };
+                        
+                        let input_value = self.choice_text_inputs.get(&index).cloned().unwrap_or_default();
+                        
+                        let text_input_widget = iced::widget::text_input(&placeholder_text, &input_value)
+                            .on_input(move |value| GameMessage::Game_TextInputChanged(index, value))
+                            .on_submit(GameMessage::Game_TextInputSubmitted(index, input_value.clone()))
+                            .padding(8)
+                            .width(Length::Fill);
+                        
+                        let submit_button = if available && !input_value.is_empty() {
+                            button(text(choice_text.clone()))
+                                .on_press(GameMessage::Game_TextInputSubmitted(index, input_value.clone()))
+                                .padding(10)
+                                .width(Length::Fixed(120.0))
+                        } else {
+                            button(text(choice_text.clone()))
+                                .padding(10)
+                                .width(Length::Fixed(120.0))
+                                .style(move |theme: &Theme, _status| {
+                                    let palette = theme.extended_palette();
+                                    iced::widget::button::Style {
+                                        background: Some(palette.background.weak.color.into()),
+                                        text_color: palette.background.strong.text,
+                                        border: iced::border::rounded(4)
+                                            .color(palette.background.strong.color)
+                                            .width(1),
+                                        ..iced::widget::button::Style::default()
+                                    }
+                                })
+                        };
+                        
+                        let input_row = row![text_input_widget, submit_button]
+                            .spacing(10)
+                            .align_y(iced::alignment::Vertical::Center);
+                        
+                        choices_column = choices_column.push(input_row);
                     } else {
-                        button(text(format!("{} {}", choice_text, 
-                            crate::translations::t(crate::translations::TranslationKey::RequirementsNotMet, &story_state.language))))
-                            .padding(10)
-                            .width(Length::Fill)
-                            .style(move |theme: &Theme, _status| {
-                                let palette = theme.extended_palette();
-                                iced::widget::button::Style {
-                                    background: Some(palette.background.weak.color.into()),
-                                    text_color: palette.background.strong.text,
-                                    border: iced::border::rounded(4)
-                                        .color(palette.background.strong.color)
-                                        .width(1),
-                                    ..iced::widget::button::Style::default()
-                                }
-                            })
-                    };
-                    
-                    choices_column = choices_column.push(choice_button);
+                        // Regular choice button (existing behavior)
+                        let choice_button = if available {
+                            button(text(choice_text.clone()))
+                                .on_press(GameMessage::Game_ChoiceSelected(index))
+                                .padding(10)
+                                .width(Length::Fill)
+                        } else {
+                            button(text(format!("{} {}", choice_text, 
+                                crate::translations::t(crate::translations::TranslationKey::RequirementsNotMet, &story_state.language))))
+                                .padding(10)
+                                .width(Length::Fill)
+                                .style(move |theme: &Theme, _status| {
+                                    let palette = theme.extended_palette();
+                                    iced::widget::button::Style {
+                                        background: Some(palette.background.weak.color.into()),
+                                        text_color: palette.background.strong.text,
+                                        border: iced::border::rounded(4)
+                                            .color(palette.background.strong.color)
+                                            .width(1),
+                                        ..iced::widget::button::Style::default()
+                                    }
+                                })
+                        };
+                        
+                        choices_column = choices_column.push(choice_button);
+                    }
                 }
             }
 

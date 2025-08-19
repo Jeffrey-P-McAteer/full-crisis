@@ -57,6 +57,24 @@ pub struct CrisisChoice {
     pub subfolder: Option<String>,
     pub requires: Option<HashMap<String, i32>>,
     pub character_type: Option<String>,
+    pub text_input: Option<CrisisTextInput>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CrisisTextInput {
+    pub variable_name: String,
+    pub input_type: TextInputType,
+    pub placeholder: Option<HashMap<String, String>>,
+    pub min_length: Option<usize>,
+    pub max_length: Option<usize>,
+    pub min_value: Option<i32>,
+    pub max_value: Option<i32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum TextInputType {
+    Text,
+    Number,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -87,6 +105,7 @@ pub struct GameState {
     pub character_name: String,
     pub character_type: Option<String>,
     pub variables: HashMap<String, i32>,
+    pub text_inputs: HashMap<String, String>, // Store user text inputs by variable name
     pub language: String,
     pub crisis_id: String,
     pub template_name: String, // The folder name used to load the crisis
@@ -99,6 +118,7 @@ impl GameState {
             character_name: String::new(),
             character_type: None,
             variables: HashMap::new(),
+            text_inputs: HashMap::new(),
             language,
             crisis_id,
             template_name,
@@ -113,6 +133,8 @@ pub struct SavedGame {
     pub character_name: String,
     pub current_scene: String,
     pub variables: HashMap<String, i32>,
+    #[serde(default)]
+    pub text_inputs: HashMap<String, String>, // User text inputs
     pub character_type: Option<String>,
     pub language: String,
     pub save_timestamp: String,
@@ -289,6 +311,7 @@ pub fn save_current_game(
         character_name: story_state.character_name.clone(),
         current_scene: story_state.current_scene.clone(),
         variables: story_state.variables.clone(),
+        text_inputs: story_state.text_inputs.clone(),
         character_type: story_state.character_type.clone(),
         language: story_state.language.clone(),
         save_timestamp: format!("{}", timestamp),
@@ -321,6 +344,7 @@ pub fn load_saved_game(display_name: &str) -> Result<GameState, String> {
         game_state.character_name = saved_game.character_name.clone();
         game_state.current_scene = saved_game.current_scene.clone();
         game_state.variables = saved_game.variables.clone();
+        game_state.text_inputs = saved_game.text_inputs.clone();
         game_state.character_type = saved_game.character_type.clone();
         
         Ok(game_state)
@@ -474,6 +498,26 @@ pub fn get_scene_text(scene: &CrisisScene, language: &str, character_name: &str)
         .clone();
     
     text.replace("{character_name}", character_name)
+}
+
+pub fn get_scene_text_with_substitutions(scene: &CrisisScene, language: &str, character_name: &str, text_inputs: &HashMap<String, String>) -> String {
+    let fallback_chain = crate::language::get_language_fallback_chain(language);
+    
+    let mut text = fallback_chain.iter()
+        .find_map(|lang| scene.text.get(lang))
+        .unwrap_or(&"Missing text".to_string())
+        .clone();
+    
+    // Replace character name
+    text = text.replace("{character_name}", character_name);
+    
+    // Replace text input variables
+    for (variable_name, value) in text_inputs {
+        let placeholder = format!("{{{}}}", variable_name);
+        text = text.replace(&placeholder, value);
+    }
+    
+    text
 }
 
 pub fn get_localized_text(text_map: &std::collections::HashMap<String, String>, language: &str) -> String {

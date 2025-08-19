@@ -67,6 +67,7 @@ pub struct GameWindow {
     pub settings_language: String,
     pub current_crisis: Option<crate::crisis::CrisisDefinition>,
     pub story_state: Option<crate::crisis::GameState>,
+    pub choice_text_inputs: std::collections::HashMap<usize, String>, // Track text input values by choice index
 }
 
 #[derive(Debug, Clone)]
@@ -88,6 +89,8 @@ pub enum GameMessage {
         Menu_SettingsLanguageChanged(String),
     QuitGameRequested,
     Game_ChoiceSelected(usize),
+    Game_TextInputChanged(usize, String), // (choice_index, input_value)
+    Game_TextInputSubmitted(usize, String), // (choice_index, input_value)
     Game_RestartRequested,
     Game_SaveAndQuitRequested,
     Game_QuitWithoutSaveRequested,

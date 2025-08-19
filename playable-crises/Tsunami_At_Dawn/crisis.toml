@@ -1,0 +1,159 @@
+# Tsunami at Dawn Crisis - Emergency Response Coordination Story
+
+[metadata]
+id = "tsunami_at_dawn"
+version = "1.0"
+author = "Crisis Game System"
+description_key = "tsunami_at_dawn_desc"
+
+[name]
+eng = "Tsunami at Dawn"
+spa = "Tsunami al Amanecer"
+
+[description]
+eng = "You are an emergency response coordinator when a massive tsunami threatens the coastal region. Coordinate rescue teams and make critical decisions about evacuation and resource allocation."
+spa = "Eres un coordinador de respuesta de emergencia cuando un tsunami masivo amenaza la región costera. Coordina equipos de rescate y toma decisiones críticas sobre evacuación y asignación de recursos."
+
+[character_names]
+male_eng = ["Commander Michael Torres", "Director James Chen", "Coordinator Alex Rodriguez", "Chief David Park", "Manager Kevin Walsh"]
+female_eng = ["Commander Sarah Mitchell", "Director Lisa Anderson", "Coordinator Jessica Kim", "Chief Amanda Wright", "Manager Nicole Garcia"]
+male_spa = ["Comandante Miguel Torres", "Director Carlos Chen", "Coordinador Alejandro Rodríguez", "Jefe David Park", "Gerente Kevin Walsh"]
+female_spa = ["Comandante Sara Mitchell", "Directora Lisa Anderson", "Coordinadora Jessica Kim", "Jefa Amanda Wright", "Gerente Nicole García"]
+
+[story]
+starting_scene = "crisis_begins"
+default_language = "eng"
+
+[mechanics]
+time_limit_minutes = 15
+save_progress = true
+allow_restart = true
+track_decisions = true
+
+[conditions]
+variables = ["teams_available", "evacuation_progress", "partner_trust", "resources_used"]
+
+[conditions.choice_effects]
+"deploy_all_teams" = { teams_available = -8 }
+"deploy_half_teams" = { teams_available = -4 }
+"request_partner_assistance" = { partner_trust = 1 }
+
+[scenes.crisis_begins]
+text.eng = "5:47 AM - You are {character_name}, Emergency Response Coordinator for the Pacific Coastal Region. The seismic monitoring station has detected a magnitude 9.2 earthquake 200 miles offshore. Tsunami waves are expected to reach the coast in 3 hours. You have 8 rescue teams at your disposal and need to coordinate with your emergency response partner to manage evacuations across 5 coastal towns."
+text.spa = "5:47 AM - Eres {character_name}, Coordinador de Respuesta de Emergencia para la Región Costera del Pacífico. La estación de monitoreo sísmico ha detectado un terremoto de magnitud 9.2 a 200 millas de la costa. Se espera que las olas del tsunami lleguen a la costa en 3 horas. Tienes 8 equipos de rescate a tu disposición y necesitas coordinar con tu socio de respuesta de emergencia para gestionar evacuaciones en 5 pueblos costeros."
+background_image = "Tsunami_At_Dawn/crisis_begins.jpg"
+
+[[scenes.crisis_begins.choices]]
+text.eng = "Enter your emergency response partner's name"
+text.spa = "Ingresa el nombre de tu socio de respuesta de emergencia"
+leads_to = "partner_coordination"
+[scenes.crisis_begins.choices.text_input]
+variable_name = "partner_name"
+input_type = "Text"
+min_length = 2
+max_length = 30
+[scenes.crisis_begins.choices.text_input.placeholder]
+eng = "Partner's name..."
+spa = "Nombre del socio..."
+
+[scenes.partner_coordination]
+text.eng = "You immediately contact {partner_name}, your trusted emergency response partner. They report: 'We have coastal evacuation buses ready and emergency shelters prepared inland. How many rescue teams are you deploying to assist with evacuations? We need to know for coordination.' You currently have 8 teams available."
+text.spa = "Contactas inmediatamente a {partner_name}, tu socio de confianza en respuesta de emergencias. Reportan: 'Tenemos autobuses de evacuación costera listos y refugios de emergencia preparados tierra adentro. ¿Cuántos equipos de rescate estás desplegando para ayudar con las evacuaciones? Necesitamos saber para la coordinación.' Actualmente tienes 8 equipos disponibles."
+
+[[scenes.partner_coordination.choices]]
+text.eng = "Specify number of teams to deploy (1-8)"
+text.spa = "Especifica el número de equipos a desplegar (1-8)"
+leads_to = "deployment_decision"
+[scenes.partner_coordination.choices.text_input]
+variable_name = "teams_deployed"
+input_type = "Number"
+min_value = 1
+max_value = 8
+[scenes.partner_coordination.choices.text_input.placeholder]
+eng = "Number of teams..."
+spa = "Número de equipos..."
+
+[scenes.deployment_decision]
+text.eng = "You deploy {teams_deployed} rescue teams to assist with coastal evacuations. {partner_name} acknowledges: 'Roger that, {teams_deployed} teams confirmed. We're coordinating evacuation routes to avoid congestion.' With {teams_deployed} teams deployed, you have critical decisions about resource allocation across the five coastal towns: Seahaven, Coral Bay, Tide Point, Marina Vista, and Sunset Shore."
+text.spa = "Despliegas {teams_deployed} equipos de rescate para ayudar con las evacuaciones costeras. {partner_name} confirma: 'Entendido, {teams_deployed} equipos confirmados. Estamos coordinando rutas de evacuación para evitar congestión.' Con {teams_deployed} equipos desplegados, tienes decisiones críticas sobre asignación de recursos en los cinco pueblos costeros: Seahaven, Coral Bay, Tide Point, Marina Vista y Sunset Shore."
+
+[[scenes.deployment_decision.choices]]
+text.eng = "Focus teams on high-population areas (Seahaven, Marina Vista)"
+text.spa = "Enfocar equipos en áreas de alta población (Seahaven, Marina Vista)"
+leads_to = "high_population_focus"
+
+[[scenes.deployment_decision.choices]]
+text.eng = "Distribute teams evenly across all five towns"
+text.spa = "Distribuir equipos uniformemente entre los cinco pueblos"
+leads_to = "even_distribution"
+
+[[scenes.deployment_decision.choices]]
+text.eng = "Prioritize most vulnerable areas (elderly care facilities)"
+text.spa = "Priorizar áreas más vulnerables (instalaciones de cuidado de ancianos)"
+leads_to = "vulnerable_priority"
+
+[scenes.high_population_focus]
+text.eng = "You concentrate your {teams_deployed} teams on Seahaven and Marina Vista, the two largest population centers. {partner_name} reports: 'Excellent decision - we're seeing rapid evacuation progress in the major towns. However, we're getting distress calls from the smaller communities. Coral Bay has a nursing home and Tide Point has a school that might need assistance.'"
+text.spa = "Concentras tus {teams_deployed} equipos en Seahaven y Marina Vista, los dos centros de población más grandes. {partner_name} reporta: 'Excelente decisión - estamos viendo progreso rápido de evacuación en los pueblos principales. Sin embargo, estamos recibiendo llamadas de socorro de las comunidades más pequeñas. Coral Bay tiene un hogar de ancianos y Tide Point tiene una escuela que podrían necesitar asistencia.'"
+
+[[scenes.high_population_focus.choices]]
+text.eng = "Maintain focus on major population centers"
+text.spa = "Mantener enfoque en centros de población principales"
+leads_to = "major_success"
+
+[[scenes.high_population_focus.choices]]
+text.eng = "Redirect some teams to assist smaller communities"
+text.spa = "Redirigir algunos equipos para ayudar a comunidades más pequeñas"
+leads_to = "resource_reallocation"
+
+[scenes.even_distribution]
+text.eng = "You distribute your {teams_deployed} teams evenly across all five coastal towns. {partner_name} coordinates: 'Good strategy for comprehensive coverage. We're seeing steady progress across all areas, though some towns are moving slower than others. The elderly care facility in Coral Bay is taking longer to evacuate than expected.'"
+text.spa = "Distribuyes tus {teams_deployed} equipos uniformemente entre los cinco pueblos costeros. {partner_name} coordina: 'Buena estrategia para cobertura completa. Estamos viendo progreso constante en todas las áreas, aunque algunos pueblos se mueven más lento que otros. La instalación de cuidado de ancianos en Coral Bay está tomando más tiempo para evacuar de lo esperado.'"
+
+[[scenes.even_distribution.choices]]
+text.eng = "Send additional support to struggling areas"
+text.spa = "Enviar apoyo adicional a áreas con dificultades"
+leads_to = "targeted_support"
+
+[[scenes.even_distribution.choices]]
+text.eng = "Maintain current distribution and monitor progress"
+text.spa = "Mantener distribución actual y monitorear progreso"
+leads_to = "steady_progress"
+
+[scenes.vulnerable_priority]
+text.eng = "You prioritize vulnerable populations, directing your {teams_deployed} teams to elderly care facilities, schools, and hospitals first. {partner_name} reports: 'Humanitarian approach confirmed. We're successfully evacuating the most at-risk populations. However, the general population in some areas is moving slower without dedicated team assistance.'"
+text.spa = "Priorizas poblaciones vulnerables, dirigiendo tus {teams_deployed} equipos a instalaciones de cuidado de ancianos, escuelas y hospitales primero. {partner_name} reporta: 'Enfoque humanitario confirmado. Estamos evacuando exitosamente a las poblaciones de mayor riesgo. Sin embargo, la población general en algunas áreas se mueve más lento sin asistencia dedicada del equipo.'"
+
+[[scenes.vulnerable_priority.choices]]
+text.eng = "Continue prioritizing vulnerable populations"
+text.spa = "Continuar priorizando poblaciones vulnerables"
+leads_to = "humanitarian_success"
+
+[[scenes.vulnerable_priority.choices]]
+text.eng = "Shift focus to general population evacuation"
+text.spa = "Cambiar enfoque a evacuación de población general"
+leads_to = "population_shift"
+
+[scenes.major_success]
+text.eng = "Your focus on major population centers pays off. {partner_name} reports: 'Seahaven and Marina Vista evacuations complete - 85% of coastal population secured! Outstanding coordination!' Your {teams_deployed} teams have successfully evacuated over 50,000 people in record time. While some smaller communities faced challenges, the overall mission prevents the majority of casualties."
+text.spa = "Tu enfoque en centros de población principales da resultado. {partner_name} reporta: '¡Evacuaciones de Seahaven y Marina Vista completas - 85% de la población costera asegurada! ¡Coordinación excepcional!' Tus {teams_deployed} equipos han evacuado exitosamente a más de 50,000 personas en tiempo récord. Aunque algunas comunidades más pequeñas enfrentaron desafíos, la misión general previene la mayoría de las víctimas."
+
+[scenes.resource_reallocation]
+text.eng = "Your quick reallocation decision proves wise. {partner_name} updates: 'Redeployment successful! We've secured both major towns and assisted the vulnerable facilities. Your {teams_deployed} teams adapted brilliantly to changing priorities.' The tsunami arrives, but your coordinated response has minimized casualties across all communities."
+text.spa = "Tu decisión rápida de reasignación resulta sabia. {partner_name} actualiza: '¡Redespliegue exitoso! Hemos asegurado tanto los pueblos principales como ayudado a las instalaciones vulnerables. Tus {teams_deployed} equipos se adaptaron brillantemente a las prioridades cambiantes.' El tsunami llega, pero tu respuesta coordinada ha minimizado las víctimas en todas las comunidades."
+
+[scenes.targeted_support]
+text.eng = "Your targeted support strategy works effectively. {partner_name} confirms: 'Additional support has accelerated evacuations in problem areas. All five towns now show good progress thanks to your {teams_deployed} teams and adaptive management.' The coordinated response ensures comprehensive evacuation success."
+text.spa = "Tu estrategia de apoyo dirigido funciona efectivamente. {partner_name} confirma: 'El apoyo adicional ha acelerado las evacuaciones en áreas problemáticas. Los cinco pueblos ahora muestran buen progreso gracias a tus {teams_deployed} equipos y gestión adaptativa.' La respuesta coordinada asegura éxito completo de evacuación."
+
+[scenes.steady_progress]
+text.eng = "Your steady approach maintains consistent progress. {partner_name} reports: 'All areas showing gradual but reliable evacuation progress. Your {teams_deployed} teams have established effective rhythm across all towns.' While not the fastest response, the methodical approach ensures no area is completely neglected."
+text.spa = "Tu enfoque constante mantiene progreso consistente. {partner_name} reporta: 'Todas las áreas muestran progreso de evacuación gradual pero confiable. Tus {teams_deployed} equipos han establecido un ritmo efectivo en todos los pueblos.' Aunque no es la respuesta más rápida, el enfoque metódico asegura que ninguna área sea completamente descuidada."
+
+[scenes.humanitarian_success]
+text.eng = "Your humanitarian priority proves invaluable. {partner_name} celebrates: 'All vulnerable populations successfully evacuated! Your {teams_deployed} teams have saved countless lives in care facilities and schools. The general population evacuation, while slower, benefits from the clear evacuation routes you've established.' Your compassionate leadership sets an example for crisis response."
+text.spa = "Tu prioridad humanitaria resulta invaluable. {partner_name} celebra: '¡Todas las poblaciones vulnerables evacuadas exitosamente! Tus {teams_deployed} equipos han salvado innumerables vidas en instalaciones de cuidado y escuelas. La evacuación de la población general, aunque más lenta, se beneficia de las rutas de evacuación claras que has establecido.' Tu liderazgo compasivo establece un ejemplo para la respuesta a crisis."
+
+[scenes.population_shift]
+text.eng = "Your strategic shift balances both needs effectively. {partner_name} concludes: 'Tactical adjustment successful! We've secured vulnerable populations first, then accelerated general evacuation. Your {teams_deployed} teams demonstrated excellent flexibility.' The balanced approach achieves both humanitarian goals and overall evacuation efficiency."
+text.spa = "Tu cambio estratégico equilibra ambas necesidades efectivamente. {partner_name} concluye: '¡Ajuste táctico exitoso! Hemos asegurado poblaciones vulnerables primero, luego acelerado la evacuación general. Tus {teams_deployed} equipos demostraron excelente flexibilidad.' El enfoque equilibrado logra tanto objetivos humanitarios como eficiencia general de evacuación."
