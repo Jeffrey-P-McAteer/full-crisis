@@ -153,6 +153,105 @@ text.eng = "Deal with resource shortage for other calls"
 text.spa = "Lidiar con escasez de recursos para otras llamadas"
 leads_to = "resource_crisis"
 
+[scenes.reinforcements]
+text.eng = "You quickly dispatch Engines 15, 22, and Ladder 8 to assist Engine 7. The combined response arrives within 7 minutes, and the incident commander radios: 'Good call on the additional units. We've got a working fire with potential for extension, but we're getting ahead of it now.'"
+text.spa = "Despachas rápidamente Bombas 15, 22 y Escalera 8 para asistir a Bomba 7. La respuesta combinada llega en 7 minutos, y el comandante del incidente radía: 'Buena decisión con las unidades adicionales. Tenemos un incendio activo con potencial de extensión, pero ahora lo estamos controlando.'"
+speaking_character_image = "Fire_Dispatch/alarmed-firefighter.png"
+
+[[scenes.reinforcements.choices]]
+text.eng = "Continue current response"
+text.spa = "Continuar respuesta actual"
+leads_to = "controlled_situation"
+
+[scenes.wait_assessment]
+text.eng = "You decide to wait for Engine 7's assessment. Three critical minutes pass before they radio: 'Engine 7 to dispatch, we have a working structure fire with heavy smoke showing. We need immediate backup - this is bigger than we can handle alone!'"
+text.spa = "Decides esperar la evaluación de Bomba 7. Pasan tres minutos críticos antes de que radíen: '¡Bomba 7 a despacho, tenemos un incendio estructural activo con humo denso visible. Necesitamos refuerzos inmediatos - esto es más grande de lo que podemos manejar solos!'"
+speaking_character_image = "Fire_Dispatch/alarmed-firefighter.png"
+
+[[scenes.wait_assessment.choices]]
+text.eng = "Send massive response now"
+text.spa = "Enviar respuesta masiva ahora"
+leads_to = "late_response"
+
+[scenes.full_alarm]
+text.eng = "You pull the full alarm: 6 trucks, 2 ladder companies, rescue squad, hazmat unit, and 4 ambulances respond. The massive response overwhelms the incident, containing it quickly but using nearly all your available resources."
+text.spa = "Activas la alarma completa: 6 camiones, 2 compañías de escaleras, escuadrón de rescate, unidad de materiales peligrosos y 4 ambulancias responden. La respuesta masiva abruma el incidente, conteniéndolo rápidamente pero usando casi todos tus recursos disponibles."
+
+[[scenes.full_alarm.choices]]
+text.eng = "Monitor citywide coverage"
+text.spa = "Monitorear cobertura de toda la ciudad"
+leads_to = "resource_management"
+
+[scenes.balanced_response]
+text.eng = "You send 4 trucks, 1 ladder company, and 2 ambulances, keeping adequate resources for other emergencies. The response proves effective - the fire is contained with 18 residents evacuated safely."
+text.spa = "Envías 4 camiones, 1 compañía de escaleras y 2 ambulancias, manteniendo recursos adecuados para otras emergencias. La respuesta resulta efectiva - el incendio se contiene con 18 residentes evacuados de forma segura."
+speaking_character_image = "Fire_Dispatch/alarmed-firefighter.png"
+
+[[scenes.balanced_response.choices]]
+text.eng = "Mission accomplished"
+text.spa = "Misión cumplida"
+leads_to = "successful_outcome"
+
+[scenes.second_alarm]
+text.eng = "You call a second alarm, sending Engines 4, 18, 21, Ladder 11, and two additional ambulances. The incident commander radios: 'Second alarm units arriving on scene. We've got good knockdown on the fire and all residents accounted for.'"
+text.spa = "Llamas una segunda alarma, enviando Bombas 4, 18, 21, Escalera 11 y dos ambulancias adicionales. El comandante del incidente radía: 'Unidades de segunda alarma llegando a la escena. Tenemos buen control del incendio y todos los residentes contabilizados.'"
+speaking_character_image = "Fire_Dispatch/alarmed-firefighter.png"
+
+[[scenes.second_alarm.choices]]
+text.eng = "Continue monitoring"
+text.spa = "Continuar monitoreando"
+leads_to = "successful_outcome"
+
+[scenes.limited_backup]
+text.eng = "You send only Engines 9 and 16 as backup. The incident commander radios back: 'We're making progress but it's tight. The fire has extended to two more units. We could use one more truck if available.'"
+text.spa = "Envías solo Bombas 9 y 16 como refuerzo. El comandante del incidente radía de vuelta: 'Estamos progresando pero está ajustado. El incendio se ha extendido a dos unidades más. Podríamos usar un camión más si está disponible.'"
+speaking_character_image = "Fire_Dispatch/alarmed-firefighter.png"
+
+[[scenes.limited_backup.choices]]
+text.eng = "Send one more truck"
+text.spa = "Enviar un camión más"
+leads_to = "adequate_response"
+
+[[scenes.limited_backup.choices]]
+text.eng = "Hold resources for other calls"
+text.spa = "Mantener recursos para otras llamadas"
+leads_to = "stretched_resources"
+
+[scenes.medical_support]
+text.eng = "You dispatch Medic 7, Medic 12, and the Mass Casualty Unit. The additional medical resources prove valuable as 8 residents are treated for smoke inhalation, with 3 transported to the hospital for observation."
+text.spa = "Despachas Médico 7, Médico 12 y la Unidad de Víctimas Masivas. Los recursos médicos adicionales resultan valiosos ya que 8 residentes son tratados por inhalación de humo, con 3 transportados al hospital para observación."
+
+[[scenes.medical_support.choices]]
+text.eng = "Monitor patient outcomes"
+text.spa = "Monitorear resultados de pacientes"
+leads_to = "medical_success"
+
+[scenes.late_response]
+text.eng = "The delayed response proves costly. By the time additional units arrive, the fire has extended to multiple floors. While eventually controlled, 5 residents require hospitalization for smoke inhalation, and property damage is extensive."
+text.spa = "La respuesta tardía resulta costosa. Para cuando llegan las unidades adicionales, el incendio se ha extendido a múltiples pisos. Aunque eventualmente se controla, 5 residentes requieren hospitalización por inhalación de humo, y el daño a la propiedad es extenso."
+
+[scenes.resource_management]
+text.eng = "Your heavy resource commitment pays off - the fire is quickly controlled with no injuries. However, when two smaller fires break out during the incident, response is delayed due to limited available units."
+text.spa = "Tu fuerte compromiso de recursos da resultado - el incendio se controla rápidamente sin lesiones. Sin embargo, cuando dos incendios menores estallan durante el incidente, la respuesta se retrasa debido a las unidades disponibles limitadas."
+
+[scenes.successful_outcome]
+text.eng = "Your strategic resource allocation proves excellent. The fire is contained with minimal property damage, all residents evacuated safely, and you maintain adequate citywide coverage for other emergencies."
+text.spa = "Tu asignación estratégica de recursos resulta excelente. El incendio se contiene con daño mínimo a la propiedad, todos los residentes evacuados de forma segura, y mantienes cobertura adecuada en toda la ciudad para otras emergencias."
+
+[scenes.adequate_response]
+text.eng = "The additional truck makes the difference. The incident commander radios: 'That last unit helped us get control. Fire is knocked down, all residents safe. Good resource management, dispatch.'"
+text.spa = "El camión adicional marca la diferencia. El comandante del incidente radía: 'Esa última unidad nos ayudó a tomar control. Incendio controlado, todos los residentes seguros. Buen manejo de recursos, despacho.'"
+speaking_character_image = "Fire_Dispatch/alarmed-firefighter.png"
+
+[scenes.stretched_resources]
+text.eng = "Your decision to hold resources results in a longer fire suppression time. The incident commander manages with available units, but later reports: 'We got it done, but one more truck would have saved us 20 minutes and reduced property loss.'"
+text.spa = "Tu decisión de mantener recursos resulta en un tiempo de supresión de incendios más largo. El comandante del incidente se las arregla con las unidades disponibles, pero luego reporta: 'Lo logramos, pero un camión más nos habría ahorrado 20 minutos y reducido la pérdida de propiedad.'"
+speaking_character_image = "Fire_Dispatch/alarmed-firefighter.png"
+
+[scenes.medical_success]
+text.eng = "All smoke inhalation victims recover fully thanks to prompt medical care. The incident commander commends your foresight: 'The extra medical units made all the difference. Professional response all around.'"
+text.spa = "Todas las víctimas de inhalación de humo se recuperan completamente gracias a la atención médica rápida. El comandante del incidente elogia tu previsión: 'Las unidades médicas adicionales marcaron toda la diferencia. Respuesta profesional en todos los aspectos.'"
+
 [scenes.resource_crisis]
 text.eng = "The other fires prove more serious due to delayed response from your resource shortage. While the apartment fire had no casualties, the warehouse fire across town spreads unchecked for 15 minutes, causing major property damage. You learn the hard lesson of balancing immediate response with citywide coverage."
 text.spa = "Los otros incendios resultan más serios debido a la respuesta tardía por tu escasez de recursos. Mientras que el incendio del apartamento no tuvo víctimas, el incendio del almacén al otro lado de la ciudad se extiende sin control por 15 minutos, causando daños importantes a la propiedad. Aprendes la dura lección de equilibrar la respuesta inmediata con la cobertura de toda la ciudad."

@@ -130,6 +130,58 @@ text.eng = "Execute perfect landing"
 text.spa = "Ejecutar aterrizaje perfecto"
 leads_to = "narrow_escape"
 
+[scenes.alternate_approach]
+text.eng = "You divert to the alternate airport. The weather is indeed better here - visibility is improving and winds are more manageable. However, your fuel is running dangerously low. This approach must be successful."
+text.spa = "Te desvías al aeropuerto alternativo. El clima es realmente mejor aquí - la visibilidad está mejorando y los vientos son más manejables. Sin embargo, tu combustible se está agotando peligrosamente. Esta aproximación debe ser exitosa."
+
+[[scenes.alternate_approach.choices]]
+text.eng = "Execute careful approach and landing"
+text.spa = "Ejecutar aproximación y aterrizaje cuidadosos"
+leads_to = "successful_alternate"
+
+[scenes.return_original]
+text.eng = "You change course back to the original airport, but precious fuel has been wasted. The storm hasn't improved, and now your options are even more limited. Your co-pilot expresses concern about the remaining fuel."
+text.spa = "Cambias de curso de vuelta al aeropuerto original, pero se ha desperdiciado combustible precioso. La tormenta no ha mejorado, y ahora tus opciones son aún más limitadas. Tu copiloto expresa preocupación sobre el combustible restante."
+
+[[scenes.return_original.choices]]
+text.eng = "Make immediate approach to original airport"
+text.spa = "Hacer aproximación inmediata al aeropuerto original"
+leads_to = "desperate_landing"
+
+[scenes.emergency_landing]
+text.eng = "With emergency services standing by, you line up for the approach through the storm. The runway is barely visible through the torrential rain and lightning. This is a test of all your training and experience."
+text.spa = "Con servicios de emergencia en espera, te alineas para la aproximación a través de la tormenta. La pista es apenas visible a través de la lluvia torrencial y los relámpagos. Esta es una prueba de todo tu entrenamiento y experiencia."
+
+[[scenes.emergency_landing.choices]]
+text.eng = "Execute emergency landing"
+text.spa = "Ejecutar aterrizaje de emergencia"
+leads_to = "emergency_outcome"
+
+[scenes.final_attempt]
+text.eng = "You execute another go-around, but this uses the last of your fuel reserves. The fuel warning lights are now illuminated. You must land immediately - there are no more chances."
+text.spa = "Ejecutas otra pasada, pero esto usa las últimas reservas de combustible. Las luces de advertencia de combustible ahora están encendidas. Debes aterrizar inmediatamente - no hay más oportunidades."
+
+[[scenes.final_attempt.choices]]
+text.eng = "Make final approach with minimal fuel"
+text.spa = "Hacer aproximación final con combustible mínimo"
+leads_to = "last_chance"
+
+[scenes.successful_alternate]
+text.eng = "Your decision to divert proves wise. You land safely at the alternate airport with only minutes of fuel remaining. The passengers are relieved, and you've made the right call despite the challenges."
+text.spa = "Tu decisión de desviarte resulta sabia. Aterrizas de forma segura en el aeropuerto alternativo con solo minutos de combustible restante. Los pasajeros están aliviados, y has tomado la decisión correcta a pesar de los desafíos."
+
+[scenes.desperate_landing]
+text.eng = "With fuel critically low, you attempt the landing at your original destination. The storm is still raging, but your skills and determination see you through. It's a hard landing, but everyone survives."
+text.spa = "Con combustible críticamente bajo, intentas el aterrizaje en tu destino original. La tormenta aún está furiosa, pero tus habilidades y determinación te ven a través. Es un aterrizaje duro, pero todos sobreviven."
+
+[scenes.emergency_outcome]
+text.eng = "Your emergency landing is executed flawlessly despite the severe conditions. The aircraft touches down safely, and emergency crews quickly assist. Your decisive action and professional skill have saved 180 lives."
+text.spa = "Tu aterrizaje de emergencia se ejecuta perfectamente a pesar de las condiciones severas. La aeronave toca el suelo de forma segura, y las cuadrillas de emergencia asisten rápidamente. Tu acción decisiva y habilidad profesional han salvado 180 vidas."
+
+[scenes.last_chance]
+text.eng = "With fuel gauges showing empty, you make your final approach. Through skill, luck, and determination, you manage to touch down just as the engines begin to sputter. It's the most challenging landing of your career, but successful."
+text.spa = "Con indicadores de combustible mostrando vacío, haces tu aproximación final. A través de habilidad, suerte y determinación, logras tocar el suelo justo cuando los motores comienzan a tartamudear. Es el aterrizaje más desafiante de tu carrera, pero exitoso."
+
 [scenes.narrow_escape]
 text.eng = "With masterful skill, you bring the aircraft down smoothly on the alternate runway. The engines flame out just as you clear the active runway. Emergency vehicles surround the aircraft, but everyone is safe. It was the closest call of your career."
 text.spa = "Con habilidad magistral, llevas la aeronave suavemente a la pista alternativa. Los motores se apagan justo cuando liberas la pista activa. Vehículos de emergencia rodean la aeronave, pero todos están a salvo. Fue la llamada más cercana de tu carrera."
