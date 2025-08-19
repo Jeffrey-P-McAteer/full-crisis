@@ -180,11 +180,17 @@ pub fn get_template_name_from_display_name(display_name: &str) -> String {
 }
 
 pub fn get_saved_games() -> SavedGames {
-    crate::storage::get_struct("saved_games").unwrap_or_default()
+    if let Some(content) = crate::storage::get_attr("saved_games") {
+        serde_json::from_str(&content).unwrap_or_default()
+    } else {
+        SavedGames::default()
+    }
 }
 
 pub fn save_games(saved_games: &SavedGames) {
-    crate::storage::set_struct("saved_games", saved_games);
+    if let Ok(serialized) = serde_json::to_string(saved_games) {
+        crate::storage::set_attr("saved_games", &serialized);
+    }
 }
 
 pub fn get_saved_crisis_names() -> Vec<String> {

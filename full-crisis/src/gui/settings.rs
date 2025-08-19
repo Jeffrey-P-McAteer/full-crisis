@@ -9,10 +9,16 @@ impl GameWindow {
             language: self.settings_language.clone(),
             last_username: self.new_game_player_name.clone(),
         };
-        crate::storage::set_struct("game_settings", &settings);
+        if let Ok(serialized) = serde_json::to_string(&settings) {
+            crate::storage::set_attr("game_settings", &serialized);
+        }
     }
 
     pub fn load_settings() -> GameSettings {
-        crate::storage::get_struct("game_settings").unwrap_or_default()
+        if let Some(content) = crate::storage::get_attr("game_settings") {
+            serde_json::from_str(&content).unwrap_or_default()
+        } else {
+            GameSettings::default()
+        }
     }
 }

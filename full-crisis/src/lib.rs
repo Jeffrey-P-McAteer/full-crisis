@@ -58,25 +58,38 @@ pub fn init_global_vars() {
 
   // Cannot assign to OS_COLOR_THEME in any reasonable manner
 
-  // Increment run number every time we start; TODO put more than proof-of-concept data here!
-  let last_run_val = crate::storage::get_attr("run-times").unwrap_or_else(|| "0".to_string());
-  let last_run_num = last_run_val.parse::<i32>().unwrap_or(0);
-  crate::storage::set_attr("run-times", &format!("{}", last_run_num+1))
-
 }
 
 /// Quit the game application
 #[cfg(target_arch = "wasm32")]
 pub fn quit_game() {
-    // On wasm32, navigate back in browser history
+    use wasm_bindgen::prelude::*;
+    
+    #[wasm_bindgen]
     extern "C" {
-        fn browser_go_back();
+        #[wasm_bindgen(js_name = "history.back")]
+        fn history_back();
     }
-    unsafe { browser_go_back(); }
+    
+    // Navigate back in browser history
+    history_back();
 }
 
 #[cfg(not(target_arch = "wasm32"))]
 pub fn quit_game() -> iced::Task<iced::advanced::graphics::core::event::Status> {
     // On native platforms, close window and exit
     iced::window::get_latest().and_then(iced::window::close).chain(iced::exit())
+}
+
+// Helper function for GUI that returns the correct Task type
+pub fn quit_game_gui<T: Send + 'static>() -> iced::Task<T> {
+    #[cfg(target_arch = "wasm32")]
+    {
+        quit_game();
+        iced::Task::none()
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        quit_game().map(|_| unreachable!())
+    }
 }

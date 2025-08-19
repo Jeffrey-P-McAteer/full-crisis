@@ -252,9 +252,7 @@ impl GameWindow {
             }
             GameMessage::QuitGameRequested => {
                 // TODO and game-save requirements should go here
-
-                iced::window::get_latest().and_then(iced::window::close).chain(iced::exit())
-                // ^ this exit assumes a single window exists, if we have 2+ we will need to iterate, close them all, and then call iced::exit()
+                crate::quit_game_gui()
             }
             GameMessage::Game_ChoiceSelected(choice_index) => {
                 if let (Some(crisis), Some(story_state)) = (&self.current_crisis, &mut self.story_state) {
@@ -424,7 +422,7 @@ impl GameWindow {
             .center_x(Length::Fill)
             .center_y(Length::Fill);
 
-        let num_times_run = crate::storage::get_attr("run-times").unwrap_or_else(|| "First Run!".to_string());
+        let app_version = env!("CARGO_PKG_VERSION");
 
         let user_language = &self.settings_language;
         let buttons = column![
@@ -440,7 +438,7 @@ impl GameWindow {
             button(text(crate::translations::t(crate::translations::TranslationKey::QuitGame, user_language)))
                 .on_press(GameMessage::QuitGameRequested)
                 .width(Length::Fill),
-            text(format!("Run: {}", num_times_run))
+            text(format!("Version {}", app_version))
                 .width(Length::Fill),
         ]
         .spacing(10)
