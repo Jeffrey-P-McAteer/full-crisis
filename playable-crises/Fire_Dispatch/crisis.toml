@@ -113,6 +113,7 @@ leads_to = "balanced_response"
 text.eng = "You dispatch Engines 7 and 12 with Ladder 3. Total response time: 6 minutes. The crews arrive to find a working fire on the third floor with smoke showing from multiple windows. The incident commander radios: 'We need more resources - this is extending to the fourth floor.'"
 text.spa = "Despachas Bombas 7 y 12 con Escalera 3. Tiempo total de respuesta: 6 minutos. Las cuadrillas llegan para encontrar un incendio activo en el tercer piso con humo visible desde múltiples ventanas. El comandante del incidente radía: 'Necesitamos más recursos - esto se está extendiendo al cuarto piso.'"
 speaking_character_image = "Fire_Dispatch/alarmed-firefighter.png"
+background_image = "Fire_Dispatch/standard_response.jpg"
 
 [[scenes.standard_response.choices]]
 text.eng = "Send additional units and call second alarm"
