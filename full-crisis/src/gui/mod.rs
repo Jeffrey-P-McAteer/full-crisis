@@ -63,7 +63,9 @@ impl GameWindow {
     }
 
     pub fn update(&mut self, message: GameMessage) -> Task<GameMessage> {
-        match message {
+        let start_time = std::time::Instant::now();
+        
+        let result = match message {
             GameMessage::Menu_NewGameRequested => {
                 if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                     *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::NewGame);
@@ -231,11 +233,21 @@ impl GameWindow {
                 Task::none()
             },
             _ => Task::none(),
+        };
+        
+        let elapsed = start_time.elapsed();
+        let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
+        if *verbosity >= 2 {
+            eprintln!("[TIMING] GameWindow::update() took {:?}", elapsed);
         }
+        
+        result
     }
 
     pub fn view(&self) -> Element<'_, GameMessage> {
-        if let Ok(evt_loop_rguard) = self.game_state.active_event_loop.read() {
+        let start_time = std::time::Instant::now();
+        
+        let result = if let Ok(evt_loop_rguard) = self.game_state.active_event_loop.read() {
             match evt_loop_rguard.clone() {
                 crate::game::ActiveEventLoop::WelcomeScreen(_welcome_screen_state) => {
                     self.view_menu_screen()
@@ -250,7 +262,15 @@ impl GameWindow {
         }
         else {
             text("Error, cannot read game_state.active_event_loop").into()
+        };
+        
+        let elapsed = start_time.elapsed();
+        let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
+        if *verbosity >= 2 {
+            eprintln!("[TIMING] GameWindow::view() took {:?}", elapsed);
         }
+        
+        result
     }
 
     pub fn theme(&self) -> Theme {
