@@ -43,6 +43,8 @@ pub enum TranslationKey {
     End,
     SceneNotFound,
     RequirementsNotMet,
+    SaveAndQuit,
+    Quit,
     
     // Difficulty Levels
     Easy,
@@ -446,6 +448,30 @@ impl TranslationManager {
                 .add_translation("jpn", "メニューに戻る")
                 .add_translation("kor", "메뉴로 돌아가기")
                 .add_translation("zho", "返回菜单"),
+            
+            Translation::new(TranslationKey::SaveAndQuit)
+                .add_translation("eng", "Save & Quit")
+                .add_translation("spa", "Guardar y Salir")
+                .add_translation("fra", "Sauvegarder et Quitter")
+                .add_translation("deu", "Speichern & Beenden")
+                .add_translation("ita", "Salva ed Esci")
+                .add_translation("por", "Salvar e Sair")
+                .add_translation("rus", "Сохранить и Выйти")
+                .add_translation("jpn", "保存して終了")
+                .add_translation("kor", "저장하고 나가기")
+                .add_translation("zho", "保存并退出"),
+            
+            Translation::new(TranslationKey::Quit)
+                .add_translation("eng", "Quit")
+                .add_translation("spa", "Salir")
+                .add_translation("fra", "Quitter")
+                .add_translation("deu", "Beenden")
+                .add_translation("ita", "Esci")
+                .add_translation("por", "Sair")
+                .add_translation("rus", "Выйти")
+                .add_translation("jpn", "終了")
+                .add_translation("kor", "나가기")
+                .add_translation("zho", "退出"),
             
             Translation::new(TranslationKey::End)
                 .add_translation("eng", "--- END ---")

@@ -198,10 +198,21 @@ impl GameWindow {
             .spacing(10)
             .align_y(Center);
 
-        let crisis_names = crate::crisis::get_crisis_names();
+        let crisis_names = crate::crisis::get_crisis_names_localized(user_language);
+        let selected_display_name = self.new_game_game_template.as_ref()
+            .and_then(|template_name| {
+                // Find the display name that matches this template
+                for display_name in &crisis_names {
+                    let found_template = crate::crisis::get_template_name_from_display_name(display_name);
+                    if found_template == *template_name {
+                        return Some(display_name.clone());
+                    }
+                }
+                None
+            });
         let game_type_picker = pick_list(
             crisis_names,
-            self.new_game_game_template.clone(),
+            selected_display_name,
             GameMessage::Menu_NewGameTemplateChoiceAltered,
         )
         .placeholder(crate::translations::t(crate::translations::TranslationKey::SelectGameType, user_language))
@@ -219,18 +230,43 @@ impl GameWindow {
             .on_press(GameMessage::Menu_NewGameStartClicked)
             .padding(10);
 
-        let layout = iced::widget::Column::new()
+        let mut layout = iced::widget::Column::new()
             .spacing(20)
             .padding(20)
             .push(name_row)
-            .push(game_type_row)
-            .push(
-                Container::new(go_button)
-                    .align_x(iced::alignment::Horizontal::Right)
-                    .width(Length::Fill),
-            )
-            .height(Length::Fill)
-            .align_x(Left);
+            .push(game_type_row);
+
+        // Add description area if a crisis is selected
+        if let Some(ref description) = self.new_game_selected_description {
+            let description_text = Text::new(description)
+                .size(14)
+                .wrapping(iced::widget::text::Wrapping::Word)
+                .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
+            
+            let description_container = Container::new(description_text)
+                .width(Length::Fill)
+                .padding(15)
+                .style(move |theme: &Theme| {
+                    let palette = theme.extended_palette();
+                    iced::widget::container::Style {
+                        background: Some(palette.background.weak.color.into()),
+                        border: iced::border::rounded(8)
+                            .color(palette.primary.weak.color)
+                            .width(1),
+                        ..iced::widget::container::Style::default()
+                    }
+                });
+            
+            layout = layout.push(description_container);
+        }
+
+        layout = layout.push(
+            Container::new(go_button)
+                .align_x(iced::alignment::Horizontal::Right)
+                .width(Length::Fill),
+        )
+        .height(Length::Fill)
+        .align_x(Left);
 
         let self_theme = self.theme();
         Container::<GameMessage, Theme, iced::Renderer>::new(layout)

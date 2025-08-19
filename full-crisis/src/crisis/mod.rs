@@ -169,13 +169,27 @@ impl SavedGames {
 }
 
 pub fn get_crisis_names() -> Vec<String> {
+    get_crisis_names_localized("eng")
+}
+
+pub fn get_crisis_names_localized(language: &str) -> Vec<String> {
     let mut names = vec![];
     
     for pc in PlayableCrises::iter() {
         let path = pc.as_ref();
         if path.ends_with("crisis.toml") {
-            let crisis_name = path.replace("/crisis.toml", "").replace("_", " ");
-            names.push(crisis_name);
+            let folder_name = path.replace("/crisis.toml", "");
+            match load_crisis(&folder_name) {
+                Ok(crisis) => {
+                    let localized_name = get_localized_text(&crisis.name, language);
+                    names.push(localized_name);
+                }
+                Err(_) => {
+                    // Fallback to folder name with underscores replaced
+                    let crisis_name = folder_name.replace("_", " ");
+                    names.push(crisis_name);
+                }
+            }
         }
     }
     
@@ -186,7 +200,41 @@ pub fn get_crisis_names() -> Vec<String> {
     names
 }
 
+pub fn get_crisis_info_by_display_name(display_name: &str, language: &str) -> Option<(String, String)> {
+    for pc in PlayableCrises::iter() {
+        let path = pc.as_ref();
+        if path.ends_with("crisis.toml") {
+            let folder_name = path.replace("/crisis.toml", "");
+            if let Ok(crisis) = load_crisis(&folder_name) {
+                let localized_name = get_localized_text(&crisis.name, language);
+                if localized_name == display_name {
+                    let description = get_localized_text(&crisis.description, language);
+                    return Some((folder_name, description));
+                }
+            }
+        }
+    }
+    None
+}
+
 pub fn get_template_name_from_display_name(display_name: &str) -> String {
+    // Try to find the folder name by matching display name across all languages
+    for pc in PlayableCrises::iter() {
+        let path = pc.as_ref();
+        if path.ends_with("crisis.toml") {
+            let folder_name = path.replace("/crisis.toml", "");
+            if let Ok(crisis) = load_crisis(&folder_name) {
+                // Check if display name matches any localized version
+                for (_, localized_name) in &crisis.name {
+                    if localized_name == display_name {
+                        return folder_name;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Fallback to old behavior if no match found
     display_name.replace(" ", "_")
 }
 

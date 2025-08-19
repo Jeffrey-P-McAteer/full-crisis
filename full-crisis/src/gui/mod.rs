@@ -48,6 +48,7 @@ impl GameWindow {
                 game_state: crate::game::GameState::new(),
                 new_game_player_name: loaded_settings.last_username,
                 new_game_game_template: None,
+                new_game_selected_description: None,
                 continue_game_game_choice: None,
                 continue_game_delete_confirmation: None,
                 settings_game_save_folder: loaded_settings.game_save_folder,
@@ -83,6 +84,14 @@ impl GameWindow {
                 // Convert display name to template name (folder path)
                 let template_name = crate::crisis::get_template_name_from_display_name(&game_template);
                 self.new_game_game_template = Some(template_name);
+                
+                // Get the description for the selected crisis
+                if let Some((_, description)) = crate::crisis::get_crisis_info_by_display_name(&game_template, &self.settings_language) {
+                    self.new_game_selected_description = Some(description);
+                } else {
+                    self.new_game_selected_description = None;
+                }
+                
                 Task::none()
             }
             GameMessage::Menu_NewGameStartClicked => {
@@ -336,6 +345,9 @@ impl GameWindow {
                 }
                 self.current_crisis = None;
                 self.story_state = None;
+                // Clear new game selections when returning to menu
+                self.new_game_game_template = None;
+                self.new_game_selected_description = None;
                 Task::none()
             }
             GameMessage::Game_SaveAndQuitRequested => {
@@ -368,6 +380,8 @@ impl GameWindow {
                 // Clear game state
                 self.current_crisis = None;
                 self.story_state = None;
+                self.new_game_game_template = None;
+                self.new_game_selected_description = None;
                 
                 Task::none()
             }
@@ -385,6 +399,8 @@ impl GameWindow {
                 // Clear game state
                 self.current_crisis = None;
                 self.story_state = None;
+                self.new_game_game_template = None;
+                self.new_game_selected_description = None;
                 
                 Task::none()
             }
@@ -619,7 +635,7 @@ impl GameWindow {
             
             // Save and Quit buttons for upper-left
             let save_button = button(
-                    text("Save & Quit")
+                    text(crate::translations::t(crate::translations::TranslationKey::SaveAndQuit, &story_state.language))
                         .align_x(Center)
                 )
                 .on_press(GameMessage::Game_SaveAndQuitRequested)
@@ -627,7 +643,7 @@ impl GameWindow {
                 .width(Length::Fixed(140.0));
                 
             let quit_button = button(
-                    text("Quit")
+                    text(crate::translations::t(crate::translations::TranslationKey::Quit, &story_state.language))
                         .align_x(Center)
                 )
                 .on_press(GameMessage::Game_QuitWithoutSaveRequested)

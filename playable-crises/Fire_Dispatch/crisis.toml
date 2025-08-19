@@ -7,7 +7,7 @@ author = "Crisis Game System"
 description_key = "fire_dispatch_desc"
 
 [name]
-eng = "Emergency Dispatch"
+eng = "Fire Dispatch"
 spa = "Despacho de Emergencia"
 
 [description]

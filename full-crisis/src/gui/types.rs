@@ -58,6 +58,7 @@ pub struct GameWindow {
     pub game_state: crate::game::GameState,
     pub new_game_player_name: String,
     pub new_game_game_template: Option<String>,
+    pub new_game_selected_description: Option<String>,
     pub continue_game_game_choice: Option<String>,
     pub continue_game_delete_confirmation: Option<String>,
     pub settings_game_save_folder: String,
