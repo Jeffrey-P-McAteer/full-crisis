@@ -8,6 +8,7 @@ pub enum TranslationKey {
     ContinueGame,
     NewGame,
     Settings,
+    Licenses,
     QuitGame,
     
     // New Game UI
@@ -156,6 +157,18 @@ impl TranslationManager {
                 .add_translation("jpn", "設定")
                 .add_translation("kor", "설정")
                 .add_translation("zho", "设置"),
+            
+            Translation::new(TranslationKey::Licenses)
+                .add_translation("eng", "Licenses")
+                .add_translation("spa", "Licencias")
+                .add_translation("fra", "Licences")
+                .add_translation("deu", "Lizenzen")
+                .add_translation("ita", "Licenze")
+                .add_translation("por", "Licenças")
+                .add_translation("rus", "Лицензии")
+                .add_translation("jpn", "ライセンス")
+                .add_translation("kor", "라이선스")
+                .add_translation("zho", "许可证"),
             
             Translation::new(TranslationKey::QuitGame)
                 .add_translation("eng", "Quit Game")

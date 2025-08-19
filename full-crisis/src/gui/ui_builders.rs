@@ -21,6 +21,9 @@ impl GameWindow {
                     crate::game::WelcomeScreenView::Settings => {
                         self.build_settings_ui()
                     }
+                    crate::game::WelcomeScreenView::Licenses => {
+                        self.build_licenses_ui()
+                    }
                     _ => {
                         Container::<GameMessage, Theme, iced::Renderer>::new(text(
                             crate::translations::t(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
@@ -386,5 +389,111 @@ impl GameWindow {
             .height(Length::Fixed(MAIN_MENU_HEIGHT_PX))
             .style(move |_theme| super::menu_right_box_style(&self_theme))
             .padding(10)
+    }
+
+    pub fn build_licenses_ui(&self) -> Container<'_, GameMessage> {
+        
+        let license_content = text(Self::get_license_content())
+            .size(14)
+            .wrapping(iced::widget::text::Wrapping::Word);
+        
+        let scrollable_content = iced::widget::Scrollable::new(
+            column![license_content]
+                .spacing(10)
+                .padding(20)
+        )
+        .width(Length::Fill)
+        .height(Length::Fill);
+        
+        let layout = column![scrollable_content]
+            .spacing(10)
+            .padding(10)
+            .height(Length::Fill)
+            .width(Length::Fill);
+
+        let self_theme = self.theme();
+        Container::<GameMessage, Theme, iced::Renderer>::new(layout)
+            .width(Length::Fixed(MAIN_MENU_RIGHT_WIDTH_PX))
+            .height(Length::Fixed(MAIN_MENU_HEIGHT_PX))
+            .style(move |_theme| super::menu_right_box_style(&self_theme))
+            .padding(10)
+    }
+
+    fn get_license_content() -> String {
+        r#"THIRD-PARTY SOFTWARE LICENSES AND ATTRIBUTIONS
+
+This software includes the following third-party libraries:
+
+=== RUST LIBRARIES ===
+
+Iced GUI Framework
+License: MIT
+Copyright (c) 2019 Héctor Ramón
+Used for: User interface rendering and interaction
+
+Serde
+License: MIT OR Apache-2.0
+Copyright (c) 2014 Erick Tryzelaar and David Tolnay
+Used for: Serialization and deserialization
+
+TOML
+License: MIT OR Apache-2.0
+Copyright (c) 2014 Alex Crichton
+Used for: Configuration file parsing
+
+once_cell
+License: MIT OR Apache-2.0
+Copyright (c) 2018 Aleksey Kladov
+Used for: Lazy static initialization
+
+rust-embed
+License: MIT
+Copyright (c) 2018 pyros2097
+Used for: Asset embedding in binary
+
+=== IMAGE ATTRIBUTIONS ===
+
+Background Images and Character Assets:
+- Crisis background images are original compositions or sourced from public domain collections
+- Character portraits are generated or sourced from royalty-free collections
+- UI elements and icons are custom-designed for this application
+
+If you believe any content violates copyright, please contact the development team.
+
+=== FULL LICENSE TEXTS ===
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Apache License 2.0
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License."#.to_string()
     }
 }

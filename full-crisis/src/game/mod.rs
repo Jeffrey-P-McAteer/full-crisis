@@ -27,6 +27,7 @@ pub enum WelcomeScreenView {
     NewGame,
     ContinueGame,
     Settings,
+    Licenses,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]

@@ -282,6 +282,12 @@ impl GameWindow {
                 }
                 Task::none()
             }
+            GameMessage::Menu_LicensesRequested => {
+                if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
+                    *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::Licenses);
+                }
+                Task::none()
+            }
             GameMessage::Menu_SettingsGameSaveFolderChanged(folder_path) => {
                 eprintln!("Settings: Game Save Folder changed to: {}", folder_path);
                 self.settings_game_save_folder = folder_path;
@@ -582,6 +588,9 @@ impl GameWindow {
                 .width(Length::Fill),
             button(text(crate::translations::t(crate::translations::TranslationKey::Settings, user_language)))
                 .on_press(GameMessage::Menu_SettingsRequested)
+                .width(Length::Fill),
+            button(text(crate::translations::t(crate::translations::TranslationKey::Licenses, user_language)))
+                .on_press(GameMessage::Menu_LicensesRequested)
                 .width(Length::Fill),
             button(text(crate::translations::t(crate::translations::TranslationKey::QuitGame, user_language)))
                 .on_press(GameMessage::QuitGameRequested)

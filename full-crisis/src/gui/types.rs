@@ -87,6 +87,7 @@ pub enum GameMessage {
         Menu_SettingsDifficultyLevelChanged(DifficultyLevel),
         Menu_SettingsAutosaveToggled(bool),
         Menu_SettingsLanguageChanged(String),
+    Menu_LicensesRequested,
     QuitGameRequested,
     Game_ChoiceSelected(usize),
     Game_TextInputChanged(usize, String), // (choice_index, input_value)
