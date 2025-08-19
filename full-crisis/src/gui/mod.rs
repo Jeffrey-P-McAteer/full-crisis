@@ -615,10 +615,11 @@ impl GameWindow {
                     .width(Length::Fill)
                     .height(Length::Fill))
                 } else {
-                    error_messages.push(format!("Background image not found: {}", bg_path));
+                    error_messages.push(format!("Scene '{}': Background image file not found: {}", story_state.current_scene, bg_path));
                     None
                 }
             } else {
+                error_messages.push(format!("Scene '{}': No background_image defined", story_state.current_scene));
                 None
             };
 
@@ -796,10 +797,11 @@ impl GameWindow {
                         .padding(20)
                         .align_x(Center)
                 } else {
-                    error_messages.push(format!("Character image not found: {}", char_path));
+                    error_messages.push(format!("Scene '{}': Character image file not found: {}", story_state.current_scene, char_path));
                     container(Space::with_width(Length::Fill))
                 }
             } else {
+                error_messages.push(format!("Scene '{}': No speaking_character_image defined", story_state.current_scene));
                 container(Space::with_width(Length::Fill))
             };
 
