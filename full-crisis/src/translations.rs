@@ -21,6 +21,10 @@ pub enum TranslationKey {
     SavedGame,
     SelectGame,
     Play,
+    Delete,
+    DeleteGame,
+    ConfirmDelete,
+    Cancel,
     
     // Settings UI
     GameSaveFolder,
@@ -260,6 +264,54 @@ impl TranslationManager {
                 .add_translation("jpn", "プレイ")
                 .add_translation("kor", "플레이")
                 .add_translation("zho", "开始游戏"),
+            
+            Translation::new(TranslationKey::Delete)
+                .add_translation("eng", "Delete")
+                .add_translation("spa", "Eliminar")
+                .add_translation("fra", "Supprimer")
+                .add_translation("deu", "Löschen")
+                .add_translation("ita", "Elimina")
+                .add_translation("por", "Excluir")
+                .add_translation("rus", "Удалить")
+                .add_translation("jpn", "削除")
+                .add_translation("kor", "삭제")
+                .add_translation("zho", "删除"),
+            
+            Translation::new(TranslationKey::DeleteGame)
+                .add_translation("eng", "Are you sure you want to delete this saved game?")
+                .add_translation("spa", "¿Estás seguro de que quieres eliminar esta partida guardada?")
+                .add_translation("fra", "Êtes-vous sûr de vouloir supprimer cette partie sauvegardée?")
+                .add_translation("deu", "Sind Sie sicher, dass Sie diesen Spielstand löschen möchten?")
+                .add_translation("ita", "Sei sicuro di voler eliminare questo gioco salvato?")
+                .add_translation("por", "Tem certeza de que deseja excluir este jogo salvo?")
+                .add_translation("rus", "Вы уверены, что хотите удалить это сохранение?")
+                .add_translation("jpn", "この保存されたゲームを削除しますか？")
+                .add_translation("kor", "이 저장된 게임을 삭제하시겠습니까?")
+                .add_translation("zho", "您确定要删除此保存的游戏吗？"),
+            
+            Translation::new(TranslationKey::ConfirmDelete)
+                .add_translation("eng", "Yes, Delete")
+                .add_translation("spa", "Sí, Eliminar")
+                .add_translation("fra", "Oui, Supprimer")
+                .add_translation("deu", "Ja, Löschen")
+                .add_translation("ita", "Sì, Elimina")
+                .add_translation("por", "Sim, Excluir")
+                .add_translation("rus", "Да, Удалить")
+                .add_translation("jpn", "はい、削除")
+                .add_translation("kor", "네, 삭제")
+                .add_translation("zho", "是的，删除"),
+            
+            Translation::new(TranslationKey::Cancel)
+                .add_translation("eng", "Cancel")
+                .add_translation("spa", "Cancelar")
+                .add_translation("fra", "Annuler")
+                .add_translation("deu", "Abbrechen")
+                .add_translation("ita", "Annulla")
+                .add_translation("por", "Cancelar")
+                .add_translation("rus", "Отмена")
+                .add_translation("jpn", "キャンセル")
+                .add_translation("kor", "취소")
+                .add_translation("zho", "取消"),
             
             // Settings UI
             Translation::new(TranslationKey::GameSaveFolder)

@@ -65,15 +65,110 @@ impl GameWindow {
             .on_press(GameMessage::Menu_ContinueGameStartClicked)
             .padding(10);
 
-        let layout = iced::widget::Column::new()
+        let delete_button = if self.continue_game_game_choice.is_some() {
+            button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)))
+                .on_press(GameMessage::Menu_ContinueGameDeleteRequested(
+                    self.continue_game_game_choice.clone().unwrap_or_default()
+                ))
+                .padding(10)
+                .style(move |theme: &Theme, status| {
+                    let palette = theme.extended_palette();
+                    iced::widget::button::Style {
+                        background: Some(match status {
+                            iced::widget::button::Status::Active => palette.danger.base.color.into(),
+                            iced::widget::button::Status::Hovered => palette.danger.strong.color.into(),
+                            _ => palette.danger.weak.color.into(),
+                        }),
+                        text_color: palette.danger.base.text,
+                        border: iced::border::rounded(4),
+                        ..iced::widget::button::Style::default()
+                    }
+                })
+        } else {
+            button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)))
+                .padding(10)
+                .style(move |theme: &Theme, _status| {
+                    let palette = theme.extended_palette();
+                    iced::widget::button::Style {
+                        background: Some(palette.background.weak.color.into()),
+                        text_color: palette.background.strong.text,
+                        border: iced::border::rounded(4)
+                            .color(palette.background.strong.color)
+                            .width(1),
+                        ..iced::widget::button::Style::default()
+                    }
+                })
+        };
+
+        let button_row = row![delete_button, iced::widget::horizontal_space(), go_button]
+            .spacing(10)
+            .align_y(Center);
+
+        let mut layout = iced::widget::Column::new()
             .spacing(20)
             .padding(20)
-            .push(game_type_row)
-            .push(
-                Container::new(go_button)
-                    .align_x(iced::alignment::Horizontal::Right)
-                    .width(Length::Fill),
-            )
+            .push(game_type_row);
+
+        // Add confirmation dialog if delete is requested
+        if let Some(ref game_name) = self.continue_game_delete_confirmation {
+            let confirmation_text = Text::new(crate::translations::t(crate::translations::TranslationKey::DeleteGame, user_language));
+            let game_info_text = Text::new(format!("\"{}\"", game_name))
+                .size(16)
+                .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
+            
+            let confirm_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::ConfirmDelete, user_language)))
+                .on_press(GameMessage::Menu_ContinueGameDeleteConfirmed(game_name.clone()))
+                .padding(10)
+                .style(move |theme: &Theme, status| {
+                    let palette = theme.extended_palette();
+                    iced::widget::button::Style {
+                        background: Some(match status {
+                            iced::widget::button::Status::Active => palette.danger.base.color.into(),
+                            iced::widget::button::Status::Hovered => palette.danger.strong.color.into(),
+                            _ => palette.danger.weak.color.into(),
+                        }),
+                        text_color: palette.danger.base.text,
+                        border: iced::border::rounded(4),
+                        ..iced::widget::button::Style::default()
+                    }
+                });
+            
+            let cancel_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Cancel, user_language)))
+                .on_press(GameMessage::Menu_ContinueGameDeleteRequested("".to_string())) // Cancel by clearing
+                .padding(10);
+            
+            let confirmation_buttons = row![confirm_button, cancel_button]
+                .spacing(10)
+                .align_y(Center);
+                
+            let confirmation_dialog = column![
+                confirmation_text,
+                game_info_text,
+                Container::new(confirmation_buttons)
+                    .align_x(iced::alignment::Horizontal::Center)
+                    .width(Length::Fill)
+            ]
+            .spacing(10)
+            .padding(15)
+            .align_x(Center);
+            
+            let confirmation_container = Container::new(confirmation_dialog)
+                .width(Length::Fill)
+                .style(move |theme: &Theme| {
+                    let palette = theme.extended_palette();
+                    iced::widget::container::Style {
+                        background: Some(palette.danger.weak.color.into()),
+                        border: iced::border::rounded(8)
+                            .color(palette.danger.base.color)
+                            .width(2),
+                        ..iced::widget::container::Style::default()
+                    }
+                });
+                
+            layout = layout.push(confirmation_container);
+        }
+
+        layout = layout.push(button_row)
             .height(Length::Fill)
             .align_x(Left);
 

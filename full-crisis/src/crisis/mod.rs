@@ -155,6 +155,17 @@ impl SavedGames {
             None
         }
     }
+
+    pub fn delete_save_by_display_name(&mut self, display_name: &str) -> bool {
+        // Extract save name from display format "SaveName - CrisisName (Date)"
+        if let Some(save_name) = display_name.split(" - ").next() {
+            let original_len = self.saves.len();
+            self.saves.retain(|s| s.save_name != save_name);
+            self.saves.len() != original_len
+        } else {
+            false
+        }
+    }
 }
 
 pub fn get_crisis_names() -> Vec<String> {
@@ -265,6 +276,17 @@ pub fn load_saved_game(display_name: &str) -> Result<GameState, String> {
         game_state.character_type = saved_game.character_type.clone();
         
         Ok(game_state)
+    } else {
+        Err(format!("Saved game '{}' not found", display_name))
+    }
+}
+
+pub fn delete_saved_game(display_name: &str) -> Result<(), String> {
+    let mut saved_games = get_saved_games();
+    
+    if saved_games.delete_save_by_display_name(display_name) {
+        save_games(&saved_games);
+        Ok(())
     } else {
         Err(format!("Saved game '{}' not found", display_name))
     }

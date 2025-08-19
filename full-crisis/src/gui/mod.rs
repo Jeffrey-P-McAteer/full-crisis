@@ -49,6 +49,7 @@ impl GameWindow {
                 new_game_player_name: loaded_settings.last_username,
                 new_game_game_template: None,
                 continue_game_game_choice: None,
+                continue_game_delete_confirmation: None,
                 settings_game_save_folder: loaded_settings.game_save_folder,
                 settings_difficulty_level: loaded_settings.difficulty_level,
                 settings_autosave: loaded_settings.autosave,
@@ -217,6 +218,51 @@ impl GameWindow {
                     }
                 }
                 
+                Task::none()
+            }
+            GameMessage::Menu_ContinueGameDeleteRequested(game_name) => {
+                let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
+                if *verbosity > 0 {
+                    eprintln!("[VERBOSE] Menu_ContinueGameDeleteRequested: game_name={:?}", game_name);
+                }
+                
+                if game_name.is_empty() {
+                    // Cancel deletion
+                    self.continue_game_delete_confirmation = None;
+                } else {
+                    // Show confirmation dialog
+                    self.continue_game_delete_confirmation = Some(game_name);
+                }
+                Task::none()
+            }
+            GameMessage::Menu_ContinueGameDeleteConfirmed(game_name) => {
+                let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
+                if *verbosity > 0 {
+                    eprintln!("[VERBOSE] Menu_ContinueGameDeleteConfirmed: game_name={:?}", game_name);
+                }
+                
+                // Perform the deletion
+                match crate::crisis::delete_saved_game(&game_name) {
+                    Ok(()) => {
+                        if *verbosity > 0 {
+                            eprintln!("[VERBOSE] Successfully deleted saved game: {}", game_name);
+                        }
+                        // Clear the selected game if it was the one being deleted
+                        if let Some(ref selected_game) = self.continue_game_game_choice {
+                            if selected_game == &game_name {
+                                self.continue_game_game_choice = None;
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        if *verbosity > 0 {
+                            eprintln!("[VERBOSE] Failed to delete saved game '{}': {}", game_name, e);
+                        }
+                    }
+                }
+                
+                // Clear confirmation dialog
+                self.continue_game_delete_confirmation = None;
                 Task::none()
             }
 
