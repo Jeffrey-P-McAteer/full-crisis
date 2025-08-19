@@ -554,15 +554,21 @@ impl GameWindow {
             }
             
             // Save and Quit buttons for upper-left
-            let save_button = button(text("Save & Quit"))
+            let save_button = button(
+                    text("Save & Quit")
+                        .align_x(Center)
+                )
                 .on_press(GameMessage::Game_SaveAndQuitRequested)
                 .padding(8)
-                .width(Length::Fixed(100.0));
+                .width(Length::Fixed(140.0));
                 
-            let quit_button = button(text("Quit"))
+            let quit_button = button(
+                    text("Quit")
+                        .align_x(Center)
+                )
                 .on_press(GameMessage::Game_QuitWithoutSaveRequested)
                 .padding(8)
-                .width(Length::Fixed(80.0));
+                .width(Length::Fixed(60.0));
                 
             let control_buttons = row![save_button, quit_button]
                 .spacing(10);
