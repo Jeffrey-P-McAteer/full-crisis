@@ -38,8 +38,13 @@ pub fn start() -> Result<(), JsValue> {
 export function os_prefers_dark() {
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
+
+export function browser_go_back() {
+    window.history.back();
+}
 ")]
 extern "C" {
     pub fn os_prefers_dark() -> bool;
+    pub fn browser_go_back();
 }
 

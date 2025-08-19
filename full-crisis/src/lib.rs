@@ -64,3 +64,19 @@ pub fn init_global_vars() {
   crate::storage::set_attr("run-times", &format!("{}", last_run_num+1))
 
 }
+
+/// Quit the game application
+#[cfg(target_arch = "wasm32")]
+pub fn quit_game() {
+    // On wasm32, navigate back in browser history
+    extern "C" {
+        fn browser_go_back();
+    }
+    unsafe { browser_go_back(); }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+pub fn quit_game() -> iced::Task<iced::advanced::graphics::core::event::Status> {
+    // On native platforms, close window and exit
+    iced::window::get_latest().and_then(iced::window::close).chain(iced::exit())
+}
