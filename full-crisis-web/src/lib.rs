@@ -6,6 +6,8 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen(start)]
 pub fn start() -> Result<(), JsValue> {
+    console_error_panic_hook::set_once();
+
     full_crisis::init_global_vars();
 
     // Detect browser theme + store in variable
