@@ -41,6 +41,7 @@ variables = ["fuel_level", "visibility", "passenger_panic", "crew_confidence"]
 [scenes.approaching_storm]
 text.eng = "Captain {character_name}, you're piloting Flight 447 with 180 passengers aboard. The storm ahead is intensifying, visibility is dropping to near zero, and you have just enough fuel for one landing attempt. Your co-pilot looks concerned as lightning flashes outside."
 text.spa = "Capitán {character_name}, estás pilotando el Vuelo 447 con 180 pasajeros a bordo. La tormenta que tienes delante se está intensificando, la visibilidad está bajando casi a cero, y tienes combustible suficiente para un solo intento de aterrizaje. Tu copiloto se ve preocupado mientras los relámpagos destellan afuera."
+background_image = "Storm_Landing/background_from_newsweek_com.jpg"
 
 [[scenes.approaching_storm.choices]]
 text.eng = "Continue approach to the original destination"

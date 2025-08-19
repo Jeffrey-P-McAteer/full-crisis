@@ -525,10 +525,30 @@ impl GameWindow {
                     let bg_handle = iced::widget::image::Handle::from_bytes(bg_file.data.as_ref().to_vec());
                     let bg_img = Image::<iced::widget::image::Handle>::new(bg_handle)
                         .width(Length::Fill)
-                        .height(Length::Fill);
-                    Some(Container::<GameMessage, Theme, iced::Renderer>::new(bg_img)
-                        .width(Length::Fill)
-                        .height(Length::Fill))
+                        .height(Length::Fill)
+                        .content_fit(iced::ContentFit::Cover);
+                    
+                    // Add semi-transparent overlay for better text readability
+                    let overlay = Container::<GameMessage, Theme, iced::Renderer>::new(
+                        iced::widget::Space::with_width(Length::Fill)
+                    )
+                    .width(Length::Fill)
+                    .height(Length::Fill)
+                    .style(|_theme: &Theme| {
+                        iced::widget::container::Style {
+                            background: Some(iced::Color::from_rgba(0.0, 0.0, 0.0, 0.3).into()),
+                            ..iced::widget::container::Style::default()
+                        }
+                    });
+                    
+                    Some(iced::widget::stack![
+                        Container::<GameMessage, Theme, iced::Renderer>::new(bg_img)
+                            .width(Length::Fill)
+                            .height(Length::Fill),
+                        overlay
+                    ]
+                    .width(Length::Fill)
+                    .height(Length::Fill))
                 } else {
                     None
                 }
