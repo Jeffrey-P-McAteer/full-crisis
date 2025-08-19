@@ -56,7 +56,8 @@ def get_last_commit_sha_message(repo_path="."):
 def wrap_text(text, width=76):
     return textwrap.fill(text, width=width, break_long_words=False, break_on_hyphens=False)
 
-def render_file_size(file_path):
+def render_file_size(td, file_path):
+  file_path = os.path.join(td, file_path)
   file_bytes = 0
   if os.path.exists(file_path):
     if os.path.isfile(file_path):
@@ -228,11 +229,11 @@ with tempfile.TemporaryDirectory(prefix='full-crisis-github-pages') as td:
 
       <header>Download <img src="full-crisis-icon.transparent.128.png" style="border-radius:6pt;"/> </header>
       <pre id="build-message">{build_message}</pre>
-      <a class="dl win mobile-light-bordered-text" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64 ({render_file_size('full-crisis.x86_64-pc-windows-gnu.exe')})</a>
-      <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.x86_64-apple-darwin.dmg">MacOS x64 ({render_file_size('Full-Crisis.x86_64-apple-darwin.dmg')})</a>
-      <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.aarch64-apple-darwin.dmg">MacOS ARM ({render_file_size('Full-Crisis.aarch64-apple-darwin.dmg')})</a>
-      <a class="dl linux mobile-light-bordered-text" href="full-crisis.x86_64-unknown-linux-gnu">Linux x64 ({render_file_size('full-crisis.x86_64-unknown-linux-gnu')})</a>
-      <a class="dl noapp mobile-light-bordered-text" href="wasm32/index.html">Play on the Web ({render_file_size('wasm32')})</a>
+      <a class="dl win mobile-light-bordered-text" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64 ({render_file_size(td, 'full-crisis.x86_64-pc-windows-gnu.exe')})</a>
+      <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.x86_64-apple-darwin.dmg">MacOS x64 ({render_file_size(td, 'Full-Crisis.x86_64-apple-darwin.dmg')})</a>
+      <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.aarch64-apple-darwin.dmg">MacOS ARM ({render_file_size(td, 'Full-Crisis.aarch64-apple-darwin.dmg')})</a>
+      <a class="dl linux mobile-light-bordered-text" href="full-crisis.x86_64-unknown-linux-gnu">Linux x64 ({render_file_size(td, 'full-crisis.x86_64-unknown-linux-gnu')})</a>
+      <a class="dl noapp mobile-light-bordered-text" href="wasm32/index.html">Play on the Web ({render_file_size(td, 'wasm32')})</a>
 
       <header>Code</header>
       <p>
