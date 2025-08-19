@@ -63,6 +63,7 @@ impl GameWindow {
     }
 
     pub fn update(&mut self, message: GameMessage) -> Task<GameMessage> {
+        #[cfg(not(target_arch = "wasm32"))]
         let start_time = std::time::Instant::now();
         
         let result = match message {
@@ -350,20 +351,24 @@ impl GameWindow {
             _ => Task::none(),
         };
         
-        let elapsed = start_time.elapsed();
-        let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
-        if *verbosity >= 3 {
-            // -vvv: Show all timings
-            eprintln!("[TIMING] GameWindow::update() took {:?}", elapsed);
-        } else if *verbosity >= 2 && elapsed.as_millis() > 10 {
-            // -vv: Show only timings > 10ms
-            eprintln!("[TIMING] GameWindow::update() took {:?} (>10ms)", elapsed);
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let elapsed = start_time.elapsed();
+            let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
+            if *verbosity >= 3 {
+                // -vvv: Show all timings
+                eprintln!("[TIMING] GameWindow::update() took {:?}", elapsed);
+            } else if *verbosity >= 2 && elapsed.as_millis() > 10 {
+                // -vv: Show only timings > 10ms
+                eprintln!("[TIMING] GameWindow::update() took {:?} (>10ms)", elapsed);
+            }
         }
         
         result
     }
 
     pub fn view(&self) -> Element<'_, GameMessage> {
+        #[cfg(not(target_arch = "wasm32"))]
         let start_time = std::time::Instant::now();
         
         let result = if let Ok(evt_loop_rguard) = self.game_state.active_event_loop.read() {
@@ -383,14 +388,17 @@ impl GameWindow {
             text("Error, cannot read game_state.active_event_loop").into()
         };
         
-        let elapsed = start_time.elapsed();
-        let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
-        if *verbosity >= 3 {
-            // -vvv: Show all timings
-            eprintln!("[TIMING] GameWindow::view() took {:?}", elapsed);
-        } else if *verbosity >= 2 && elapsed.as_millis() > 10 {
-            // -vv: Show only timings > 10ms
-            eprintln!("[TIMING] GameWindow::view() took {:?} (>10ms)", elapsed);
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let elapsed = start_time.elapsed();
+            let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
+            if *verbosity >= 3 {
+                // -vvv: Show all timings
+                eprintln!("[TIMING] GameWindow::view() took {:?}", elapsed);
+            } else if *verbosity >= 2 && elapsed.as_millis() > 10 {
+                // -vv: Show only timings > 10ms
+                eprintln!("[TIMING] GameWindow::view() took {:?} (>10ms)", elapsed);
+            }
         }
         
         result
