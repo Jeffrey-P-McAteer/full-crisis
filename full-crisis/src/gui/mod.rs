@@ -507,8 +507,9 @@ impl GameWindow {
                 }
             }
 
-            // Left column: story text above choices (60% width)
+            // Left column: story text above choices (60% width), anchored to bottom
             let left_column = column![
+                Space::with_height(Length::Fill), // Expanding spacer to push content to bottom
                 story_text_display,
                 container(choices_column).padding(20)
             ]
@@ -516,7 +517,7 @@ impl GameWindow {
             .width(Length::FillPortion(60))
             .height(Length::Fill);
 
-            // Speaking character at right (40% width)
+            // Speaking character at right (40% width), anchored to bottom
             let character_display = if let Some(ref char_path) = current_scene.speaking_character_image {
                 if let Some(char_file) = crate::crisis::PlayableCrises::get(char_path) {
                     let char_handle = iced::widget::image::Handle::from_bytes(char_file.data.as_ref().to_vec());
@@ -534,9 +535,12 @@ impl GameWindow {
                 container(Space::with_width(Length::Fill))
             };
 
-            let right_column = container(character_display)
-                .width(Length::FillPortion(40))
-                .height(Length::Fill);
+            let right_column = column![
+                Space::with_height(Length::Fill), // Expanding spacer to push character to bottom
+                character_display
+            ]
+            .width(Length::FillPortion(40))
+            .height(Length::Fill);
 
             // Bottom row with left column (story+choices) and right column (character)
             let bottom_row = row![left_column, right_column]
