@@ -419,7 +419,7 @@ impl GameWindow {
             .align_x(Center)
             .padding(20);
 
-            // Story text in center
+            // Story text and choices in left column (60% width)
             let scene_text = crate::crisis::get_scene_text(current_scene, &story_state.language, &story_state.character_name);
             let story_text_display = container(
                 container(
@@ -440,11 +440,9 @@ impl GameWindow {
                 })
             )
             .width(Length::Fill)
-            .max_width(600)
-            .align_x(Center)
-            .padding(20);
+            .padding(10);
 
-            // User choices at lower-left
+            // User choices below story text
             let mut choices_column = column![].spacing(10);
             
             if current_scene.choices.is_empty() {
@@ -454,7 +452,7 @@ impl GameWindow {
                         button(text(crate::translations::t(crate::translations::TranslationKey::ReturnToMenu, &story_state.language)))
                             .on_press(GameMessage::Game_RestartRequested)
                             .padding(10)
-                            .width(Length::Fixed(200.0))
+                            .width(Length::Fill)
                     ]
                     .spacing(10)
                 );
@@ -486,12 +484,12 @@ impl GameWindow {
                         button(text(choice_text.clone()))
                             .on_press(GameMessage::Game_ChoiceSelected(index))
                             .padding(10)
-                            .width(Length::Fixed(300.0))
+                            .width(Length::Fill)
                     } else {
                         button(text(format!("{} {}", choice_text, 
                             crate::translations::t(crate::translations::TranslationKey::RequirementsNotMet, &story_state.language))))
                             .padding(10)
-                            .width(Length::Fixed(300.0))
+                            .width(Length::Fill)
                             .style(move |theme: &Theme, _status| {
                                 let palette = theme.extended_palette();
                                 iced::widget::button::Style {
@@ -508,45 +506,46 @@ impl GameWindow {
                     choices_column = choices_column.push(choice_button);
                 }
             }
-            
-            let choices_container = container(choices_column)
-                .width(Length::Fixed(320.0))
-                .padding(20);
 
-            // Speaking character at lower-right
+            // Left column: story text above choices (60% width)
+            let left_column = column![
+                story_text_display,
+                container(choices_column).padding(20)
+            ]
+            .spacing(10)
+            .width(Length::FillPortion(60))
+            .height(Length::Fill);
+
+            // Speaking character at right (40% width)
             let character_display = if let Some(ref char_path) = current_scene.speaking_character_image {
                 if let Some(char_file) = crate::crisis::PlayableCrises::get(char_path) {
                     let char_handle = iced::widget::image::Handle::from_bytes(char_file.data.as_ref().to_vec());
                     let char_img = Image::<iced::widget::image::Handle>::new(char_handle)
-                        .width(Length::Fixed(200.0))
+                        .width(Length::Fill)
                         .height(Length::Fixed(300.0));
                     container(char_img)
-                        .width(Length::Fixed(220.0))
+                        .width(Length::Fill)
                         .padding(20)
+                        .align_x(Center)
                 } else {
-                    container(Space::with_width(Length::Fixed(220.0)))
+                    container(Space::with_width(Length::Fill))
                 }
             } else {
-                container(Space::with_width(Length::Fixed(220.0)))
+                container(Space::with_width(Length::Fill))
             };
 
-            // Bottom row with choices on left and character on right
-            let bottom_row = row![
-                choices_container,
-                horizontal_space(),
-                character_display
-            ]
-            .align_y(iced::alignment::Vertical::Bottom)
-            .width(Length::Fill);
+            let right_column = container(character_display)
+                .width(Length::FillPortion(40))
+                .height(Length::Fill);
 
-            // Main layout: top data, center story, bottom choices+character
+            // Bottom row with left column (story+choices) and right column (character)
+            let bottom_row = row![left_column, right_column]
+                .width(Length::Fill)
+                .height(Length::Fill);
+
+            // Main layout: top data, then bottom row with story/choices/character
             let main_layout = column![
                 top_data,
-                container(story_text_display)
-                    .width(Length::Fill)
-                    .height(Length::Fill)
-                    .align_x(Center)
-                    .align_y(iced::alignment::Vertical::Center),
                 bottom_row
             ]
             .width(Length::Fill)
