@@ -89,10 +89,11 @@ pub struct GameState {
     pub variables: HashMap<String, i32>,
     pub language: String,
     pub crisis_id: String,
+    pub template_name: String, // The folder name used to load the crisis
 }
 
 impl GameState {
-    pub fn new(crisis_id: String, language: String) -> Self {
+    pub fn new(crisis_id: String, language: String, template_name: String) -> Self {
         Self {
             current_scene: String::new(),
             character_name: String::new(),
@@ -100,6 +101,7 @@ impl GameState {
             variables: HashMap::new(),
             language,
             crisis_id,
+            template_name,
         }
     }
 }
@@ -107,13 +109,14 @@ impl GameState {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SavedGame {
     pub save_name: String,
-    pub crisis_name: String,
+    pub crisis_name: String, // This is now the template name (folder path)
     pub character_name: String,
     pub current_scene: String,
     pub variables: HashMap<String, i32>,
     pub character_type: Option<String>,
     pub language: String,
-    pub save_timestamp: String, // ISO 8601 timestamp
+    pub save_timestamp: String,
+    pub template_name: String, // Explicit template name field for clarity
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -172,6 +175,10 @@ pub fn get_crisis_names() -> Vec<String> {
     names
 }
 
+pub fn get_template_name_from_display_name(display_name: &str) -> String {
+    display_name.replace(" ", "_")
+}
+
 pub fn get_saved_games() -> SavedGames {
     crate::storage::get_struct("saved_games").unwrap_or_default()
 }
@@ -191,10 +198,16 @@ pub fn get_saved_crisis_names() -> Vec<String> {
 
 pub fn save_current_game(
     story_state: &GameState, 
-    crisis_name: &str, 
+    template_name: &str, 
     save_name: Option<String>
 ) -> Result<String, String> {
     let mut saved_games = get_saved_games();
+    
+    // Load the crisis to get the human-readable name
+    let human_readable_name = match load_crisis(template_name) {
+        Ok(crisis) => get_localized_text(&crisis.name, &story_state.language),
+        Err(_) => template_name.replace("_", " "), // Fallback to template name
+    };
     
     // Generate save name if not provided
     let timestamp = std::time::SystemTime::now()
@@ -207,13 +220,14 @@ pub fn save_current_game(
     
     let saved_game = SavedGame {
         save_name: save_name.clone(),
-        crisis_name: crisis_name.to_string(),
+        crisis_name: human_readable_name, // Human-readable name for display
         character_name: story_state.character_name.clone(),
         current_scene: story_state.current_scene.clone(),
         variables: story_state.variables.clone(),
         character_type: story_state.character_type.clone(),
         language: story_state.language.clone(),
         save_timestamp: format!("{}", timestamp),
+        template_name: template_name.to_string(), // Template name for loading
     };
     
     saved_games.add_save(saved_game);
@@ -226,9 +240,17 @@ pub fn load_saved_game(display_name: &str) -> Result<GameState, String> {
     let saved_games = get_saved_games();
     
     if let Some(saved_game) = saved_games.get_save_by_display_name(display_name) {
+        // Use template_name if available, otherwise fall back to crisis_name
+        let template_name = if saved_game.template_name.is_empty() {
+            saved_game.crisis_name.clone() // Backwards compatibility
+        } else {
+            saved_game.template_name.clone()
+        };
+        
         let mut game_state = GameState::new(
-            saved_game.crisis_name.clone(),
+            saved_game.crisis_name.clone(), // This should be metadata.id from crisis file
             saved_game.language.clone(),
+            template_name.clone(), // This should be the folder name
         );
         
         game_state.character_name = saved_game.character_name.clone();

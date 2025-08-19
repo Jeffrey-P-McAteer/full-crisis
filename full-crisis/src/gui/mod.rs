@@ -78,7 +78,9 @@ impl GameWindow {
                 Task::none()
             }
             GameMessage::Menu_NewGameTemplateChoiceAltered(game_template) => {
-                self.new_game_game_template = Some(game_template);
+                // Convert display name to template name (folder path)
+                let template_name = crate::crisis::get_template_name_from_display_name(&game_template);
+                self.new_game_game_template = Some(template_name);
                 Task::none()
             }
             GameMessage::Menu_NewGameStartClicked => {
@@ -108,6 +110,7 @@ impl GameWindow {
                             let mut story_state = crate::crisis::GameState::new(
                                 crisis.metadata.id.clone(),
                                 user_language.clone(),
+                                template_name.clone(),
                             );
                             story_state.current_scene = crisis.story.starting_scene.clone();
                             story_state.character_name = character_name;
@@ -171,8 +174,8 @@ impl GameWindow {
                                     loaded_story_state.character_name);
                             }
                             
-                            // Load the crisis definition
-                            match crate::crisis::load_crisis(&loaded_story_state.crisis_id) {
+                            // Load the crisis definition using template_name
+                            match crate::crisis::load_crisis(&loaded_story_state.template_name) {
                                 Ok(crisis) => {
                                     if *verbosity > 0 {
                                         eprintln!("[VERBOSE] Crisis loaded successfully");
@@ -296,11 +299,9 @@ impl GameWindow {
                     eprintln!("[VERBOSE] Game_SaveAndQuitRequested");
                 }
                 
-                if let (Some(story_state), Some(crisis)) = (&self.story_state, &self.current_crisis) {
-                    // Generate crisis display name from the crisis.name
-                    let crisis_display_name = crate::crisis::get_localized_text(&crisis.name, &story_state.language);
-                    
-                    match crate::crisis::save_current_game(story_state, &crisis_display_name, None) {
+                if let (Some(story_state), Some(_crisis)) = (&self.story_state, &self.current_crisis) {
+                    // Use the template_name from the GameState
+                    match crate::crisis::save_current_game(story_state, &story_state.template_name, None) {
                         Ok(save_name) => {
                             if *verbosity > 0 {
                                 eprintln!("[VERBOSE] Game saved as: {}", save_name);
