@@ -1,4 +1,5 @@
 use std::hash::Hasher;
+use std::time::SystemTime;
 use twox_hash::XxHash64;
 use serde::{Serialize, Deserialize};
 
@@ -98,5 +99,9 @@ where
       }
     }
   }
+}
+
+pub fn time_now() -> SystemTime {
+    SystemTime::now()
 }
 

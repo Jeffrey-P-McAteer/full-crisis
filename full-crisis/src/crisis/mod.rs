@@ -210,7 +210,7 @@ pub fn save_current_game(
     };
     
     // Generate save name if not provided
-    let timestamp = std::time::SystemTime::now()
+    let timestamp = crate::storage::time_now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default()
         .as_secs();
