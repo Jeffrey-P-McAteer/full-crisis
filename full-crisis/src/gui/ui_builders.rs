@@ -59,7 +59,7 @@ impl GameWindow {
             .align_y(Center);
 
         let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Play, user_language)))
-            .on_press(GameMessage::Menu_NewGameStartClicked)
+            .on_press(GameMessage::Menu_ContinueGameStartClicked)
             .padding(10);
 
         let layout = iced::widget::Column::new()

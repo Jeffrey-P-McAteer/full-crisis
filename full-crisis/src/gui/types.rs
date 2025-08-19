@@ -76,6 +76,7 @@ pub enum GameMessage {
         Menu_NewGameStartClicked,
     Menu_ContinueGameRequested,
         Menu_ContinueGameChoiceAltered(String),
+        Menu_ContinueGameStartClicked,
     Menu_SettingsRequested,
         Menu_SettingsGameSaveFolderChanged(String),
         Menu_SettingsDifficultyLevelChanged(DifficultyLevel),
@@ -84,5 +85,7 @@ pub enum GameMessage {
     QuitGameRequested,
     Game_ChoiceSelected(usize),
     Game_RestartRequested,
+    Game_SaveAndQuitRequested,
+    Game_QuitWithoutSaveRequested,
 }
 

@@ -104,6 +104,56 @@ impl GameState {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SavedGame {
+    pub save_name: String,
+    pub crisis_name: String,
+    pub character_name: String,
+    pub current_scene: String,
+    pub variables: HashMap<String, i32>,
+    pub character_type: Option<String>,
+    pub language: String,
+    pub save_timestamp: String, // ISO 8601 timestamp
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct SavedGames {
+    pub saves: Vec<SavedGame>,
+}
+
+impl SavedGames {
+    pub fn add_save(&mut self, save: SavedGame) {
+        // Remove any existing save with the same name
+        self.saves.retain(|s| s.save_name != save.save_name);
+        // Add the new save
+        self.saves.push(save);
+        // Sort by timestamp (newest first)
+        self.saves.sort_by(|a, b| b.save_timestamp.cmp(&a.save_timestamp));
+    }
+    
+    pub fn get_save_names(&self) -> Vec<String> {
+        self.saves.iter().map(|s| {
+            // Convert timestamp to readable format
+            let readable_time = if let Ok(timestamp) = s.save_timestamp.parse::<u64>() {
+                let datetime = std::time::UNIX_EPOCH + std::time::Duration::from_secs(timestamp);
+                format!("{:?}", datetime).split_whitespace().take(2).collect::<Vec<_>>().join(" ")
+            } else {
+                s.save_timestamp.clone()
+            };
+            format!("{} - {} ({})", s.save_name, s.crisis_name, readable_time)
+        }).collect()
+    }
+    
+    pub fn get_save_by_display_name(&self, display_name: &str) -> Option<&SavedGame> {
+        // Extract save name from display format "SaveName - CrisisName (Date)"
+        if let Some(save_name) = display_name.split(" - ").next() {
+            self.saves.iter().find(|s| s.save_name == save_name)
+        } else {
+            None
+        }
+    }
+}
+
 pub fn get_crisis_names() -> Vec<String> {
     let mut names = vec![];
     
@@ -122,8 +172,74 @@ pub fn get_crisis_names() -> Vec<String> {
     names
 }
 
+pub fn get_saved_games() -> SavedGames {
+    crate::storage::get_struct("saved_games").unwrap_or_default()
+}
+
+pub fn save_games(saved_games: &SavedGames) {
+    crate::storage::set_struct("saved_games", saved_games);
+}
+
 pub fn get_saved_crisis_names() -> Vec<String> {
-    vec!["TODO: Load saved games".to_string()]
+    let saved_games = get_saved_games();
+    if saved_games.saves.is_empty() {
+        vec!["No saved games found".to_string()]
+    } else {
+        saved_games.get_save_names()
+    }
+}
+
+pub fn save_current_game(
+    story_state: &GameState, 
+    crisis_name: &str, 
+    save_name: Option<String>
+) -> Result<String, String> {
+    let mut saved_games = get_saved_games();
+    
+    // Generate save name if not provided
+    let timestamp = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs();
+    let save_name = save_name.unwrap_or_else(|| {
+        format!("{}-{}", story_state.character_name, timestamp)
+    });
+    
+    let saved_game = SavedGame {
+        save_name: save_name.clone(),
+        crisis_name: crisis_name.to_string(),
+        character_name: story_state.character_name.clone(),
+        current_scene: story_state.current_scene.clone(),
+        variables: story_state.variables.clone(),
+        character_type: story_state.character_type.clone(),
+        language: story_state.language.clone(),
+        save_timestamp: format!("{}", timestamp),
+    };
+    
+    saved_games.add_save(saved_game);
+    save_games(&saved_games);
+    
+    Ok(save_name)
+}
+
+pub fn load_saved_game(display_name: &str) -> Result<GameState, String> {
+    let saved_games = get_saved_games();
+    
+    if let Some(saved_game) = saved_games.get_save_by_display_name(display_name) {
+        let mut game_state = GameState::new(
+            saved_game.crisis_name.clone(),
+            saved_game.language.clone(),
+        );
+        
+        game_state.character_name = saved_game.character_name.clone();
+        game_state.current_scene = saved_game.current_scene.clone();
+        game_state.variables = saved_game.variables.clone();
+        game_state.character_type = saved_game.character_type.clone();
+        
+        Ok(game_state)
+    } else {
+        Err(format!("Saved game '{}' not found", display_name))
+    }
 }
 
 pub fn load_crisis(crisis_name: &str) -> Result<CrisisDefinition, Box<dyn std::error::Error>> {

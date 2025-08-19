@@ -150,8 +150,69 @@ impl GameWindow {
                 }
                 Task::none()
             }
-            GameMessage::Menu_ContinueGameChoiceAltered(game_name) => {
-                self.continue_game_game_choice = Some(game_name);
+            GameMessage::Menu_ContinueGameChoiceAltered(saved_game_name) => {
+                self.continue_game_game_choice = Some(saved_game_name);
+                Task::none()
+            }
+            GameMessage::Menu_ContinueGameStartClicked => {
+                let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
+                if *verbosity > 0 {
+                    eprintln!("[VERBOSE] Menu_ContinueGameStartClicked: saved_game={:?}", self.continue_game_game_choice);
+                }
+                
+                if let Some(ref saved_game_name) = self.continue_game_game_choice {
+                    match crate::crisis::load_saved_game(saved_game_name) {
+                        Ok(loaded_story_state) => {
+                            if *verbosity > 0 {
+                                eprintln!("[VERBOSE] Loaded saved game: {}", saved_game_name);
+                                eprintln!("[VERBOSE] Crisis: {}, Scene: {}, Character: {}", 
+                                    loaded_story_state.crisis_id,
+                                    loaded_story_state.current_scene,
+                                    loaded_story_state.character_name);
+                            }
+                            
+                            // Load the crisis definition
+                            match crate::crisis::load_crisis(&loaded_story_state.crisis_id) {
+                                Ok(crisis) => {
+                                    if *verbosity > 0 {
+                                        eprintln!("[VERBOSE] Crisis loaded successfully");
+                                    }
+                                    
+                                    // Set up the game state
+                                    self.current_crisis = Some(crisis);
+                                    self.story_state = Some(loaded_story_state);
+                                    
+                                    // Switch to game view
+                                    if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
+                                        *evt_loop_wguard = crate::game::ActiveEventLoop::ActiveGame(crate::game::GameView::StoryScene);
+                                        if *verbosity > 0 {
+                                            eprintln!("[VERBOSE] Successfully switched to loaded game");
+                                        }
+                                    } else {
+                                        if *verbosity > 0 {
+                                            eprintln!("[VERBOSE] Failed to acquire event loop write lock");
+                                        }
+                                    }
+                                }
+                                Err(e) => {
+                                    if *verbosity > 0 {
+                                        eprintln!("[VERBOSE] Failed to load crisis '{}': {}", loaded_story_state.crisis_id, e);
+                                    }
+                                }
+                            }
+                        }
+                        Err(e) => {
+                            if *verbosity > 0 {
+                                eprintln!("[VERBOSE] Failed to load saved game '{}': {}", saved_game_name, e);
+                            }
+                        }
+                    }
+                } else {
+                    if *verbosity > 0 {
+                        eprintln!("[VERBOSE] No saved game selected");
+                    }
+                }
+                
                 Task::none()
             }
 
@@ -227,6 +288,58 @@ impl GameWindow {
                 }
                 self.current_crisis = None;
                 self.story_state = None;
+                Task::none()
+            }
+            GameMessage::Game_SaveAndQuitRequested => {
+                let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
+                if *verbosity > 0 {
+                    eprintln!("[VERBOSE] Game_SaveAndQuitRequested");
+                }
+                
+                if let (Some(story_state), Some(crisis)) = (&self.story_state, &self.current_crisis) {
+                    // Generate crisis display name from the crisis.name
+                    let crisis_display_name = crate::crisis::get_localized_text(&crisis.name, &story_state.language);
+                    
+                    match crate::crisis::save_current_game(story_state, &crisis_display_name, None) {
+                        Ok(save_name) => {
+                            if *verbosity > 0 {
+                                eprintln!("[VERBOSE] Game saved as: {}", save_name);
+                            }
+                        }
+                        Err(e) => {
+                            if *verbosity > 0 {
+                                eprintln!("[VERBOSE] Failed to save game: {}", e);
+                            }
+                        }
+                    }
+                }
+                
+                // Return to main menu
+                if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
+                    *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::MainMenu);
+                }
+                
+                // Clear game state
+                self.current_crisis = None;
+                self.story_state = None;
+                
+                Task::none()
+            }
+            GameMessage::Game_QuitWithoutSaveRequested => {
+                let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
+                if *verbosity > 0 {
+                    eprintln!("[VERBOSE] Game_QuitWithoutSaveRequested");
+                }
+                
+                // Return to main menu without saving
+                if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
+                    *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::MainMenu);
+                }
+                
+                // Clear game state
+                self.current_crisis = None;
+                self.story_state = None;
+                
                 Task::none()
             }
             GameMessage::Nop => {
@@ -431,22 +544,48 @@ impl GameWindow {
                 variables_text = format!("Variables: {:?}", story_state.variables);
             }
             
-            let top_data = container(
-                column![
-                    text(title.clone()).size(24).align_x(Center),
-                    character_info.align_x(Center),
-                    if !variables_text.is_empty() {
-                        text(variables_text.clone()).size(12).color(iced::Color::from_rgb(0.5, 0.5, 0.5))
-                    } else {
-                        text("")
-                    }
-                ]
-                .spacing(5)
-                .align_x(Center)
-            )
+            // Save and Quit buttons for upper-left
+            let save_button = button(text("Save & Quit"))
+                .on_press(GameMessage::Game_SaveAndQuitRequested)
+                .padding(8)
+                .width(Length::Fixed(100.0));
+                
+            let quit_button = button(text("Quit"))
+                .on_press(GameMessage::Game_QuitWithoutSaveRequested)
+                .padding(8)
+                .width(Length::Fixed(80.0));
+                
+            let control_buttons = row![save_button, quit_button]
+                .spacing(10);
+
+            // Top row with buttons on left and title/info in center
+            let top_row = row![
+                container(control_buttons)
+                    .align_x(iced::alignment::Horizontal::Left),
+                container(
+                    column![
+                        text(title.clone()).size(24).align_x(Center),
+                        character_info.align_x(Center),
+                        if !variables_text.is_empty() {
+                            text(variables_text.clone()).size(12).color(iced::Color::from_rgb(0.5, 0.5, 0.5))
+                        } else {
+                            text("")
+                        }
+                    ]
+                    .spacing(5)
+                    .align_x(Center)
+                )
+                .width(Length::Fill)
+                .align_x(Center),
+                // Right side spacer to balance the layout
+                container(Space::with_width(Length::Fixed(190.0)))
+            ]
             .width(Length::Fill)
-            .align_x(Center)
-            .padding(20);
+            .align_y(iced::alignment::Vertical::Top);
+            
+            let top_data = container(top_row)
+                .width(Length::Fill)
+                .padding(20);
 
             // Story text and choices in left column (60% width)
             let scene_text = crate::crisis::get_scene_text(current_scene, &story_state.language, &story_state.character_name);
