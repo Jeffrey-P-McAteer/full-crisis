@@ -316,7 +316,7 @@ impl GameWindow {
                 
                 // Return to main menu
                 if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
-                    *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::MainMenu);
+                    *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::Empty);
                 }
                 
                 // Clear game state
@@ -333,7 +333,7 @@ impl GameWindow {
                 
                 // Return to main menu without saving
                 if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
-                    *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::MainMenu);
+                    *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::Empty);
                 }
                 
                 // Clear game state
