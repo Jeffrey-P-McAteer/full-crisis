@@ -5,24 +5,9 @@
 
 Join historic disasters as emergency response personnel and hone your crisis-solving skills while saving the world!
 
+## Documentation
 
-# TODOs
-
- - [x] Begin an Icon
- - [ ] Make the Icon a lot better
- - [x] Waste a ton of time overengineering the cloud build system
- - [x] Finish building webpage generator - http://full-crisis.jmcateer.com/ see `update_github_pages.py` for details
- - [ ] Design a "Game" format
-    - We want to be able to point at a folder and place _all_ story details there.
-    - Multi-lingual design is a plus; we'll make the text storage in a manner that authors will write all languages at the same place as the phrase/event in question.
-    - Graphics, music, links between them. GUI Level editor? Graph of plot?
- - [ ] Design some game-file format that will hold relevant data (will be trivial after game format designed)
- - [ ] Write stories
- - [ ] Build release pipeline to use GitHub CI to build releases for:
-    - [ ] Web via Github Pages
-    - [ ] Windows-x64 `.exe` file
-    - [ ] Is it worth researching building a `.app` bundle w/o Apple's toolchain? Probably not worth it.
-    - Linux folks are capable of running `cargo run --release`
+- **[Crisis Game Format Documentation](playable-crises/README.md)** - Complete guide to creating and structuring crisis scenarios
 
 # Development Dependencies
 
@@ -83,20 +68,6 @@ If you do NOT have hardware-accelerated OpenGL rendering available (typically my
  - `uv run lcloud-compile-all.py host`
  - `uv run update-github-pages.py`
 
-# (OLD) Steps to build for all targets (assuming starting on Arch)
-
- - HOST: `cargo build --target x86_64-unknown-linux-gnu --release`
- - HOST: `uv run cross-compile-using-arch-container.py`
- - HOST: `uv run sign-release-bins.py`
- - RDP to a windows box and run (assuming shared filesystem w/HOST)
- - WIN: `uv run embed-icons-using-native-tools.py`
- - SSH to a mac and run
- - MAC: `REBUILD=t uv run embed-icons-using-native-tools.py` (assuming IP is 169.254.100.10)
- - HOST: `rsync -aP jeffrey@169.254.100.10:full-crisis/target/aarch64-apple-darwin ./target/`
- - HOST: `rsync -aP jeffrey@169.254.100.10:full-crisis/target/x86_64-apple-darwin ./target/`
- - HOST: `uv run update-github-pages.py`
-
-
 # Build/CI research
 
 ```bash
@@ -120,20 +91,7 @@ cargo build --timings --release
 
 # Research and References
 
-We use Macroquad because it is a simple framework that supports PC + web
- - https://macroquad.rs/
-
- - https://github.com/cross-rs/cross
- - https://mwalkowski.com/post/container-inception-docker-in-nspawn-container/
-
- - https://github.com/burtonageo/cargo-bundle
- - https://www.microsoft.com/en-us/wdsi/filesubmission
-
- - https://areweguiyet.com/
- - https://github.com/RibirX/Ribir
-
  - https://unikraft.org/ - for a potential server?
-
 
 # Incomplete experiments
 
