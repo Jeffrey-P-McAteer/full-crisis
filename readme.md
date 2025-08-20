@@ -99,9 +99,7 @@ cargo build --timings --release
     - Because we use `iced` which does not expose this control, we will need to either use another crate which can hijack `winit` behavior such as `muda` - https://docs.rs/muda/latest/muda/#note-for-winit-or-tao-users
     - or build some crazy multi-process capability but that sounds dumb and bad. TODO research `muda` integration so Macs can have menus!
 
- - [-] See if we can place a 32-bit windows PE32 binary in a web-based VM such as https://github.com/Pixelsuft/SandboXP for our web demos
-    - We can easily build for the target, but integrating into a web environment is fraught with emulation issues including filesystem handling.
-    - Abandoned for now, but ideally some form of web based game would be nice.
+
 
 # License
 
