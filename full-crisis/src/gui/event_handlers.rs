@@ -138,14 +138,14 @@ impl GameWindow {
     fn handle_new_game_start(&mut self) -> Task<GameMessage> {
         let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
         if *verbosity > 0 {
-            eprintln!("[VERBOSE] Menu_NewGameStartClicked: template_name={:?}", self.new_game_game_template);
+            eprintln!("Menu_NewGameStartClicked: template_name={:?}", self.new_game_game_template);
         }
         
         if let Some(ref template_name) = self.new_game_game_template {
             match crate::crisis::load_crisis(template_name) {
                 Ok(crisis) => {
                     if *verbosity > 0 {
-                        eprintln!("[VERBOSE] Menu_NewGameStartClicked: Crisis loaded successfully");
+                        eprintln!("Menu_NewGameStartClicked: Crisis loaded successfully");
                     }
                     
                     let character_name = if self.new_game_player_name.is_empty() {
@@ -172,7 +172,7 @@ impl GameWindow {
                 }
                 Err(e) => {
                     if *verbosity > 0 {
-                        eprintln!("[VERBOSE] Menu_NewGameStartClicked: Failed to load crisis: {}", e);
+                        eprintln!("Menu_NewGameStartClicked: Failed to load crisis: {}", e);
                     }
                 }
             }
@@ -197,14 +197,14 @@ impl GameWindow {
                         }
                         Err(e) => {
                             if *verbosity > 0 {
-                                eprintln!("[VERBOSE] Failed to load crisis: {}", e);
+                                eprintln!("Failed to load crisis: {}", e);
                             }
                         }
                     }
                 }
                 Err(e) => {
                     if *verbosity > 0 {
-                        eprintln!("[VERBOSE] Failed to load saved game: {}", e);
+                        eprintln!("Failed to load saved game: {}", e);
                     }
                 }
             }
@@ -234,7 +234,7 @@ impl GameWindow {
             }
             Err(e) => {
                 if *verbosity > 0 {
-                    eprintln!("[VERBOSE] Failed to delete saved game '{}': {}", game_name, e);
+                    eprintln!("Failed to delete saved game '{}': {}", game_name, e);
                 }
             }
         }
@@ -356,12 +356,12 @@ impl GameWindow {
             match crate::crisis::save_current_game(story_state, &story_state.template_name, None) {
                 Ok(save_name) => {
                     if *verbosity > 0 {
-                        eprintln!("[VERBOSE] Game saved as: {}", save_name);
+                        eprintln!("Game saved as: {}", save_name);
                     }
                 }
                 Err(e) => {
                     if *verbosity > 0 {
-                        eprintln!("[VERBOSE] Failed to save game: {}", e);
+                        eprintln!("Failed to save game: {}", e);
                     }
                 }
             }
@@ -374,7 +374,7 @@ impl GameWindow {
     fn handle_quit_without_save(&mut self) -> Task<GameMessage> {
         let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
         if *verbosity > 0 {
-            eprintln!("[VERBOSE] Game_QuitWithoutSaveRequested");
+            eprintln!("Game_QuitWithoutSaveRequested");
         }
         
         self.clear_game_state();

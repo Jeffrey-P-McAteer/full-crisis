@@ -182,33 +182,33 @@ pub fn load_crisis(crisis_name: &str) -> Result<CrisisDefinition, Box<dyn std::e
     let crisis_path = format!("{}/crisis.toml", crisis_name.replace(" ", "_"));
     
     if *verbosity > 0 {
-        eprintln!("[VERBOSE] load_crisis: Attempting to load crisis '{}' from path '{}'", crisis_name, crisis_path);
+        eprintln!("load_crisis: Attempting to load crisis '{}' from path '{}'", crisis_name, crisis_path);
     }
     
     if let Some(file) = PlayableCrises::get(&crisis_path) {
         if *verbosity > 0 {
-            eprintln!("[VERBOSE] load_crisis: Found embedded file, size {} bytes", file.data.len());
+            eprintln!("load_crisis: Found embedded file, size {} bytes", file.data.len());
         }
         
         let contents = std::str::from_utf8(file.data.as_ref())?;
         if *verbosity > 1 {
-            eprintln!("[VERBOSE] load_crisis: File contents preview (first 200 chars): {}", 
+            eprintln!("load_crisis: File contents preview (first 200 chars): {}", 
                 &contents[..std::cmp::min(200, contents.len())]);
         }
         
         match toml::from_str::<CrisisDefinition>(contents) {
             Ok(mut crisis) => {
                 if *verbosity > 0 {
-                    eprintln!("[VERBOSE] load_crisis: Successfully parsed TOML, crisis id: {}", crisis.metadata.id);
-                    eprintln!("[VERBOSE] load_crisis: Starting scene: {}", crisis.story.starting_scene);
-                    eprintln!("[VERBOSE] load_crisis: Character name keys: {:?}", crisis.character_names.names.keys().collect::<Vec<_>>());
+                    eprintln!("load_crisis: Successfully parsed TOML, crisis id: {}", crisis.metadata.id);
+                    eprintln!("load_crisis: Starting scene: {}", crisis.story.starting_scene);
+                    eprintln!("load_crisis: Character name keys: {:?}", crisis.character_names.names.keys().collect::<Vec<_>>());
                 }
                 
                 // Load scene files from scenes/ directory
                 match load_crisis_scenes(crisis_name) {
                     Ok(scenes) => {
                         if *verbosity > 0 {
-                            eprintln!("[VERBOSE] load_crisis: Loaded {} scenes from files", scenes.len());
+                            eprintln!("load_crisis: Loaded {} scenes from files", scenes.len());
                         }
                         
                         // Merge scenes from files with any inline scenes (files take precedence)
@@ -218,7 +218,7 @@ pub fn load_crisis(crisis_name: &str) -> Result<CrisisDefinition, Box<dyn std::e
                     }
                     Err(e) => {
                         if *verbosity > 0 {
-                            eprintln!("[VERBOSE] load_crisis: Scene loading failed: {}", e);
+                            eprintln!("load_crisis: Scene loading failed: {}", e);
                         }
                         return Err(e);
                     }
@@ -228,14 +228,14 @@ pub fn load_crisis(crisis_name: &str) -> Result<CrisisDefinition, Box<dyn std::e
             }
             Err(e) => {
                 if *verbosity > 0 {
-                    eprintln!("[VERBOSE] load_crisis: TOML parsing failed: {}", e);
+                    eprintln!("load_crisis: TOML parsing failed: {}", e);
                 }
                 Err(e.into())
             }
         }
     } else {
         if *verbosity > 0 {
-            eprintln!("[VERBOSE] load_crisis: File not found. Available embedded files:");
+            eprintln!("load_crisis: File not found. Available embedded files:");
             for path in PlayableCrises::iter() {
                 eprintln!("  - {}", path);
             }
@@ -271,13 +271,13 @@ fn load_crisis_scenes(crisis_name: &str) -> Result<HashMap<String, CrisisScene>,
                         match parse_scene_from_toml_value(&toml_value) {
                             Ok(scene) => {
                                 if *verbosity > 1 {
-                                    eprintln!("[VERBOSE] load_crisis_scenes: Loaded scene '{}' from '{}'", scene_name, path);
+                                    eprintln!("load_crisis_scenes: Loaded scene '{}' from '{}'", scene_name, path);
                                 }
                                 scenes.insert(scene_name, scene);
                             }
                             Err(e) => {
                                 if *verbosity > 0 {
-                                    eprintln!("[VERBOSE] load_crisis_scenes: Failed to convert scene '{}': {}", path, e);
+                                    eprintln!("load_crisis_scenes: Failed to convert scene '{}': {}", path, e);
                                 }
                                 return Err(format!("Failed to convert scene file '{}': {}", path, e).into());
                             }
@@ -285,7 +285,7 @@ fn load_crisis_scenes(crisis_name: &str) -> Result<HashMap<String, CrisisScene>,
                     }
                     Err(e) => {
                         if *verbosity > 0 {
-                            eprintln!("[VERBOSE] load_crisis_scenes: Failed to parse scene '{}': {}", path, e);
+                            eprintln!("load_crisis_scenes: Failed to parse scene '{}': {}", path, e);
                         }
                         return Err(format!("Failed to parse scene file '{}': {}", path, e).into());
                     }
@@ -408,8 +408,8 @@ pub fn get_random_character_name(crisis: &CrisisDefinition, character_type: Opti
     let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
     
     if *verbosity > 1 {
-        eprintln!("[VERBOSE] get_random_character_name: character_type={:?}, language={}", character_type, language);
-        eprintln!("[VERBOSE] get_random_character_name: available keys={:?}", crisis.character_names.names.keys().collect::<Vec<_>>());
+        eprintln!("get_random_character_name: character_type={:?}, language={}", character_type, language);
+        eprintln!("get_random_character_name: available keys={:?}", crisis.character_names.names.keys().collect::<Vec<_>>());
     }
     
     // Try different naming patterns based on character_type
@@ -427,7 +427,7 @@ pub fn get_random_character_name(crisis: &CrisisDefinition, character_type: Opti
     };
     
     if *verbosity > 1 {
-        eprintln!("[VERBOSE] get_random_character_name: trying keys={:?}", possible_keys);
+        eprintln!("get_random_character_name: trying keys={:?}", possible_keys);
     }
     
     // Try each possible key
@@ -435,7 +435,7 @@ pub fn get_random_character_name(crisis: &CrisisDefinition, character_type: Opti
         if let Some(names) = crisis.character_names.names.get(name_key) {
             if let Some(name) = names.choose(&mut rng) {
                 if *verbosity > 1 {
-                    eprintln!("[VERBOSE] get_random_character_name: found name '{}' using key '{}'", name, name_key);
+                    eprintln!("get_random_character_name: found name '{}' using key '{}'", name, name_key);
                 }
                 return name.clone();
             }
@@ -443,7 +443,7 @@ pub fn get_random_character_name(crisis: &CrisisDefinition, character_type: Opti
     }
     
     if *verbosity > 1 {
-        eprintln!("[VERBOSE] get_random_character_name: no standard keys worked, trying any key with language");
+        eprintln!("get_random_character_name: no standard keys worked, trying any key with language");
     }
     
     // If no standard keys worked, try to find ANY available character names
@@ -451,7 +451,7 @@ pub fn get_random_character_name(crisis: &CrisisDefinition, character_type: Opti
         if key.contains(language) && !names.is_empty() {
             if let Some(name) = names.choose(&mut rng) {
                 if *verbosity > 1 {
-                    eprintln!("[VERBOSE] get_random_character_name: found name '{}' using fallback key '{}'", name, key);
+                    eprintln!("get_random_character_name: found name '{}' using fallback key '{}'", name, key);
                 }
                 return name.clone();
             }
@@ -459,7 +459,7 @@ pub fn get_random_character_name(crisis: &CrisisDefinition, character_type: Opti
     }
     
     if *verbosity > 1 {
-        eprintln!("[VERBOSE] get_random_character_name: no language-specific keys worked, trying any key");
+        eprintln!("get_random_character_name: no language-specific keys worked, trying any key");
     }
     
     // Absolute final fallback - try any names at all
@@ -467,7 +467,7 @@ pub fn get_random_character_name(crisis: &CrisisDefinition, character_type: Opti
         if !names.is_empty() {
             if let Some(name) = names.choose(&mut rng) {
                 if *verbosity > 1 {
-                    eprintln!("[VERBOSE] get_random_character_name: found name '{}' using absolute fallback key '{}'", name, key);
+                    eprintln!("get_random_character_name: found name '{}' using absolute fallback key '{}'", name, key);
                 }
                 return name.clone();
             }
@@ -475,7 +475,7 @@ pub fn get_random_character_name(crisis: &CrisisDefinition, character_type: Opti
     }
     
     if *verbosity > 0 {
-        eprintln!("[VERBOSE] get_random_character_name: all fallbacks failed, using 'Player'");
+        eprintln!("get_random_character_name: all fallbacks failed, using 'Player'");
     }
     
     "Player".to_string()
