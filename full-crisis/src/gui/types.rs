@@ -68,6 +68,7 @@ pub struct GameWindow {
     pub current_crisis: Option<crate::crisis::CrisisDefinition>,
     pub story_state: Option<crate::crisis::GameState>,
     pub choice_text_inputs: std::collections::HashMap<usize, String>, // Track text input values by choice index
+    pub animation_frame_index: usize, // Current frame index for character animation
 }
 
 #[derive(Debug, Clone)]
@@ -95,5 +96,6 @@ pub enum GameMessage {
     Game_RestartRequested,
     Game_SaveAndQuitRequested,
     Game_QuitWithoutSaveRequested,
+    Game_AnimationTick, // Timer message for character animation
 }
 

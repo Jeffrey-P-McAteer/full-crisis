@@ -357,18 +357,44 @@ impl GameWindow {
     }
 
     fn create_character_column(&self, current_scene: &crate::crisis::CrisisScene, story_state: &crate::crisis::GameState, error_messages: &mut Vec<String>) -> iced::widget::Column<GameMessage, Theme, iced::Renderer> {
-        let character_display = if let Some(ref char_path) = current_scene.speaking_character_image {
-            if let Some(char_file) = crate::crisis::PlayableCrises::get(char_path) {
-                let char_handle = iced::widget::image::Handle::from_bytes(char_file.data.as_ref().to_vec());
-                let char_img = Image::<iced::widget::image::Handle>::new(char_handle)
-                    .width(Length::Fill);
-                container(char_img)
-                    .width(Length::Fill)
-                    .padding(20)
-                    .align_x(Center)
-            } else {
-                error_messages.push(format!("Scene '{}': Character image file not found: {}", story_state.current_scene, char_path));
-                container(Space::with_width(Length::Fill))
+        let character_display = if let Some(ref char_image) = current_scene.speaking_character_image {
+            match char_image {
+                crate::crisis::SpeakingCharacterImage::Single(char_path) => {
+                    if let Some(char_file) = crate::crisis::PlayableCrises::get(char_path) {
+                        let char_handle = iced::widget::image::Handle::from_bytes(char_file.data.as_ref().to_vec());
+                        let char_img = Image::<iced::widget::image::Handle>::new(char_handle)
+                            .width(Length::Fill);
+                        container(char_img)
+                            .width(Length::Fill)
+                            .padding(20)
+                            .align_x(Center)
+                    } else {
+                        error_messages.push(format!("Scene '{}': Character image file not found: {}", story_state.current_scene, char_path));
+                        container(Space::with_width(Length::Fill))
+                    }
+                }
+                crate::crisis::SpeakingCharacterImage::Animation(image_paths) => {
+                    if !image_paths.is_empty() {
+                        let current_frame_index = self.animation_frame_index % image_paths.len();
+                        let char_path = &image_paths[current_frame_index];
+                        
+                        if let Some(char_file) = crate::crisis::PlayableCrises::get(char_path) {
+                            let char_handle = iced::widget::image::Handle::from_bytes(char_file.data.as_ref().to_vec());
+                            let char_img = Image::<iced::widget::image::Handle>::new(char_handle)
+                                .width(Length::Fill);
+                            container(char_img)
+                                .width(Length::Fill)
+                                .padding(20)
+                                .align_x(Center)
+                        } else {
+                            error_messages.push(format!("Scene '{}': Character animation image file not found: {}", story_state.current_scene, char_path));
+                            container(Space::with_width(Length::Fill))
+                        }
+                    } else {
+                        error_messages.push(format!("Scene '{}': Empty animation array for speaking_character_image", story_state.current_scene));
+                        container(Space::with_width(Length::Fill))
+                    }
+                }
             }
         } else {
             error_messages.push(format!("Scene '{}': No speaking_character_image defined", story_state.current_scene));

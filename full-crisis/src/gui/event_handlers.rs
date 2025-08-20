@@ -110,6 +110,10 @@ impl GameWindow {
             GameMessage::Game_QuitWithoutSaveRequested => {
                 self.handle_quit_without_save()
             }
+            GameMessage::Game_AnimationTick => {
+                self.animation_frame_index = self.animation_frame_index.wrapping_add(1);
+                Task::none()
+            }
             GameMessage::Nop => {
                 eprintln!("Recieved a GameMessage::Nop");
                 Task::none()
@@ -387,5 +391,6 @@ impl GameWindow {
         self.new_game_game_template = None;
         self.new_game_selected_description = None;
         self.choice_text_inputs.clear();
+        self.animation_frame_index = 0;
     }
 }

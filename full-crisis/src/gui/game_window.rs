@@ -35,6 +35,7 @@ impl GameWindow {
                 current_crisis: None,
                 story_state: None,
                 choice_text_inputs: std::collections::HashMap::new(),
+                animation_frame_index: 0,
             },
             Task::batch([
                 widget::focus_next(),
@@ -80,6 +81,16 @@ impl GameWindow {
         match self.os_theme {
             crate::game::OSColorTheme::Light => Theme::Light,
             crate::game::OSColorTheme::Dark => Theme::Dark,
+        }
+    }
+
+    pub fn subscription(&self) -> iced::Subscription<GameMessage> {
+        if self.current_crisis.is_some() && self.story_state.is_some() {
+            // Only run animation timer when in active game
+            iced::time::every(std::time::Duration::from_millis(500))
+                .map(|_| GameMessage::Game_AnimationTick)
+        } else {
+            iced::Subscription::none()
         }
     }
 }
