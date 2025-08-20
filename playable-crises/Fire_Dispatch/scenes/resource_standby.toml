@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/two_firetrucks_responding.png"
+speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+
+[text]
+eng = "You place additional resources on standby. 'Engine 8, Engine 15, and Rescue 3, move to staging positions - respond to Riverside Apartments for potential backup.' Your proactive resource positioning ensures faster response if the situation escalates beyond initial crew capacity."
+spa = "Pones recursos adicionales en espera. 'Camión 8, Camión 15, y Rescate 3, moverse a posiciones de preparación - responder a Apartamentos Riverside para posible apoyo.' Tu posicionamiento proactivo de recursos asegura respuesta más rápida si la situación escala más allá de la capacidad del equipo inicial."
+
+[[choices]]
+text.eng = "Monitor first responding units while maintaining standby"
+text.spa = "Monitorear unidades de primera respuesta mientras mantienes espera"
+leads_to = "await_report"
+
+[[choices]]
+text.eng = "Request additional EMS units to stage nearby"
+text.spa = "Solicitar unidades EMS adicionales para prepararse cerca"
+leads_to = "enhanced_response"
+
+[[choices]]
+text.eng = "Coordinate with police for traffic control"
+text.spa = "Coordinar con policía para control de tráfico"
+leads_to = "field_assessment"

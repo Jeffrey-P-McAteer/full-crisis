@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/fire_scene_report.png"
+speaking_character_image = "Fire_Dispatch/firefighter_radio.png"
+
+[text]
+eng = "You request a detailed report from incident command. 'Dispatch to Command, requesting comprehensive status report - personnel accountability, fire spread, structural integrity, and evacuation completion.' 'Command to Dispatch: All personnel accounted for, fire contained to units 3A and 3B, structural engineer requested for assessment, 95% evacuation complete with two residents refusing to leave unit 6C.'"
+spa = "Solicitas un informe detallado del comando del incidente. 'Despacho a Comando, solicitando informe de estado comprensivo - responsabilidad del personal, propagación del fuego, integridad estructural, y finalización de evacuación.' 'Comando a Despacho: Todo el personal contabilizado, fuego contenido a unidades 3A y 3B, ingeniero estructural solicitado para evaluación, 95% de evacuación completa con dos residentes negándose a dejar la unidad 6C.'"
+
+[[choices]]
+text.eng = "Request police assistance for holdout residents"
+text.spa = "Solicitar asistencia policial para residentes obstinados"
+leads_to = "successful_outcome"
+
+[[choices]]
+text.eng = "Coordinate structural engineer response for building assessment"
+text.spa = "Coordinar respuesta de ingeniero estructural para evaluación del edificio"
+leads_to = "damage_assessment"
+
+[[choices]]
+text.eng = "Prepare incident documentation for post-event analysis"
+text.spa = "Preparar documentación del incidente para análisis post-evento"
+leads_to = "complete_suppression"

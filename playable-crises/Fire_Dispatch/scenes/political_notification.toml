@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/full_alarm_response.png"
+speaking_character_image = "Fire_Dispatch/fire_chief_character.png"
+
+[text]
+eng = "You begin political notifications for the major incident. 'This is Dispatch notifying the Fire Chief and Mayor's office - we have a full alarm structural fire with potential for significant displacement and media attention.' 'Understood, I'll coordinate with emergency management for shelter operations and media briefing schedule.'"
+spa = "Comienzas notificaciones políticas para el incidente mayor. 'Habla Despacho notificando al Jefe de Bomberos y oficina del Alcalde - tenemos un incendio estructural de alarma completa con potencial de desplazamiento significativo y atención de medios.' 'Entendido, coordinaré con manejo de emergencias para operaciones de refugio y horario de briefing de medios.'"
+
+[[choices]]
+text.eng = "Request emergency management activation for sheltering"
+text.spa = "Solicitar activación de manejo de emergencias para refugio"
+leads_to = "citizen_assist"
+
+[[choices]]
+text.eng = "Coordinate with public information officer for media response"
+text.spa = "Coordinar con oficial de información pública para respuesta de medios"
+leads_to = "successful_outcome"
+
+[[choices]]
+text.eng = "Brief city manager on potential infrastructure impact"
+text.spa = "Informar a gerente de ciudad sobre potencial impacto de infraestructura"
+leads_to = "damage_assessment"

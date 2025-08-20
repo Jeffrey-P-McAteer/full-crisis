@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/battalion_command_scene.png"
+speaking_character_image = "Fire_Dispatch/fire_chief_character.png"
+
+[text]
+eng = "You coordinate the final suppression operations. 'Command to Dispatch, fire is fully suppressed, ventilation operations complete, beginning overhaul procedures. All residents accounted for, no injuries reported.' Your coordinated response has successfully managed a complex incident with positive outcomes for all involved parties."
+spa = "Coordinas las operaciones de supresión final. 'Comando a Despacho, fuego completamente suprimido, operaciones de ventilación completas, comenzando procedimientos de revisión. Todos los residentes contabilizados, no se reportan heridas.' Tu respuesta coordinada ha manejado exitosamente un incidente complejo con resultados positivos para todas las partes involucradas."
+
+[[choices]]
+text.eng = "Begin demobilization of excess resources"
+text.spa = "Comenzar desmovilización de recursos excesivos"
+leads_to = "successful_outcome"
+
+[[choices]]
+text.eng = "Coordinate post-incident analysis and documentation"
+text.spa = "Coordinar análisis y documentación post-incidente"
+leads_to = "damage_assessment"
+
+[[choices]]
+text.eng = "Release mutual aid units back to home jurisdictions"
+text.spa = "Liberar unidades de ayuda mutua de regreso a jurisdicciones de origen"
+leads_to = "successful_outcome"

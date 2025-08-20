@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/apartment_complex_night.png"
+speaking_character_image = "Fire_Dispatch/battalion_chief_character.png"
+
+[text]
+eng = "You coordinate damage assessment operations. 'Dispatch to Building Department, we'll need structural assessment team at Riverside Apartments - fire damage to third floor with potential water damage to floors below.' 'Building Department confirms - structural engineer and safety inspector en route, ETA 20 minutes.' Proper damage assessment is crucial for determining occupancy safety."
+spa = "Coordinas operaciones de evaluación de daños. 'Despacho a Departamento de Construcción, necesitaremos equipo de evaluación estructural en Apartamentos Riverside - daño por fuego al tercer piso con potencial daño de agua a pisos de abajo.' 'Departamento de Construcción confirma - ingeniero estructural e inspector de seguridad en ruta, tiempo estimado de llegada 20 minutos.' La evaluación apropiada de daños es crucial para determinar la seguridad de ocupación."
+
+[[choices]]
+text.eng = "Coordinate with utilities for service restoration assessment"
+text.spa = "Coordinar con servicios públicos para evaluación de restauración de servicios"
+leads_to = "successful_outcome"
+
+[[choices]]
+text.eng = "Work with insurance representatives for preliminary assessment"
+text.spa = "Trabajar con representantes de seguros para evaluación preliminar"
+leads_to = "citizen_assist"
+
+[[choices]]
+text.eng = "Schedule follow-up inspection for code compliance"
+text.spa = "Programar inspección de seguimiento para cumplimiento de código"
+leads_to = "complete_suppression"

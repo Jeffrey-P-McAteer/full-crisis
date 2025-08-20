@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/fire_scene_report.png"
+speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+
+[text]
+eng = "You dispatch precautionary backup based on the initial report. 'Engine 7 and Rescue 1, respond to Riverside Apartments as backup - initial report indicates potential for escalation.' Your conservative approach ensures adequate resources are available if the situation changes rapidly, though it reduces available coverage for other potential emergencies."
+spa = "Despachas respaldo precautorio basado en el informe inicial. 'Camión 7 y Rescate 1, responder a Apartamentos Riverside como respaldo - informe inicial indica potencial de escalada.' Tu enfoque conservador asegura que recursos adecuados estén disponibles si la situación cambia rápidamente, aunque reduce cobertura disponible para otras emergencias potenciales."
+
+[[choices]]
+text.eng = "Monitor backup units and maintain radio contact"
+text.spa = "Monitorear unidades de respaldo y mantener contacto de radio"
+leads_to = "command_monitoring"
+
+[[choices]]
+text.eng = "Coordinate with neighboring districts for additional coverage"
+text.spa = "Coordinar con distritos vecinos para cobertura adicional"
+leads_to = "mutual_aid"
+
+[[choices]]
+text.eng = "Request status update from first-arriving units"
+text.spa = "Solicitar actualización de estado de unidades de primera llegada"
+leads_to = "field_assessment"

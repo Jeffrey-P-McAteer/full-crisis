@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/command_center_monitoring.png"
+speaking_character_image = "Fire_Dispatch/battalion_chief_character.png"
+
+[text]
+eng = "You begin preparing contingency plans for potential escalation. 'Dispatch to Battalion Chief, I'm placing Engine 8 and Truck 2 on standby for this location. Weather conditions are creating high wind potential.' 'Copy that, Dispatch. I'm also requesting aerial ladder company to stage nearby in case we need roof operations.'"
+spa = "Comienzas a preparar planes de contingencia para una posible escalada. 'Despacho a Jefe de Batallón, estoy poniendo al Camión 8 y Camión 2 en espera para esta ubicación. Las condiciones climáticas están creando alto potencial de viento.' 'Recibido, Despacho. También solicito compañía de escalera aérea para prepararse cerca en caso de que necesitemos operaciones en el techo.'"
+
+[[choices]]
+text.eng = "Activate mutual aid agreements with neighboring departments"
+text.spa = "Activar acuerdos de ayuda mutua con departamentos vecinos"
+leads_to = "mutual_aid"
+
+[[choices]]
+text.eng = "Request hazmat team to stage nearby"
+text.spa = "Solicitar equipo de materiales peligrosos para prepararse cerca"
+leads_to = "enhanced_response"
+
+[[choices]]
+text.eng = "Coordinate media response plan for potential escalation"
+text.spa = "Coordinar plan de respuesta de medios para posible escalada"
+leads_to = "political_notification"

@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/enhanced_response_convoy.png"
+speaking_character_image = "Fire_Dispatch/battalion_chief_character.png"
+
+[text]
+eng = "You activate mutual aid agreements. 'Dispatch to Regional Fire Control, requesting activation of mutual aid for City Station - structure fire with enhanced response requirements.' 'Regional Control confirms: Westside FD sending Engine 501, Eastview FD sending Truck 302, both units ETA 8 minutes.' This coordinated regional response significantly increases operational capacity."
+spa = "Activas acuerdos de ayuda mutua. 'Despacho a Control Regional de Bomberos, solicitando activación de ayuda mutua para Estación de la Ciudad - incendio estructural con requisitos de respuesta mejorada.' 'Control Regional confirma: Bomberos de Westside enviando Camión 501, Bomberos de Eastview enviando Camión 302, ambas unidades tiempo estimado de llegada 8 minutos.' Esta respuesta regional coordinada aumenta significativamente la capacidad operacional."
+
+[[choices]]
+text.eng = "Establish unified command structure with incoming departments"
+text.spa = "Establecer estructura de comando unificado con departamentos entrantes"
+leads_to = "command_monitoring"
+
+[[choices]]
+text.eng = "Coordinate radio frequencies for multi-agency operations"
+text.spa = "Coordinar frecuencias de radio para operaciones multi-agencia"
+leads_to = "resource_reallocation"
+
+[[choices]]
+text.eng = "Brief mutual aid units on incident specifics and staging"
+text.spa = "Informar unidades de ayuda mutua sobre especificaciones del incidente y preparación"
+leads_to = "detailed_report"

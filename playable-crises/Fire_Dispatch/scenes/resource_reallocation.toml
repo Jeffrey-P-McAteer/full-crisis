@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/battalion_command_scene.png"
+speaking_character_image = "Fire_Dispatch/battalion_chief_character.png"
+
+[text]
+eng = "You coordinate resource reallocation across the incident. 'Dispatch to all units - Engine 12 and Truck 4 primary fire attack, Engine 8 water supply, Rescue 3 search and rescue operations, Battalion Chief incident command.' Your strategic positioning of resources maximizes effectiveness while maintaining coordinated operations."
+spa = "Coordinas reasignación de recursos a través del incidente. 'Despacho a todas las unidades - Camión 12 y Camión 4 ataque primario de fuego, Camión 8 suministro de agua, Rescate 3 operaciones de búsqueda y rescate, Jefe de Batallón comando del incidente.' Tu posicionamiento estratégico de recursos maximiza la efectividad mientras mantiene operaciones coordinadas."
+
+[[choices]]
+text.eng = "Establish rehab sector for firefighter rotation and rest"
+text.spa = "Establecer sector de rehabilitación para rotación y descanso de bomberos"
+leads_to = "command_monitoring"
+
+[[choices]]
+text.eng = "Deploy additional resources for extended operations"
+text.spa = "Desplegar recursos adicionales para operaciones extendidas"
+leads_to = "enhanced_response"
+
+[[choices]]
+text.eng = "Coordinate with EMS for firefighter medical monitoring"
+text.spa = "Coordinar con EMS para monitoreo médico de bomberos"
+leads_to = "complete_suppression"

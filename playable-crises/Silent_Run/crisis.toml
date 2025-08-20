@@ -767,3 +767,703 @@ leads_to = "principled_departure"
 text.eng = "Negotiate terms that allow ethical customer service"
 text.spa = "Negociar términos que permitan servicio ético al cliente"
 leads_to = "ethical_negotiation"
+
+[scenes.protocol_champion]
+text.eng = "You decide to become the champion of the new protocols, implementing them with exceptional precision and helping other staff understand their importance. Your thoroughness in following every procedure becomes a model for the branch. Patricia notices your dedication and begins relying on you as a go-to person for protocol questions. Your commitment to excellence in following rules earns respect, but some colleagues worry you're becoming too rigid in customer interactions."
+text.spa = "Decides convertirte en el campeón de los nuevos protocolos, implementándolos con precisión excepcional y ayudando a otros miembros del personal a entender su importancia. Tu minuciosidad al seguir cada procedimiento se convierte en un modelo para la sucursal. Patricia nota tu dedicación y comienza a depender de ti como la persona a quien acudir para preguntas sobre protocolos. Tu compromiso con la excelencia al seguir reglas gana respeto, pero algunos colegas se preocupan de que te estés volviendo demasiado rígido en las interacciones con clientes."
+
+[[scenes.protocol_champion.choices]]
+text.eng = "Train colleagues on best protocol practices"
+text.spa = "Entrenar colegas en las mejores prácticas de protocolo"
+leads_to = "teaching_role"
+
+[[scenes.protocol_champion.choices]]
+text.eng = "Balance strict protocols with customer relationships"
+text.spa = "Equilibrar protocolos estrictos con relaciones con clientes"
+leads_to = "best_practices"
+
+[scenes.efficiency_balance]
+text.eng = "You strive to find the perfect balance between efficient service and thorough protocol compliance. By streamlining the new procedures and identifying redundancies, you manage to maintain customer satisfaction while meeting all security requirements. Your approach becomes a template for how the new policies should be implemented bank-wide. Management takes notice of your innovative solutions to procedural challenges."
+text.spa = "Te esfuerzas por encontrar el equilibrio perfecto entre servicio eficiente y cumplimiento minucioso de protocolos. Al simplificar los nuevos procedimientos e identificar redundancias, logras mantener la satisfacción del cliente mientras cumples todos los requisitos de seguridad. Tu enfoque se convierte en una plantilla de cómo las nuevas políticas deberían implementarse en todo el banco. La gerencia nota tus soluciones innovadoras a los desafíos procedimentales."
+
+[[scenes.efficiency_balance.choices]]
+text.eng = "Propose procedural improvements to management"
+text.spa = "Proponer mejoras procedimentales a la gerencia"
+leads_to = "operational_innovation"
+
+[[scenes.efficiency_balance.choices]]
+text.eng = "Mentor other staff on balanced approaches"
+text.spa = "Ser mentor de otro personal en enfoques equilibrados"
+leads_to = "efficiency_mentor"
+
+[scenes.principled_stand]
+text.eng = "You take a firm principled stand for customer rights, refusing to compromise on transparency and fair treatment. Your unwavering commitment to doing what's right, regardless of management pressure, inspires trust among customers and respect from ethical colleagues. Though this creates tension with management, your integrity becomes a cornerstone of your professional reputation. Customers begin specifically requesting to work with you because they trust your honesty."
+text.spa = "Tomas una postura firme de principios por los derechos de los clientes, negándote a comprometer la transparencia y el trato justo. Tu compromiso inquebrantable de hacer lo correcto, independientemente de la presión de la gerencia, inspira confianza entre los clientes y respeto de colegas éticos. Aunque esto crea tensión con la gerencia, tu integridad se convierte en la piedra angular de tu reputación profesional. Los clientes comienzan a solicitar específicamente trabajar contigo porque confían en tu honestidad."
+
+[[scenes.principled_stand.choices]]
+text.eng = "Build a reputation as the trustworthy teller"
+text.spa = "Construir una reputación como el cajero confiable"
+leads_to = "customer_advocate_ending"
+
+[[scenes.principled_stand.choices]]
+text.eng = "Document instances of management pressure"
+text.spa = "Documentar instancias de presión de la gerencia"
+leads_to = "ethical_consequences"
+
+[scenes.compromise_attempt]
+text.eng = "You attempt to find middle ground between customer advocacy and management expectations. By carefully selecting which battles to fight and when to push back on problematic policies, you try to protect customers while maintaining your position. This delicate balancing act requires constant vigilance and diplomatic skill, as you navigate between competing loyalties and conflicting ethical demands."
+text.spa = "Intentas encontrar un punto medio entre la defensa del cliente y las expectativas de la gerencia. Al seleccionar cuidadosamente qué batallas pelear y cuándo presionar contra políticas problemáticas, tratas de proteger a los clientes mientras mantienes tu posición. Este delicado acto de equilibrio requiere vigilancia constante y habilidad diplomática, mientras navegas entre lealtades competidoras y demandas éticas conflictivas."
+
+[[scenes.compromise_attempt.choices]]
+text.eng = "Focus on gradual policy improvements"
+text.spa = "Enfocarse en mejoras graduales de políticas"
+leads_to = "communication_improvement"
+
+[[scenes.compromise_attempt.choices]]
+text.eng = "Identify allies among staff for customer protection"
+text.spa = "Identificar aliados entre el personal para protección del cliente"
+leads_to = "protection_planning"
+
+[scenes.confidence_champion]
+text.eng = "You become a confidence champion for the bank, working to reassure customers while maintaining complete honesty about policies and procedures. Your approach combines transparency with reassurance, helping customers understand that their interests are being protected even when new procedures feel burdensome. Your reputation for honest communication becomes a valuable asset for customer retention during uncertain times."
+text.spa = "Te conviertes en un campeón de confianza para el banco, trabajando para tranquilizar a los clientes mientras mantienes completa honestidad sobre políticas y procedimientos. Tu enfoque combina transparencia con tranquilidad, ayudando a los clientes a entender que sus intereses están siendo protegidos incluso cuando los nuevos procedimientos se sienten engorrosos. Tu reputación por comunicación honesta se convierte en un activo valioso para la retención de clientes durante tiempos inciertos."
+
+[[scenes.confidence_champion.choices]]
+text.eng = "Develop customer education programs"
+text.spa = "Desarrollar programas de educación para clientes"
+leads_to = "rights_education"
+
+[[scenes.confidence_champion.choices]]
+text.eng = "Create trust-building communication strategies"
+text.spa = "Crear estrategias de comunicación que generen confianza"
+leads_to = "strategy_documentation"
+
+[scenes.best_practices]
+text.eng = "You focus on developing and implementing best practices that serve both security requirements and customer needs. By studying successful approaches from other branches and adapting them to your situation, you create a framework that maximizes both compliance and customer satisfaction. Your methodical approach to improving service standards becomes a model for balanced banking operations."
+text.spa = "Te enfocas en desarrollar e implementar mejores prácticas que sirvan tanto a los requisitos de seguridad como a las necesidades del cliente. Al estudiar enfoques exitosos de otras sucursales y adaptarlos a tu situación, creas un marco que maximiza tanto el cumplimiento como la satisfacción del cliente. Tu enfoque metódico para mejorar estándares de servicio se convierte en un modelo para operaciones bancarias equilibradas."
+
+[[scenes.best_practices.choices]]
+text.eng = "Share successful practices with other branches"
+text.spa = "Compartir prácticas exitosas con otras sucursales"
+leads_to = "operational_innovation"
+
+[[scenes.best_practices.choices]]
+text.eng = "Continue refining customer service approaches"
+text.spa = "Continuar refinando enfoques de servicio al cliente"
+leads_to = "efficiency_mentor"
+
+[scenes.guardian_role]
+text.eng = "You embrace the role of customer guardian, seeing yourself as their protector against potentially harmful policies or procedures. Your protective instincts drive you to carefully scrutinize every policy change and push back when customer interests are threatened. This guardian mindset makes you a trusted advocate but also puts you at odds with management directives that prioritize institutional interests over individual customer welfare."
+text.spa = "Abrazas el papel de guardián del cliente, viéndote como su protector contra políticas o procedimientos potencialmente dañinos. Tus instintos protectores te impulsan a escudriñar cuidadosamente cada cambio de política y presionar cuando los intereses del cliente están amenazados. Esta mentalidad de guardián te hace un defensor confiable pero también te pone en desacuerdo con directivas gerenciales que priorizan intereses institucionales sobre el bienestar individual del cliente."
+
+[[scenes.guardian_role.choices]]
+text.eng = "Build network of customer protection advocates"
+text.spa = "Construir red de defensores de protección del cliente"
+leads_to = "protection_movement"
+
+[[scenes.guardian_role.choices]]
+text.eng = "Document and report problematic policies"
+text.spa = "Documentar y reportar políticas problemáticas"
+leads_to = "external_reporting"
+
+[scenes.legal_preparation]
+text.eng = "You begin preparing for potential legal implications of the current situation, documenting incidents and researching relevant banking regulations. Your preparation includes understanding whistleblower protections, customer rights under banking law, and potential legal remedies for policy violations. This knowledge becomes a powerful tool for protecting both yourself and customers from potentially illegal practices."
+text.spa = "Comienzas a prepararte para posibles implicaciones legales de la situación actual, documentando incidentes e investigando regulaciones bancarias relevantes. Tu preparación incluye entender protecciones para denunciantes, derechos del cliente bajo la ley bancaria, y posibles remedios legales para violaciones de política. Este conocimiento se convierte en una herramienta poderosa para proteger tanto a ti como a los clientes de prácticas potencialmente ilegales."
+
+[[scenes.legal_preparation.choices]]
+text.eng = "Consult with banking law experts"
+text.spa = "Consultar con expertos en derecho bancario"
+leads_to = "ethical_alternatives"
+
+[[scenes.legal_preparation.choices]]
+text.eng = "Prepare documentation for regulatory authorities"
+text.spa = "Preparar documentación para autoridades regulatorias"
+leads_to = "external_reporting"
+
+[scenes.teaching_role]
+text.eng = "You embrace the teaching role, helping colleagues and customers understand the new procedures and their underlying purposes. Your educational approach transforms confusion and resistance into comprehension and cooperation. By explaining the 'why' behind policies rather than just the 'what,' you help everyone involved make informed decisions about their interactions with the bank's new security measures."
+text.spa = "Abrazas el papel de enseñanza, ayudando a colegas y clientes a entender los nuevos procedimientos y sus propósitos subyacentes. Tu enfoque educativo transforma la confusión y resistencia en comprensión y cooperación. Al explicar el 'por qué' detrás de las políticas en lugar de solo el 'qué,' ayudas a todos los involucrados a tomar decisiones informadas sobre sus interacciones con las nuevas medidas de seguridad del banco."
+
+[[scenes.teaching_role.choices]]
+text.eng = "Develop training materials for staff and customers"
+text.spa = "Desarrollar materiales de entrenamiento para personal y clientes"
+leads_to = "strategy_documentation"
+
+[[scenes.teaching_role.choices]]
+text.eng = "Create mentorship programs for new procedures"
+text.spa = "Crear programas de mentoría para nuevos procedimientos"
+leads_to = "efficiency_mentor"
+
+[scenes.strategy_documentation]
+text.eng = "You create comprehensive documentation of strategies that successfully balance security requirements with customer service excellence. Your detailed records of what works, what doesn't, and why become valuable resources for training and policy development. This documentation effort transforms your daily experiences into institutional knowledge that can benefit the entire organization."
+text.spa = "Creas documentación comprensiva de estrategias que exitosamente equilibran requisitos de seguridad con excelencia en servicio al cliente. Tus registros detallados de qué funciona, qué no, y por qué se convierten en recursos valiosos para entrenamiento y desarrollo de políticas. Este esfuerzo de documentación transforma tus experiencias diarias en conocimiento institucional que puede beneficiar a toda la organización."
+
+[[scenes.strategy_documentation.choices]]
+text.eng = "Present documentation to senior management"
+text.spa = "Presentar documentación a la alta gerencia"
+leads_to = "operational_innovation"
+
+[[scenes.strategy_documentation.choices]]
+text.eng = "Use documentation to improve training programs"
+text.spa = "Usar documentación para mejorar programas de entrenamiento"
+leads_to = "efficiency_mentor"
+
+[scenes.covert_documentation]
+text.eng = "You begin covertly documenting evidence of questionable banking practices, keeping detailed records of incidents, policy violations, and customer concerns. Your careful documentation creates a comprehensive record that could be valuable for regulatory authorities or legal proceedings. This evidence-gathering puts you at personal risk but provides protection for customers and potential whistleblower claims."
+text.spa = "Comienzas a documentar encubiertamente evidencia de prácticas bancarias cuestionables, manteniendo registros detallados de incidentes, violaciones de política y preocupaciones de clientes. Tu documentación cuidadosa crea un registro comprensivo que podría ser valioso para autoridades regulatorias o procedimientos legales. Esta recopilación de evidencia te pone en riesgo personal pero proporciona protección para clientes y posibles reclamos de denunciante."
+
+[[scenes.covert_documentation.choices]]
+text.eng = "Secure evidence with legal counsel"
+text.spa = "Asegurar evidencia con consejero legal"
+leads_to = "ethical_alternatives"
+
+[[scenes.covert_documentation.choices]]
+text.eng = "Share findings with banking regulators"
+text.spa = "Compartir hallazgos con reguladores bancarios"
+leads_to = "external_reporting"
+
+[scenes.external_reporting]
+text.eng = "You decide to report your concerns to external authorities, contacting banking regulators about potential policy violations and customer mistreatment. Your report triggers an investigation that could have significant consequences for the bank and its practices. This whistleblower action protects customers but puts your career at risk and creates tension with colleagues who may view you as disloyal."
+text.spa = "Decides reportar tus preocupaciones a autoridades externas, contactando reguladores bancarios sobre posibles violaciones de política y maltrato de clientes. Tu reporte desencadena una investigación que podría tener consecuencias significativas para el banco y sus prácticas. Esta acción de denunciante protege a los clientes pero pone tu carrera en riesgo y crea tensión con colegas que pueden verte como desleal."
+
+[[scenes.external_reporting.choices]]
+text.eng = "Continue working while investigation proceeds"
+text.spa = "Continuar trabajando mientras procede la investigación"
+leads_to = "whistleblower_path"
+
+[[scenes.external_reporting.choices]]
+text.eng = "Prepare for potential retaliation"
+text.spa = "Prepararse para posible represalia"
+leads_to = "ethical_consequences"
+
+[scenes.pattern_analysis]
+text.eng = "You analyze patterns in customer complaints, policy changes, and management behavior to understand the bigger picture of what's happening at the bank. Your systematic analysis reveals concerning trends that suggest deeper problems than initially apparent. This analytical approach gives you valuable insights but also burdens you with knowledge that demands difficult decisions about how to respond."
+text.spa = "Analizas patrones en quejas de clientes, cambios de política y comportamiento de la gerencia para entender el panorama general de lo que está pasando en el banco. Tu análisis sistemático revela tendencias preocupantes que sugieren problemas más profundos de los inicialmente aparentes. Este enfoque analítico te da información valiosa pero también te carga con conocimiento que demanda decisiones difíciles sobre cómo responder."
+
+[[scenes.pattern_analysis.choices]]
+text.eng = "Document patterns for regulatory review"
+text.spa = "Documentar patrones para revisión regulatoria"
+leads_to = "external_reporting"
+
+[[scenes.pattern_analysis.choices]]
+text.eng = "Share analysis with trusted colleagues"
+text.spa = "Compartir análisis con colegas confiables"
+leads_to = "colleague_briefing"
+
+[scenes.fear_mitigation]
+text.eng = "You focus on helping colleagues and customers overcome their fears about the changing banking environment. Your reassuring presence and honest communication help people feel more secure despite the uncertainty surrounding new policies. By addressing fears directly and providing accurate information, you become a stabilizing influence during a period of institutional stress."
+text.spa = "Te enfocas en ayudar a colegas y clientes a superar sus miedos sobre el ambiente bancario cambiante. Tu presencia tranquilizadora y comunicación honesta ayudan a las personas a sentirse más seguras a pesar de la incertidumbre que rodea las nuevas políticas. Al abordar los miedos directamente y proporcionar información precisa, te conviertes en una influencia estabilizadora durante un período de estrés institucional."
+
+[[scenes.fear_mitigation.choices]]
+text.eng = "Develop fear-reducing communication strategies"
+text.spa = "Desarrollar estrategias de comunicación que reduzcan el miedo"
+leads_to = "stability_anchor"
+
+[[scenes.fear_mitigation.choices]]
+text.eng = "Create support networks for concerned colleagues"
+text.spa = "Crear redes de apoyo para colegas preocupados"
+leads_to = "protection_planning"
+
+[scenes.protection_movement]
+text.eng = "You begin building a movement focused on customer protection, organizing colleagues who share your concerns about current banking practices. Your leadership in creating this informal network provides a voice for ethical banking and customer advocacy. This grassroots effort has the potential to create meaningful change but also draws unwanted attention from management."
+text.spa = "Comienzas a construir un movimiento enfocado en la protección del cliente, organizando colegas que comparten tus preocupaciones sobre las prácticas bancarias actuales. Tu liderazgo en crear esta red informal proporciona una voz para la banca ética y la defensa del cliente. Este esfuerzo de base tiene el potencial de crear cambio significativo pero también atrae atención no deseada de la gerencia."
+
+[[scenes.protection_movement.choices]]
+text.eng = "Expand movement to other bank branches"
+text.spa = "Expandir movimiento a otras sucursales bancarias"
+leads_to = "unified_front"
+
+[[scenes.protection_movement.choices]]
+text.eng = "Focus on local customer protection initiatives"
+text.spa = "Enfocarse en iniciativas locales de protección del cliente"
+leads_to = "rights_education"
+
+[scenes.rights_education]
+text.eng = "You develop educational programs to help customers understand their rights under banking law and regulation. Your efforts to inform customers about their protections and remedies empowers them to make better decisions and protect themselves from potential exploitation. This educational initiative builds customer trust and loyalty while positioning you as a customer advocate."
+text.spa = "Desarrollas programas educativos para ayudar a los clientes a entender sus derechos bajo la ley y regulación bancaria. Tus esfuerzos para informar a los clientes sobre sus protecciones y remedios los empodera para tomar mejores decisiones y protegerse de posible explotación. Esta iniciativa educativa construye confianza y lealtad del cliente mientras te posiciona como un defensor del cliente."
+
+[[scenes.rights_education.choices]]
+text.eng = "Partner with consumer advocacy groups"
+text.spa = "Asociarse con grupos de defensa del consumidor"
+leads_to = "customer_advocate_ending"
+
+[[scenes.rights_education.choices]]
+text.eng = "Create accessible educational materials"
+text.spa = "Crear materiales educativos accesibles"
+leads_to = "transparency_ending"
+
+[scenes.careful_deception]
+text.eng = "You engage in careful deception to protect customers while avoiding direct confrontation with management. Your strategic withholding of information and selective communication helps customers make better decisions without explicitly violating bank policies. This approach requires constant vigilance and moral flexibility, as you navigate between competing loyalties and ethical obligations."
+text.spa = "Te involucras en engaño cuidadoso para proteger a los clientes mientras evitas confrontación directa con la gerencia. Tu retención estratégica de información y comunicación selectiva ayuda a los clientes a tomar mejores decisiones sin violar explícitamente las políticas del banco. Este enfoque requiere vigilancia constante y flexibilidad moral, mientras navegas entre lealtades competidoras y obligaciones éticas."
+
+[[scenes.careful_deception.choices]]
+text.eng = "Develop more sophisticated protective strategies"
+text.spa = "Desarrollar estrategias protectoras más sofisticadas"
+leads_to = "protective_delay"
+
+[[scenes.careful_deception.choices]]
+text.eng = "Gradually transition to more honest approaches"
+text.spa = "Transicionar gradualmente a enfoques más honestos"
+leads_to = "delayed_honesty"
+
+[scenes.delayed_honesty]
+text.eng = "You plan to transition from protective deception to complete honesty once you've established safer conditions for yourself and customers. Your strategic timing aims to maximize truth-telling while minimizing negative consequences. This approach requires patience and careful judgment about when conditions are right for full transparency."
+text.spa = "Planeas transicionar del engaño protector a la honestidad completa una vez que hayas establecido condiciones más seguras para ti y los clientes. Tu tiempo estratégico apunta a maximizar el decir la verdad mientras minimiza las consecuencias negativas. Este enfoque requiere paciencia y juicio cuidadoso sobre cuándo las condiciones son correctas para la transparencia total."
+
+[[scenes.delayed_honesty.choices]]
+text.eng = "Begin gradual honesty implementation"
+text.spa = "Comenzar implementación gradual de honestidad"
+leads_to = "transparency_ending"
+
+[[scenes.delayed_honesty.choices]]
+text.eng = "Wait for more favorable conditions"
+text.spa = "Esperar condiciones más favorables"
+leads_to = "protective_delay"
+
+[scenes.management_partnership]
+text.eng = "You attempt to form a partnership with management, working together to find solutions that satisfy both institutional needs and customer welfare. Your collaborative approach seeks to influence policy development from within the system rather than opposing it. This strategy requires diplomatic skill and may compromise some ideals, but offers the potential for systemic improvement."
+text.spa = "Intentas formar una sociedad con la gerencia, trabajando juntos para encontrar soluciones que satisfagan tanto las necesidades institucionales como el bienestar del cliente. Tu enfoque colaborativo busca influir el desarrollo de políticas desde dentro del sistema en lugar de oponerse a él. Esta estrategia requiere habilidad diplomática y puede comprometer algunos ideales, pero ofrece el potencial de mejora sistémica."
+
+[[scenes.management_partnership.choices]]
+text.eng = "Propose customer-friendly policy modifications"
+text.spa = "Proponer modificaciones de política amigables al cliente"
+leads_to = "communication_improvement"
+
+[[scenes.management_partnership.choices]]
+text.eng = "Develop joint customer service initiatives"
+text.spa = "Desarrollar iniciativas conjuntas de servicio al cliente"
+leads_to = "operational_innovation"
+
+[scenes.transparency_ultimatum]
+text.eng = "You present management with an ultimatum demanding complete transparency with customers about policy changes and their implications. Your direct confrontation forces the issue but puts your job at risk. This approach prioritizes principles over job security and may lead to significant positive change or personal consequences, depending on management's response to your demands."
+text.spa = "Presentas a la gerencia un ultimátum demandando transparencia completa con los clientes sobre los cambios de política y sus implicaciones. Tu confrontación directa fuerza el tema pero pone tu trabajo en riesgo. Este enfoque prioriza principios sobre seguridad laboral y puede llevar a un cambio positivo significativo o consecuencias personales, dependiendo de la respuesta de la gerencia a tus demandas."
+
+[[scenes.transparency_ultimatum.choices]]
+text.eng = "Stand firm on transparency demands"
+text.spa = "Mantenerse firme en las demandas de transparencia"
+leads_to = "principled_departure"
+
+[[scenes.transparency_ultimatum.choices]]
+text.eng = "Negotiate compromise transparency measures"
+text.spa = "Negociar medidas de transparencia de compromiso"
+leads_to = "ethical_negotiation"
+
+[scenes.ethical_discussion]
+text.eng = "You initiate an ethical discussion with management about the moral implications of current banking policies and their impact on customers. Your thoughtful approach to ethical considerations opens dialogue about responsible banking practices. This conversation may lead to policy improvements or resistance, depending on management's receptiveness to ethical concerns."
+text.spa = "Inicias una discusión ética con la gerencia sobre las implicaciones morales de las políticas bancarias actuales y su impacto en los clientes. Tu enfoque reflexivo hacia consideraciones éticas abre diálogo sobre prácticas bancarias responsables. Esta conversación puede llevar a mejoras de política o resistencia, dependiendo de la receptividad de la gerencia a las preocupaciones éticas."
+
+[[scenes.ethical_discussion.choices]]
+text.eng = "Develop ethical banking framework with management"
+text.spa = "Desarrollar marco bancario ético con la gerencia"
+leads_to = "management_partnership"
+
+[[scenes.ethical_discussion.choices]]
+text.eng = "Continue advocating for customer-focused policies"
+text.spa = "Continuar abogando por políticas enfocadas en el cliente"
+leads_to = "customer_priority"
+
+[scenes.catch_up_mode]
+text.eng = "You enter catch-up mode, working rapidly to understand developments you may have missed while focused on routine tasks. Your accelerated information gathering helps you regain situational awareness but may cause you to miss important details in your haste to get up to speed on current events."
+text.spa = "Entras en modo de ponerte al día, trabajando rápidamente para entender desarrollos que puedes haber perdido mientras te enfocabas en tareas rutinarias. Tu recopilación acelerada de información te ayuda a recuperar conciencia situacional pero puede causar que pierdas detalles importantes en tu prisa por ponerte al día con los eventos actuales."
+
+[[scenes.catch_up_mode.choices]]
+text.eng = "Focus on essential information only"
+text.spa = "Enfocarse solo en información esencial"
+leads_to = "rapid_assessment"
+
+[[scenes.catch_up_mode.choices]]
+text.eng = "Seek comprehensive understanding despite time pressure"
+text.spa = "Buscar comprensión comprensiva a pesar de la presión temporal"
+leads_to = "intelligence_network"
+
+[scenes.rapid_assessment]
+text.eng = "You conduct a rapid assessment of the current situation, prioritizing speed over thoroughness to quickly understand key developments. Your streamlined analysis provides immediate actionable insights but may miss subtle details that could be important later. This approach helps you respond quickly to urgent situations."
+text.spa = "Conduces una evaluación rápida de la situación actual, priorizando velocidad sobre minuciosidad para entender rápidamente desarrollos clave. Tu análisis simplificado proporciona información inmediata y accionable pero puede perder detalles sutiles que podrían ser importantes más tarde. Este enfoque te ayuda a responder rápidamente a situaciones urgentes."
+
+[[scenes.rapid_assessment.choices]]
+text.eng = "Act immediately on preliminary findings"
+text.spa = "Actuar inmediatamente en hallazgos preliminares"
+leads_to = "protective_action"
+
+[[scenes.rapid_assessment.choices]]
+text.eng = "Gather additional data before acting"
+text.spa = "Reunir datos adicionales antes de actuar"
+leads_to = "intelligence_gathering"
+
+[scenes.threat_analysis]
+text.eng = "You conduct a comprehensive threat analysis to understand potential risks to customers, colleagues, and yourself from current banking practices. Your systematic evaluation of threats helps you develop appropriate protective strategies. This analysis provides valuable security insights but also highlights the serious nature of the challenges you face."
+text.spa = "Conduces un análisis comprensivo de amenazas para entender riesgos potenciales para clientes, colegas y ti mismo de las prácticas bancarias actuales. Tu evaluación sistemática de amenazas te ayuda a desarrollar estrategias protectoras apropiadas. Este análisis proporciona información valiosa de seguridad pero también resalta la naturaleza seria de los desafíos que enfrentas."
+
+[[scenes.threat_analysis.choices]]
+text.eng = "Develop countermeasures for identified threats"
+text.spa = "Desarrollar contramedidas para amenazas identificadas"
+leads_to = "protective_delay"
+
+[[scenes.threat_analysis.choices]]
+text.eng = "Share threat assessment with trusted allies"
+text.spa = "Compartir evaluación de amenazas con aliados confiables"
+leads_to = "protection_planning"
+
+[scenes.narrative_control]
+text.eng = "You attempt to control the narrative around banking policy changes, shaping how information is communicated to customers and colleagues. Your influence over information flow helps protect people from harmful misinformation while ensuring they receive accurate, helpful guidance. This strategic communication role requires careful balance between transparency and discretion."
+text.spa = "Intentas controlar la narrativa alrededor de los cambios de política bancaria, dando forma a cómo se comunica la información a clientes y colegas. Tu influencia sobre el flujo de información ayuda a proteger a las personas de desinformación dañina mientras aseguras que reciban orientación precisa y útil. Este papel de comunicación estratégica requiere equilibrio cuidadoso entre transparencia y discreción."
+
+[[scenes.narrative_control.choices]]
+text.eng = "Establish trusted communication channels"
+text.spa = "Establecer canales de comunicación confiables"
+leads_to = "communication_improvement"
+
+[[scenes.narrative_control.choices]]
+text.eng = "Counter misinformation with accurate data"
+text.spa = "Contrarrestar desinformación con datos precisos"
+leads_to = "transparency_ending"
+
+[scenes.customer_alliance]
+text.eng = "You form strategic alliances with concerned customers who share your commitment to ethical banking practices. These partnerships provide you with valuable support and information while giving customers a voice in banking policy discussions. Your customer alliance becomes a powerful force for positive change but may create tension with management."
+text.spa = "Formas alianzas estratégicas con clientes preocupados que comparten tu compromiso con prácticas bancarias éticas. Estas sociedades te proporcionan apoyo valioso e información mientras dan a los clientes una voz en discusiones de política bancaria. Tu alianza de clientes se convierte en una fuerza poderosa para cambio positivo pero puede crear tensión con la gerencia."
+
+[[scenes.customer_alliance.choices]]
+text.eng = "Expand customer advocacy network"
+text.spa = "Expandir red de defensa del cliente"
+leads_to = "customer_advocate_ending"
+
+[[scenes.customer_alliance.choices]]
+text.eng = "Focus on specific policy improvements"
+text.spa = "Enfocarse en mejoras específicas de política"
+leads_to = "communication_improvement"
+
+[scenes.protective_intervention]
+text.eng = "You intervene directly to protect customers from harmful policies or procedures, taking personal risks to shield them from potential financial damage. Your protective actions demonstrate genuine care for customer welfare but may violate bank policies and put your job at risk. This intervention shows your commitment to doing what's right regardless of personal consequences."
+text.spa = "Intervienes directamente para proteger a los clientes de políticas o procedimientos dañinos, tomando riesgos personales para protegerlos de posible daño financiero. Tus acciones protectoras demuestran cuidado genuino por el bienestar del cliente pero pueden violar las políticas del banco y poner tu trabajo en riesgo. Esta intervención muestra tu compromiso de hacer lo correcto independientemente de las consecuencias personales."
+
+[[scenes.protective_intervention.choices]]
+text.eng = "Continue protective interventions despite risks"
+text.spa = "Continuar intervenciones protectoras a pesar de los riesgos"
+leads_to = "guardian_role"
+
+[[scenes.protective_intervention.choices]]
+text.eng = "Document interventions for legal protection"
+text.spa = "Documentar intervenciones para protección legal"
+leads_to = "legal_preparation"
+
+[scenes.fdic_education]
+text.eng = "You educate customers about FDIC protections and their rights under federal banking regulations. Your educational efforts help customers understand their protections and make informed decisions about their banking relationships. This customer education builds trust and demonstrates your commitment to transparency and customer empowerment."
+text.spa = "Educas a los clientes sobre protecciones de FDIC y sus derechos bajo regulaciones bancarias federales. Tus esfuerzos educativos ayudan a los clientes a entender sus protecciones y tomar decisiones informadas sobre sus relaciones bancarias. Esta educación del cliente construye confianza y demuestra tu compromiso con la transparencia y el empoderamiento del cliente."
+
+[[scenes.fdic_education.choices]]
+text.eng = "Expand financial literacy programs"
+text.spa = "Expandir programas de alfabetización financiera"
+leads_to = "rights_education"
+
+[[scenes.fdic_education.choices]]
+text.eng = "Create customer protection resources"
+text.spa = "Crear recursos de protección del cliente"
+leads_to = "customer_advocate_ending"
+
+[scenes.transition_planning]
+text.eng = "You help customers plan for potential transitions in banking services, preparing them for possible changes in their banking relationships. Your forward-thinking approach helps customers make proactive decisions about their financial security. This transition planning demonstrates your commitment to customer welfare beyond immediate transactions."
+text.spa = "Ayudas a los clientes a planificar para posibles transiciones en servicios bancarios, preparándolos para posibles cambios en sus relaciones bancarias. Tu enfoque con visión de futuro ayuda a los clientes a tomar decisiones proactivas sobre su seguridad financiera. Esta planificación de transición demuestra tu compromiso con el bienestar del cliente más allá de transacciones inmediatas."
+
+[[scenes.transition_planning.choices]]
+text.eng = "Provide comprehensive transition support"
+text.spa = "Proporcionar apoyo comprensivo de transición"
+leads_to = "customer_advocate_ending"
+
+[[scenes.transition_planning.choices]]
+text.eng = "Focus on maintaining current banking relationships"
+text.spa = "Enfocarse en mantener relaciones bancarias actuales"
+leads_to = "stability_anchor"
+
+[scenes.informed_assistance]
+text.eng = "You provide customers with informed assistance based on your comprehensive understanding of banking policies and their implications. Your knowledgeable guidance helps customers navigate complex financial decisions while protecting their interests. This informed assistance positions you as a trusted advisor and valuable resource for customer empowerment."
+text.spa = "Proporcionas a los clientes asistencia informada basada en tu comprensión comprensiva de las políticas bancarias y sus implicaciones. Tu orientación conocedora ayuda a los clientes a navegar decisiones financieras complejas mientras protege sus intereses. Esta asistencia informada te posiciona como un consejero confiable y recurso valioso para el empoderamiento del cliente."
+
+[[scenes.informed_assistance.choices]]
+text.eng = "Develop comprehensive customer guidance programs"
+text.spa = "Desarrollar programas comprensivos de orientación al cliente"
+leads_to = "customer_advocate_ending"
+
+[[scenes.informed_assistance.choices]]
+text.eng = "Share knowledge with other bank employees"
+text.spa = "Compartir conocimiento con otros empleados del banco"
+leads_to = "colleague_briefing"
+
+[scenes.customer_protection_terms]
+text.eng = "You negotiate specific terms and conditions that prioritize customer protection within existing banking policies. Your focus on protecting customer interests while working within institutional constraints demonstrates practical advocacy. These negotiated protections help customers while maintaining your position within the bank's structure."
+text.spa = "Negocias términos y condiciones específicos que priorizan la protección del cliente dentro de las políticas bancarias existentes. Tu enfoque en proteger los intereses del cliente mientras trabajas dentro de restricciones institucionales demuestra defensa práctica. Estas protecciones negociadas ayudan a los clientes mientras mantienes tu posición dentro de la estructura del banco."
+
+[[scenes.customer_protection_terms.choices]]
+text.eng = "Expand protective terms to cover more scenarios"
+text.spa = "Expandir términos protectores para cubrir más escenarios"
+leads_to = "rights_education"
+
+[[scenes.customer_protection_terms.choices]]
+text.eng = "Document and formalize protection agreements"
+text.spa = "Documentar y formalizar acuerdos de protección"
+leads_to = "strategy_documentation"
+
+[scenes.documentation_request]
+text.eng = "You formally request documentation of all policy changes and their rationales, ensuring transparency and accountability in banking operations. Your demand for proper documentation creates a paper trail that protects both customers and employees from arbitrary policy enforcement. This systematic approach to documentation provides legal protection and institutional memory."
+text.spa = "Solicitas formalmente documentación de todos los cambios de política y sus fundamentos, asegurando transparencia y responsabilidad en operaciones bancarias. Tu demanda de documentación apropiada crea un rastro en papel que protege tanto a clientes como empleados del cumplimiento arbitrario de políticas. Este enfoque sistemático a la documentación proporciona protección legal y memoria institucional."
+
+[[scenes.documentation_request.choices]]
+text.eng = "Use documentation to improve policy clarity"
+text.spa = "Usar documentación para mejorar claridad de políticas"
+leads_to = "communication_improvement"
+
+[[scenes.documentation_request.choices]]
+text.eng = "Share documentation with customer advocates"
+text.spa = "Compartir documentación with defensores del cliente"
+leads_to = "customer_alliance"
+
+[scenes.broader_protection]
+text.eng = "You expand your protective efforts beyond individual customers to address systemic issues affecting the broader banking community. Your comprehensive approach to customer protection tackles root causes rather than just symptoms. This expanded scope of protection demonstrates your commitment to systemic change and institutional reform."
+text.spa = "Expandes tus esfuerzos protectores más allá de clientes individuales para abordar problemas sistémicos que afectan a la comunidad bancaria más amplia. Tu enfoque comprensivo hacia la protección del cliente aborda causas raíz en lugar de solo síntomas. Este alcance expandido de protección demuestra tu compromiso con el cambio sistémico y la reforma institucional."
+
+[[scenes.broader_protection.choices]]
+text.eng = "Advocate for industry-wide policy reforms"
+text.spa = "Abogar por reformas de política en toda la industria"
+leads_to = "external_reporting"
+
+[[scenes.broader_protection.choices]]
+text.eng = "Build coalition of ethical banking advocates"
+text.spa = "Construir coalición de defensores de banca ética"
+leads_to = "unified_front"
+
+[scenes.warning_cessation]
+text.eng = "You decide to stop providing selective warnings to customers, focusing instead on systemic solutions to banking policy problems. Your shift from individual protection to institutional change reflects a strategic decision to address root causes. This approach may leave some customers temporarily vulnerable but aims for broader, more sustainable improvements."
+text.spa = "Decides dejar de proporcionar advertencias selectivas a clientes, enfocándote en su lugar en soluciones sistémicas a problemas de política bancaria. Tu cambio de protección individual a cambio institucional refleja una decisión estratégica de abordar causas raíz. Este enfoque puede dejar a algunos clientes temporalmente vulnerables pero apunta a mejoras más amplias y sostenibles."
+
+[[scenes.warning_cessation.choices]]
+text.eng = "Focus exclusively on policy reform efforts"
+text.spa = "Enfocarse exclusivamente en esfuerzos de reforma de políticas"
+leads_to = "management_partnership"
+
+[[scenes.warning_cessation.choices]]
+text.eng = "Resume selective protection when necessary"
+text.spa = "Reanudar protección selectiva cuando sea necesario"
+leads_to = "protective_delay"
+
+[scenes.informant_role]
+text.eng = "You adopt an informant role, providing management with insights about customer concerns and colleague perspectives while maintaining your commitment to ethical banking. Your position as a bridge between management and front-line staff helps facilitate better communication and policy development. This role requires careful balance between loyalty and transparency."
+text.spa = "Adoptas un papel de informante, proporcionando a la gerencia información sobre preocupaciones de clientes y perspectivas de colegas mientras mantienes tu compromiso con la banca ética. Tu posición como puente entre la gerencia y el personal de primera línea ayuda a facilitar mejor comunicación y desarrollo de políticas. Este papel requiere equilibrio cuidadoso entre lealtad y transparencia."
+
+[[scenes.informant_role.choices]]
+text.eng = "Use informant position to advocate for improvements"
+text.spa = "Usar posición de informante para abogar por mejoras"
+leads_to = "management_partnership"
+
+[[scenes.informant_role.choices]]
+text.eng = "Maintain neutral observer status"
+text.spa = "Mantener estado de observador neutral"
+leads_to = "neutral_position"
+
+[scenes.neutral_position]
+text.eng = "You maintain a neutral position between competing interests, avoiding alignment with either management directives or customer advocacy movements. Your neutrality allows you to serve as a mediator and objective observer of banking operations. This position provides safety from conflict but may limit your ability to drive meaningful change."
+text.spa = "Mantienes una posición neutral entre intereses competidores, evitando alineación con directivas de gerencia o movimientos de defensa del cliente. Tu neutralidad te permite servir como mediador y observador objetivo de operaciones bancarias. Esta posición proporciona seguridad del conflicto pero puede limitar tu capacidad de impulsar cambio significativo."
+
+[[scenes.neutral_position.choices]]
+text.eng = "Use neutral position to facilitate dialogue"
+text.spa = "Usar posición neutral para facilitar diálogo"
+leads_to = "communication_improvement"
+
+[[scenes.neutral_position.choices]]
+text.eng = "Maintain neutrality while observing developments"
+text.spa = "Mantener neutralidad mientras observas desarrollos"
+leads_to = "extended_surveillance"
+
+[scenes.pressure_endurance]
+text.eng = "You develop strategies to endure pressure from management while maintaining your ethical standards and customer service commitments. Your resilience in the face of institutional pressure demonstrates character and provides stability for customers and colleagues who depend on your integrity. This endurance requires mental strength and clear principles."
+text.spa = "Desarrollas estrategias para soportar presión de la gerencia mientras mantienes tus estándares éticos y compromisos de servicio al cliente. Tu resistencia ante la presión institucional demuestra carácter y proporciona estabilidad para clientes y colegas que dependen de tu integridad. Esta resistencia requiere fuerza mental y principios claros."
+
+[[scenes.pressure_endurance.choices]]
+text.eng = "Help colleagues develop similar resilience"
+text.spa = "Ayudar a colegas a desarrollar resistencia similar"
+leads_to = "protection_planning"
+
+[[scenes.pressure_endurance.choices]]
+text.eng = "Document pressure tactics for legal protection"
+text.spa = "Documentar tácticas de presión para protección legal"
+leads_to = "ethical_consequences"
+
+[scenes.honest_reassurance]
+text.eng = "You provide honest reassurance to customers and colleagues, combining truthfulness with emotional support during uncertain times. Your approach balances transparency about challenges with genuine comfort and encouragement. This honest reassurance builds trust while helping people cope with difficult banking situations."
+text.spa = "Proporcionas tranquilidad honesta a clientes y colegas, combinando veracidad con apoyo emocional durante tiempos inciertos. Tu enfoque equilibra transparencia sobre desafíos con comfort genuino y aliento. Esta tranquilidad honesta construye confianza mientras ayuda a las personas a lidiar con situaciones bancarias difíciles."
+
+[[scenes.honest_reassurance.choices]]
+text.eng = "Expand honest communication practices"
+text.spa = "Expandir prácticas de comunicación honesta"
+leads_to = "transparency_ending"
+
+[[scenes.honest_reassurance.choices]]
+text.eng = "Train others in honest reassurance techniques"
+text.spa = "Entrenar a otros en técnicas de tranquilidad honesta"
+leads_to = "teaching_role"
+
+[scenes.information_push]
+text.eng = "You actively push information to customers and colleagues, ensuring they have access to important details about banking policies and their implications. Your proactive information sharing helps people make informed decisions and protects them from uninformed choices. This information advocacy requires careful selection of what to share and when."
+text.spa = "Empujas activamente información a clientes y colegas, asegurando que tengan acceso a detalles importantes sobre políticas bancarias y sus implicaciones. Tu compartir proactivo de información ayuda a las personas a tomar decisiones informadas y los protege de elecciones desinformadas. Esta defensa de información requiere selección cuidadosa de qué compartir y cuándo."
+
+[[scenes.information_push.choices]]
+text.eng = "Establish systematic information distribution"
+text.spa = "Establecer distribución sistemática de información"
+leads_to = "communication_improvement"
+
+[[scenes.information_push.choices]]
+text.eng = "Focus on critical information only"
+text.spa = "Enfocarse solo en información crítica"
+leads_to = "threat_analysis"
+
+[scenes.communication_improvement]
+text.eng = "You work systematically to improve communication between management, staff, and customers, creating better understanding and cooperation among all parties. Your communication initiatives help reduce confusion and build trust throughout the banking relationship network. These improvements create lasting positive changes in how information flows through the organization."
+text.spa = "Trabajas sistemáticamente para mejorar la comunicación entre gerencia, personal y clientes, creando mejor entendimiento y cooperación entre todas las partes. Tus iniciativas de comunicación ayudan a reducir confusión y construir confianza a través de toda la red de relaciones bancarias. Estas mejoras crean cambios positivos duraderos en cómo fluye la información a través de la organización."
+
+[[scenes.communication_improvement.choices]]
+text.eng = "Implement structured communication protocols"
+text.spa = "Implementar protocolos de comunicación estructurados"
+leads_to = "operational_innovation"
+
+[[scenes.communication_improvement.choices]]
+text.eng = "Focus on transparency-building measures"
+text.spa = "Enfocarse en medidas de construcción de transparencia"
+leads_to = "transparency_ending"
+
+[scenes.customer_follow_up]
+text.eng = "You systematically follow up with customers to ensure their concerns are properly addressed and their banking needs are met. Your comprehensive follow-up process demonstrates genuine care for customer welfare and helps identify ongoing issues that need attention. This customer-focused approach builds strong relationships and improves service quality."
+text.spa = "Haces seguimiento sistemático con clientes para asegurar que sus preocupaciones sean apropiadamente abordadas y sus necesidades bancarias sean satisfechas. Tu proceso comprensivo de seguimiento demuestra cuidado genuino por el bienestar del cliente y ayuda a identificar problemas continuos que necesitan atención. Este enfoque enfocado en el cliente construye relaciones fuertes y mejora la calidad del servicio."
+
+[[scenes.customer_follow_up.choices]]
+text.eng = "Expand follow-up services to more customers"
+text.spa = "Expandir servicios de seguimiento a más clientes"
+leads_to = "customer_advocate_ending"
+
+[[scenes.customer_follow_up.choices]]
+text.eng = "Use follow-up data to improve banking services"
+text.spa = "Usar datos de seguimiento para mejorar servicios bancarios"
+leads_to = "operational_innovation"
+
+[scenes.management_observation]
+text.eng = "You carefully observe management behavior and decision-making processes to better understand institutional priorities and potential areas for improvement. Your systematic observation helps you identify opportunities for positive influence while avoiding counterproductive confrontations. This intelligence-gathering approach provides strategic advantages in navigating organizational dynamics."
+text.spa = "Observas cuidadosamente el comportamiento de la gerencia y procesos de toma de decisiones para entender mejor las prioridades institucionales y áreas potenciales de mejora. Tu observación sistemática te ayuda a identificar oportunidades para influencia positiva mientras evitas confrontaciones contraproducentes. Este enfoque de recopilación de inteligencia proporciona ventajas estratégicas al navegar dinámicas organizacionales."
+
+[[scenes.management_observation.choices]]
+text.eng = "Use observations to propose strategic improvements"
+text.spa = "Usar observaciones para proponer mejoras estratégicas"
+leads_to = "management_partnership"
+
+[[scenes.management_observation.choices]]
+text.eng = "Continue observing while building evidence base"
+text.spa = "Continuar observando mientras construyes base de evidencia"
+leads_to = "extended_surveillance"
+
+[scenes.operational_innovation]
+text.eng = "You develop innovative operational improvements that enhance both efficiency and customer service quality. Your creative solutions to banking challenges demonstrate the potential for positive change within existing systems. These innovations show management that customer-focused approaches can also benefit the institution's operational goals."
+text.spa = "Desarrollas mejoras operacionales innovadoras que realzan tanto la eficiencia como la calidad del servicio al cliente. Tus soluciones creativas a desafíos bancarios demuestran el potencial de cambio positivo dentro de sistemas existentes. Estas innovaciones muestran a la gerencia que los enfoques enfocados en el cliente también pueden beneficiar las metas operacionales de la institución."
+
+[[scenes.operational_innovation.choices]]
+text.eng = "Implement innovations bank-wide"
+text.spa = "Implementar innovaciones en todo el banco"
+leads_to = "transparency_ending"
+
+[[scenes.operational_innovation.choices]]
+text.eng = "Train staff on innovative practices"
+text.spa = "Entrenar personal en prácticas innovadoras"
+leads_to = "efficiency_mentor"
+
+[scenes.efficiency_mentor]
+text.eng = "You become a mentor for efficient and ethical banking practices, helping colleagues develop skills that serve both institutional and customer interests. Your mentorship creates positive cultural change within the organization while improving service quality. This teaching role allows you to multiply your positive impact through others."
+text.spa = "Te conviertes en un mentor para prácticas bancarias eficientes y éticas, ayudando a colegas a desarrollar habilidades que sirven tanto a intereses institucionales como del cliente. Tu mentoría crea cambio cultural positivo dentro de la organización mientras mejora la calidad del servicio. Este papel de enseñanza te permite multiplicar tu impacto positivo a través de otros."
+
+[[scenes.efficiency_mentor.choices]]
+text.eng = "Develop formal mentorship programs"
+text.spa = "Desarrollar programas formales de mentoría"
+leads_to = "operational_innovation"
+
+[[scenes.efficiency_mentor.choices]]
+text.eng = "Focus on leadership development for ethical banking"
+text.spa = "Enfocarse en desarrollo de liderazgo para banca ética"
+leads_to = "transparency_ending"
+
+[scenes.supportive_approach]
+text.eng = "You take a supportive approach to helping colleagues navigate the challenging banking environment, providing emotional and practical assistance during difficult times. Your supportive leadership creates a positive work environment that benefits both staff morale and customer service quality. This approach builds strong team relationships and institutional resilience."
+text.spa = "Tomas un enfoque de apoyo para ayudar a colegas a navegar el ambiente bancario desafiante, proporcionando asistencia emocional y práctica durante tiempos difíciles. Tu liderazgo de apoyo crea un ambiente de trabajo positivo que beneficia tanto la moral del personal como la calidad del servicio al cliente. Este enfoque construye relaciones de equipo fuertes y resistencia institucional."
+
+[[scenes.supportive_approach.choices]]
+text.eng = "Expand support systems for all staff"
+text.spa = "Expandir sistemas de apoyo para todo el personal"
+leads_to = "protection_planning"
+
+[[scenes.supportive_approach.choices]]
+text.eng = "Develop stress management programs"
+text.spa = "Desarrollar programas de manejo del estrés"
+leads_to = "stability_anchor"
+
+[scenes.extended_surveillance]
+text.eng = "You maintain extended surveillance of banking operations to identify patterns, problems, and opportunities for improvement. Your comprehensive monitoring provides valuable insights into institutional behavior and customer impact. This surveillance approach requires patience and discretion but yields important intelligence for decision-making."
+text.spa = "Mantienes vigilancia extendida de operaciones bancarias para identificar patrones, problemas y oportunidades de mejora. Tu monitoreo comprensivo proporciona información valiosa sobre comportamiento institucional e impacto en clientes. Este enfoque de vigilancia requiere paciencia y discreción pero produce inteligencia importante para la toma de decisiones."
+
+[[scenes.extended_surveillance.choices]]
+text.eng = "Compile surveillance findings for strategic planning"
+text.spa = "Compilar hallazgos de vigilancia para planificación estratégica"
+leads_to = "advisor_intelligence"
+
+[[scenes.extended_surveillance.choices]]
+text.eng = "Share critical findings with appropriate parties"
+text.spa = "Compartir hallazgos críticos con partes apropiadas"
+leads_to = "colleague_briefing"
+
+[scenes.preparation_leadership]
+text.eng = "You provide leadership in preparing colleagues and customers for potential banking changes, helping them develop resilience and adaptability. Your preparation-focused leadership ensures that people are ready for various scenarios and can respond effectively to challenges. This proactive leadership style reduces anxiety and improves outcomes during uncertain times."
+text.spa = "Proporcionas liderazgo al preparar colegas y clientes para posibles cambios bancarios, ayudándolos a desarrollar resistencia y adaptabilidad. Tu liderazgo enfocado en preparación asegura que las personas estén listas para varios escenarios y puedan responder efectivamente a desafíos. Este estilo de liderazgo proactivo reduce ansiedad y mejora resultados durante tiempos inciertos."
+
+[[scenes.preparation_leadership.choices]]
+text.eng = "Develop comprehensive preparation protocols"
+text.spa = "Desarrollar protocolos comprensivos de preparación"
+leads_to = "scenario_planning"
+
+[[scenes.preparation_leadership.choices]]
+text.eng = "Train others in preparation leadership"
+text.spa = "Entrenar a otros en liderazgo de preparación"
+leads_to = "stability_anchor"
+
+[scenes.stability_anchor]
+text.eng = "You become a stability anchor for your workplace, providing consistent, reliable support that helps others maintain their equilibrium during turbulent times. Your stabilizing presence creates a sense of security and confidence that benefits everyone in the banking environment. This anchor role is essential for maintaining institutional function during crisis."
+text.spa = "Te conviertes en un ancla de estabilidad para tu lugar de trabajo, proporcionando apoyo consistente y confiable que ayuda a otros a mantener su equilibrio durante tiempos turbulentos. Tu presencia estabilizadora crea un sentido de seguridad y confianza que beneficia a todos en el ambiente bancario. Este papel de ancla es esencial para mantener la función institucional durante crisis."
+
+[[scenes.stability_anchor.choices]]
+text.eng = "Expand stabilizing influence throughout organization"
+text.spa = "Expandir influencia estabilizadora a través de la organización"
+leads_to = "transparency_ending"
+
+[[scenes.stability_anchor.choices]]
+text.eng = "Develop other stability anchors among colleagues"
+text.spa = "Desarrollar otras anclas de estabilidad entre colegas"
+leads_to = "protection_planning"
+
+[scenes.ethical_consequences]
+text.eng = "You face the ethical consequences of your principled stand, accepting potential career costs for maintaining your integrity and customer advocacy. Your willingness to accept consequences for doing what's right demonstrates authentic commitment to ethical banking. While this path may involve personal sacrifices, it preserves your moral authority and customer trust."
+text.spa = "Enfrentas las consecuencias éticas de tu postura de principios, aceptando costos potenciales de carrera por mantener tu integridad y defensa del cliente. Tu disposición a aceptar consecuencias por hacer lo correcto demuestra compromiso auténtico con la banca ética. Aunque este camino puede involucrar sacrificios personales, preserva tu autoridad moral y confianza del cliente."
+
+[[scenes.ethical_consequences.choices]]
+text.eng = "Continue ethical advocacy despite consequences"
+text.spa = "Continuar defensa ética a pesar de las consecuencias"
+leads_to = "principled_departure"
+
+[[scenes.ethical_consequences.choices]]
+text.eng = "Seek legal protection for ethical positions"
+text.spa = "Buscar protección legal para posiciones éticas"
+leads_to = "ethical_alternatives"
+
+[scenes.ethical_alternatives]
+text.eng = "You explore legal and ethical alternatives that allow you to maintain your principles while continuing to serve customers effectively. Your research into protective options helps you find sustainable ways to practice ethical banking. These alternatives may include regulatory protections, professional organizations, or legal counsel that support your position."
+text.spa = "Exploras alternativas legales y éticas que te permiten mantener tus principios mientras continúas sirviendo a los clientes efectivamente. Tu investigación de opciones protectoras te ayuda a encontrar maneras sostenibles de practicar banca ética. Estas alternativas pueden incluir protecciones regulatorias, organizaciones profesionales o consejo legal que apoye tu posición."
+
+[[scenes.ethical_alternatives.choices]]
+text.eng = "Implement protective measures while continuing advocacy"
+text.spa = "Implementar medidas protectoras mientras continúas la defensa"
+leads_to = "customer_advocate_ending"
+
+[[scenes.ethical_alternatives.choices]]
+text.eng = "Seek professional organization support"
+text.spa = "Buscar apoyo de organización profesional"
+leads_to = "external_reporting"

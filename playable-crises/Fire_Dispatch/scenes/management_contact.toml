@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/apartment_complex_night.png"
+speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+
+[text]
+eng = "You contact building management for evacuation coordination. 'This is Fire Dispatch - we have active structure fire response at your Riverside location. Do you have building personnel on-site to assist with evacuation?' 'Yes, we have two maintenance staff and a manager on-site. They're already helping residents and can provide building layouts.'"
+spa = "Contactas a la administración del edificio para coordinación de evacuación. 'Habla Despacho de Bomberos - tenemos respuesta activa de incendio estructural en su ubicación de Riverside. ¿Tienen personal del edificio en sitio para asistir con la evacuación?' 'Sí, tenemos dos miembros del personal de mantenimiento y un gerente en sitio. Ya están ayudando a los residentes y pueden proporcionar planos del edificio.'"
+
+[[choices]]
+text.eng = "Request building layouts and utility shutoff locations"
+text.spa = "Solicitar planos del edificio y ubicaciones de corte de servicios"
+leads_to = "field_assessment"
+
+[[choices]]
+text.eng = "Ask management to coordinate with Red Cross for displaced residents"
+text.spa = "Pedir a administración coordinar con Cruz Roja para residentes desplazados"
+leads_to = "citizen_assist"
+
+[[choices]]
+text.eng = "Have management provide resident count and special needs info"
+text.spa = "Hacer que administración proporcione conteo de residentes e info de necesidades especiales"
+leads_to = "detailed_report"

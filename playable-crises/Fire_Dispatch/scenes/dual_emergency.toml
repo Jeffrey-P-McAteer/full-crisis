@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/enhanced_response_convoy.png"
+speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+
+[text]
+eng = "A second emergency call comes in during the apartment fire response. 'Dispatch, we have a medical emergency - cardiac arrest at 1247 Oak Street.' With major resources committed to the fire, you must balance competing emergency demands while maintaining effective coverage citywide."
+spa = "Una segunda llamada de emergencia entra durante la respuesta al incendio del apartamento. 'Despacho, tenemos una emergencia médica - paro cardíaco en 1247 Oak Street.' Con recursos principales comprometidos al incendio, debes balancear demandas de emergencia competidoras mientras mantienes cobertura efectiva en toda la ciudad."
+
+[[choices]]
+text.eng = "Dispatch available EMS and request mutual aid for medical emergency"
+text.spa = "Despachar EMS disponible y solicitar ayuda mutua para emergencia médica"
+leads_to = "resource_reallocation"
+
+[[choices]]
+text.eng = "Request county EMS while maintaining fire operations"
+text.spa = "Solicitar EMS del condado mientras mantienes operaciones de incendio"
+leads_to = "enhanced_response"
+
+[[choices]]
+text.eng = "Coordinate with regional dispatch for resource sharing"
+text.spa = "Coordinar con despacho regional para compartir recursos"
+leads_to = "mutual_aid"

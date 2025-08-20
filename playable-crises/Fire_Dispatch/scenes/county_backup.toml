@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/full_alarm_response.png"
+speaking_character_image = "Fire_Dispatch/battalion_chief_character.png"
+
+[text]
+eng = "You request county backup resources. 'Dispatch to County Fire, requesting mutual aid response - full alarm structure fire, 6-story apartment complex with potential for extension to adjacent buildings.' 'County Fire to City Dispatch, we're sending Engine 210 and Truck 205, ETA 12 minutes.' This significant resource commitment reflects the serious nature of the incident."
+spa = "Solicitas recursos de respaldo del condado. 'Despacho a Bomberos del Condado, solicitando respuesta de ayuda mutua - incendio estructural de alarma completa, complejo de apartamentos de 6 pisos con potencial de extensión a edificios adyacentes.' 'Bomberos del Condado a Despacho de la Ciudad, estamos enviando Camión 210 y Camión 205, tiempo estimado de llegada 12 minutos.' Este compromiso significativo de recursos refleja la naturaleza seria del incidente."
+
+[[choices]]
+text.eng = "Coordinate staging areas for incoming county units"
+text.spa = "Coordinar áreas de preparación para unidades del condado entrantes"
+leads_to = "command_monitoring"
+
+[[choices]]
+text.eng = "Request county hazmat team due to building age"
+text.spa = "Solicitar equipo de materiales peligrosos del condado debido a la edad del edificio"
+leads_to = "enhanced_response"
+
+[[choices]]
+text.eng = "Update incident command on extended resource availability"
+text.spa = "Actualizar comando de incidente sobre disponibilidad de recursos extendidos"
+leads_to = "resource_reallocation"

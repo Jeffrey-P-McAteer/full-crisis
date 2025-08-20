@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/apartment_complex_night.png"
+speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+
+[text]
+eng = "You coordinate citizen assistance for displaced residents. 'Dispatch to American Red Cross Emergency Services, we have approximately 40 displaced residents from apartment fire, requesting shelter activation.' 'Red Cross confirming - we'll establish temporary shelter at Community Center, estimated setup time 45 minutes.' Caring for affected citizens extends beyond immediate fire suppression."
+spa = "Coordinas asistencia ciudadana para residentes desplazados. 'Despacho a Servicios de Emergencia de la Cruz Roja Americana, tenemos aproximadamente 40 residentes desplazados por incendio de apartamento, solicitando activación de refugio.' 'Cruz Roja confirmando - estableceremos refugio temporal en el Centro Comunitario, tiempo estimado de configuración 45 minutos.' Cuidar de los ciudadanos afectados se extiende más allá de la supresión inmediata del incendio."
+
+[[choices]]
+text.eng = "Coordinate with social services for long-term housing assistance"
+text.spa = "Coordinar con servicios sociales para asistencia de vivienda a largo plazo"
+leads_to = "successful_outcome"
+
+[[choices]]
+text.eng = "Arrange transportation for elderly and disabled residents"
+text.spa = "Organizar transporte para residentes ancianos y discapacitados"
+leads_to = "detailed_report"
+
+[[choices]]
+text.eng = "Contact Salvation Army for emergency clothing and supplies"
+text.spa = "Contactar al Ejército de Salvación para ropa y suministros de emergencia"
+leads_to = "damage_assessment"

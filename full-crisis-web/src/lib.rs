@@ -23,6 +23,7 @@ pub fn start() -> Result<(), JsValue> {
         full_crisis::gui::GameWindow::update,
         full_crisis::gui::GameWindow::view,
     )
+    .subscription(full_crisis::gui::GameWindow::subscription)
     .theme(full_crisis::gui::GameWindow::theme)
     //.font(include_bytes!("../fonts/icons.ttf").as_slice())
     .default_font(iced::Font::MONOSPACE)
