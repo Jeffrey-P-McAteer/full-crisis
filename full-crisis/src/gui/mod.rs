@@ -934,8 +934,7 @@ impl GameWindow {
                 if let Some(char_file) = crate::crisis::PlayableCrises::get(char_path) {
                     let char_handle = iced::widget::image::Handle::from_bytes(char_file.data.as_ref().to_vec());
                     let char_img = Image::<iced::widget::image::Handle>::new(char_handle)
-                        .width(Length::Fill)
-                        .height(Length::Fixed(300.0));
+                        .width(Length::Fill);
                     container(char_img)
                         .width(Length::Fill)
                         .padding(20)
