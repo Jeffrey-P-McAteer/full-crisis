@@ -5,6 +5,8 @@
 
 Join historic disasters as emergency response personnel and hone your crisis-solving skills while saving the world!
 
+[Full-Crisis Download Page + Web Demo](https://full-crisis.jmcateer.com)
+
 ## Documentation
 
 - **[Crisis Game Format Documentation](playable-crises/README.md)** - Complete guide to creating and structuring crisis scenarios
