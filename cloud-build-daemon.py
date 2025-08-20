@@ -226,6 +226,13 @@ if __name__ == '__main__':
         'git', 'reset', '--hard', 'origin/master',
       ], check=True, cwd=BUILD_DIR)
 
+      # Finally this one-liner deletes the last 10 files which the git history lists as being deleted, ensuring we do not retain
+      # ancient files simply because we use fetch + reset --hard.
+      subprocess.run([
+        'sh', '-c',
+          'git log -n 10 --diff-filter=D --summary --pretty=format: | awk \'/delete mode/ {print $4}\' | xargs -I{} rm {}'
+      ], check=False, cwd=BUILD_DIR)
+
       subprocess.run(['sync'], check=False)
 
       # We now have the most recent changes locally, copy code to shared VM dir
@@ -235,6 +242,13 @@ if __name__ == '__main__':
           f'{REPO_DIR}',
           f'/mnt/nfs/shared-vm-dir/', # "/" at end will ensure /mnt/nfs/shared-vm-dir/full-crisis is created if not exists
       ], check=True)
+
+      # We also delete the same files within /mnt/nfs/shared-vm-dir/full-crisis for the same reason - to avoid missing out on deleted files
+      subprocess.run([
+        'sh', '-c',
+          'git log -n 10 --diff-filter=D --summary --pretty=format: | awk \'/delete mode/ {print $4}\' | xargs -I{} rm {}'
+      ], check=False, cwd=f'/mnt/nfs/shared-vm-dir/full-crisis')
+
 
       # Tell VMs to do builds, we use multiple threads b/c this is primarially I/O bound.
 

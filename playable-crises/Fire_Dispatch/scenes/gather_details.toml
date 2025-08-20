@@ -1,0 +1,24 @@
+background_image = "Fire_Dispatch/apartment_fire_background.png"
+speaking_character_image = [
+    "Fire_Dispatch/panicked_caller_character.png",
+    "Fire_Dispatch/panicked_caller_character_2.png",
+]
+
+[text]
+eng = "Caller: 'It's the Riverside Apartments on Oak Street! Third floor, but the smoke is getting thicker. I can see flames from the window!' You note this is a 6-story building with 48 units. Your database shows it's an older building without modern fire suppression systems."
+spa = "Llamador: '¡Son los Apartamentos Riverside en Oak Street! Tercer piso, ¡pero el humo se está espesando. ¡Puedo ver llamas desde la ventana!' Notas que es un edificio de 6 pisos con 48 unidades. Tu base de datos muestra que es un edificio antiguo sin sistemas modernos de supresión de incendios."
+
+[[choices]]
+text.eng = "Send standard response - 2 fire trucks"
+text.spa = "Enviar respuesta estándar - 2 camiones de bomberos"
+leads_to = "standard_response"
+
+[[choices]]
+text.eng = "Send enhanced response - 4 trucks plus rescue unit"
+text.spa = "Enviar respuesta mejorada - 4 camiones más unidad de rescate"
+leads_to = "enhanced_response"
+
+[[choices]]
+text.eng = "Send full alarm - 6 trucks, 2 rescue units, ambulances"
+text.spa = "Enviar alarma completa - 6 camiones, 2 unidades de rescate, ambulancias"
+leads_to = "full_alarm"

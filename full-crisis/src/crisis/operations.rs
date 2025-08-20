@@ -197,12 +197,33 @@ pub fn load_crisis(crisis_name: &str) -> Result<CrisisDefinition, Box<dyn std::e
         }
         
         match toml::from_str::<CrisisDefinition>(contents) {
-            Ok(crisis) => {
+            Ok(mut crisis) => {
                 if *verbosity > 0 {
                     eprintln!("[VERBOSE] load_crisis: Successfully parsed TOML, crisis id: {}", crisis.metadata.id);
                     eprintln!("[VERBOSE] load_crisis: Starting scene: {}", crisis.story.starting_scene);
                     eprintln!("[VERBOSE] load_crisis: Character name keys: {:?}", crisis.character_names.names.keys().collect::<Vec<_>>());
                 }
+                
+                // Load scene files from scenes/ directory
+                match load_crisis_scenes(crisis_name) {
+                    Ok(scenes) => {
+                        if *verbosity > 0 {
+                            eprintln!("[VERBOSE] load_crisis: Loaded {} scenes from files", scenes.len());
+                        }
+                        
+                        // Merge scenes from files with any inline scenes (files take precedence)
+                        for (scene_name, scene) in scenes {
+                            crisis.scenes.insert(scene_name, scene);
+                        }
+                    }
+                    Err(e) => {
+                        if *verbosity > 0 {
+                            eprintln!("[VERBOSE] load_crisis: Scene loading failed: {}", e);
+                        }
+                        return Err(e);
+                    }
+                }
+                
                 Ok(crisis)
             }
             Err(e) => {
@@ -221,6 +242,165 @@ pub fn load_crisis(crisis_name: &str) -> Result<CrisisDefinition, Box<dyn std::e
         }
         Err(format!("Crisis '{}' not found", crisis_name).into())
     }
+}
+
+fn load_crisis_scenes(crisis_name: &str) -> Result<HashMap<String, CrisisScene>, Box<dyn std::error::Error>> {
+    let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
+    let mut scenes = HashMap::new();
+    let crisis_folder = crisis_name.replace(" ", "_");
+    
+    // Look for scene files in the scenes/ subdirectory
+    for file_path in PlayableCrises::iter() {
+        let path = file_path.as_ref();
+        let scenes_prefix = format!("{}/scenes/", crisis_folder);
+        
+        if path.starts_with(&scenes_prefix) && path.ends_with(".toml") {
+            let scene_name = path
+                .strip_prefix(&scenes_prefix)
+                .unwrap()
+                .strip_suffix(".toml")
+                .unwrap()
+                .to_string();
+            
+            if let Some(file) = PlayableCrises::get(path) {
+                let contents = std::str::from_utf8(file.data.as_ref())?;
+                
+                // Parse TOML into a flexible Value first, then convert to CrisisScene
+                match toml::from_str::<toml::Value>(contents) {
+                    Ok(toml_value) => {
+                        match parse_scene_from_toml_value(&toml_value) {
+                            Ok(scene) => {
+                                if *verbosity > 1 {
+                                    eprintln!("[VERBOSE] load_crisis_scenes: Loaded scene '{}' from '{}'", scene_name, path);
+                                }
+                                scenes.insert(scene_name, scene);
+                            }
+                            Err(e) => {
+                                if *verbosity > 0 {
+                                    eprintln!("[VERBOSE] load_crisis_scenes: Failed to convert scene '{}': {}", path, e);
+                                }
+                                return Err(format!("Failed to convert scene file '{}': {}", path, e).into());
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        if *verbosity > 0 {
+                            eprintln!("[VERBOSE] load_crisis_scenes: Failed to parse scene '{}': {}", path, e);
+                        }
+                        return Err(format!("Failed to parse scene file '{}': {}", path, e).into());
+                    }
+                }
+            }
+        }
+    }
+    
+    Ok(scenes)
+}
+
+fn parse_scene_from_toml_value(value: &toml::Value) -> Result<CrisisScene, Box<dyn std::error::Error>> {
+    let table = value.as_table().ok_or("Scene must be a table")?;
+    
+    // Parse text field (required)
+    let text = table.get("text")
+        .and_then(|v| v.as_table())
+        .map(|t| {
+            t.iter()
+                .map(|(k, v)| (k.clone(), v.as_str().unwrap_or("").to_string()))
+                .collect()
+        })
+        .unwrap_or_default();
+    
+    // Parse choices (optional, default empty)
+    let choices = table.get("choices")
+        .and_then(|v| v.as_array())
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|choice_val| {
+                    choice_val.as_table().and_then(|choice_table| {
+                        // Parse choice text
+                        let choice_text = choice_table.get("text")
+                            .and_then(|v| v.as_table())
+                            .map(|t| {
+                                t.iter()
+                                    .map(|(k, v)| (k.clone(), v.as_str().unwrap_or("").to_string()))
+                                    .collect()
+                            })
+                            .unwrap_or_default();
+                        
+                        // Parse leads_to (required)
+                        let leads_to = choice_table.get("leads_to")
+                            .and_then(|v| v.as_str())
+                            .map(|s| s.to_string())?;
+                        
+                        // Parse optional fields
+                        let subfolder = choice_table.get("subfolder")
+                            .and_then(|v| v.as_str())
+                            .map(|s| s.to_string());
+                        
+                        let requires = choice_table.get("requires")
+                            .and_then(|v| v.as_table())
+                            .map(|t| {
+                                t.iter()
+                                    .filter_map(|(k, v)| {
+                                        v.as_integer().map(|i| (k.clone(), i as i32))
+                                    })
+                                    .collect()
+                            });
+                        
+                        let character_type = choice_table.get("character_type")
+                            .and_then(|v| v.as_str())
+                            .map(|s| s.to_string());
+                        
+                        Some(CrisisChoice {
+                            text: choice_text,
+                            leads_to,
+                            subfolder,
+                            requires,
+                            character_type,
+                            text_input: None, // TODO: Implement if needed
+                        })
+                    })
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    
+    // Parse optional fields
+    let continue_in_subfolder = table.get("continue_in_subfolder")
+        .and_then(|v| v.as_str())
+        .map(|s| s.to_string());
+    
+    let background_image = table.get("background_image")
+        .and_then(|v| v.as_str())
+        .map(|s| s.to_string());
+    
+    // Parse speaking_character_image with flexible handling
+    let speaking_character_image = table.get("speaking_character_image")
+        .map(|v| {
+            match v {
+                toml::Value::String(s) => Some(SpeakingCharacterImage::Single(s.clone())),
+                toml::Value::Array(arr) => {
+                    let images: Vec<String> = arr.iter()
+                        .filter_map(|item| item.as_str().map(|s| s.to_string()))
+                        .collect();
+                    if images.is_empty() {
+                        None
+                    } else {
+                        Some(SpeakingCharacterImage::Animation(images))
+                    }
+                }
+                _ => None,
+            }
+        })
+        .flatten();
+    
+    Ok(CrisisScene {
+        text,
+        choices,
+        continue_in_subfolder,
+        background_image,
+        speaking_character_image,
+    })
 }
 
 pub fn get_random_character_name(crisis: &CrisisDefinition, character_type: Option<&str>, language: &str) -> String {

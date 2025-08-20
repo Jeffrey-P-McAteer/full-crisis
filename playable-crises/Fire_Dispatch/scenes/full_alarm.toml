@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/full_alarm_response.png"
+speaking_character_image = "Fire_Dispatch/battalion_chief_character.png"
+
+[text]
+eng = "You sound a full alarm: 6 fire trucks, 2 rescue units, 3 ambulances, and the Battalion Chief. 'All units, structure fire with multiple entrapments, Riverside Apartments Oak Street.' This is maximum response - excellent for life safety but leaves the entire city vulnerable to other emergencies for the next 45 minutes."
+spa = "Suenas una alarma completa: 6 camiones de bomberos, 2 unidades de rescate, 3 ambulancias, y el Jefe de Batallón. 'Todas las unidades, incendio estructural con múltiples personas atrapadas, Apartamentos Riverside en Oak Street.' Esta es respuesta máxima - excelente para seguridad de vidas pero deja toda la ciudad vulnerable a otras emergencias por los próximos 45 minutos."
+
+[[choices]]
+text.eng = "Request mutual aid from adjacent counties"
+text.spa = "Solicitar ayuda mutua de condados adyacentes"
+leads_to = "county_backup"
+
+[[choices]]
+text.eng = "Monitor all radio channels for status updates"
+text.spa = "Monitorear todos los canales de radio para actualizaciones"
+leads_to = "command_monitoring"
+
+[[choices]]
+text.eng = "Notify mayor's office of major incident"
+text.spa = "Notificar oficina del alcalde de incidente mayor"
+leads_to = "political_notification"

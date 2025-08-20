@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/single_truck_assessment.png"
+speaking_character_image = "Fire_Dispatch/firefighter_radio.png"
+
+[text]
+eng = "'Engine 7 to Dispatch - we're on scene at Riverside Apartments. Heavy smoke from third floor, but fire appears contained to one unit. Request one additional engine for backup.' Your quick initial dispatch is paying off, but the situation needs more resources."
+spa = "'Camión 7 a Despacho - estamos en el lugar en Apartamentos Riverside. Humo pesado del tercer piso, pero el incendio parece contenido a una unidad. Solicitamos un camión adicional para respaldo.' Tu despacho inicial rápido está dando resultado, pero la situación necesita más recursos."
+
+[[choices]]
+text.eng = "Send the requested backup truck"
+text.spa = "Enviar el camión de respaldo solicitado"
+leads_to = "standard_response"
+
+[[choices]]
+text.eng = "Send enhanced response based on field assessment"
+text.spa = "Enviar respuesta mejorada basada en evaluación de campo"
+leads_to = "enhanced_response"
+
+[[choices]]
+text.eng = "Ask for more detailed situation report first"
+text.spa = "Pedir reporte de situación más detallado primero"
+leads_to = "detailed_report"

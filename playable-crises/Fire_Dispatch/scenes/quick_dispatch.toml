@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/firetruck_rushing_night.png"
+speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+
+[text]
+eng = "You immediately dispatch Engine 7 to the scene. 'Engine 7, respond to apartment fire, exact location unknown, caller disconnected.' As the truck races through the night, you realize you may have acted too quickly without gathering crucial details about the building layout, potential hazards, or number of people at risk."
+spa = "Inmediatamente despachas al Camión 7 al lugar. 'Camión 7, responder a incendio de apartamentos, ubicación exacta desconocida, la persona colgó.' Mientras el camión corre por la noche, te das cuenta de que quizás actuaste muy rápido sin obtener detalles cruciales sobre la distribución del edificio, peligros potenciales, o número de personas en riesgo."
+
+[[choices]]
+text.eng = "Call them back to gather more information"
+text.spa = "Llamarlos de vuelta para obtener más información"
+leads_to = "gather_details"
+
+[[choices]]
+text.eng = "Send backup - dispatch second truck"
+text.spa = "Enviar refuerzo - despachar segundo camión"
+leads_to = "standard_response"
+
+[[choices]]
+text.eng = "Wait for first responder assessment"
+text.spa = "Esperar evaluación del primer respondiente"
+leads_to = "field_assessment"

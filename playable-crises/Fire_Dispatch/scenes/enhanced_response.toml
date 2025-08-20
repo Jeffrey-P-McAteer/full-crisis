@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/enhanced_response_convoy.png"
+speaking_character_image = "Fire_Dispatch/fire_chief_character.png"
+
+[text]
+eng = "You escalate to an enhanced response: 4 fire trucks plus rescue squad and ambulance. 'Multi-unit response to Riverside Apartments, structure fire with entrapment potential.' The additional resources strain your available fleet but provide comprehensive coverage for rescue operations, medical support, and extended firefighting capabilities."
+spa = "Escalas a una respuesta mejorada: 4 camiones de bomberos más escuadrón de rescate y ambulancia. 'Respuesta multi-unidad a Apartamentos Riverside, incendio estructural con potencial de personas atrapadas.' Los recursos adicionales estresan tu flota disponible pero proveen cobertura integral para operaciones de rescate, apoyo médico, y capacidades extendidas de extinción."
+
+[[choices]]
+text.eng = "Coordinate with neighboring districts for backup coverage"
+text.spa = "Coordinar con distritos vecinos para cobertura de respaldo"
+leads_to = "mutual_aid"
+
+[[choices]]
+text.eng = "Monitor response and assess need for additional resources"
+text.spa = "Monitorear respuesta y evaluar necesidad de recursos adicionales"
+leads_to = "response_monitoring"
+
+[[choices]]
+text.eng = "Prepare for potential second emergency call"
+text.spa = "Preparar para potencial segunda llamada de emergencia"
+leads_to = "dual_emergency"

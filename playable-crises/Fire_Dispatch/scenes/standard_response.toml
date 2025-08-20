@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/two_firetrucks_responding.png"
+speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+
+[text]
+eng = "You dispatch 2 fire trucks to the Riverside Apartments. 'Engine 12 and Truck 4, respond to structure fire, 6-story apartment building, third floor reported, multiple occupants.' The response launches within 90 seconds. This is protocol for apartment fires - sufficient for most situations but may be limited if conditions escalate."
+spa = "Despachas 2 camiones de bomberos a los Apartamentos Riverside. 'Camión 12 y Camión 4, responder a incendio estructural, edificio de apartamentos de 6 pisos, tercer piso reportado, múltiples ocupantes.' La respuesta se lanza en 90 segundos. Este es el protocolo para incendios de apartamentos - suficiente para la mayoría de situaciones pero puede ser limitado si las condiciones escalan."
+
+[[choices]]
+text.eng = "Place additional resources on standby"
+text.spa = "Poner recursos adicionales en espera"
+leads_to = "resource_standby"
+
+[[choices]]
+text.eng = "Monitor radio for first responder report"
+text.spa = "Monitorear radio para reporte del primer respondiente"
+leads_to = "await_report"
+
+[[choices]]
+text.eng = "Contact building management for evacuation plan"
+text.spa = "Contactar administración del edificio para plan de evacuación"
+leads_to = "management_contact"

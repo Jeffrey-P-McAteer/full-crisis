@@ -89,8 +89,139 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
             });
         }
+        Command::Test => {
+            match run_crisis_tests(args.verbosity) {
+                Ok(_) => println!("All crisis tests completed."),
+                Err(e) => {
+                    eprintln!("Test error: {}", e);
+                    std::process::exit(1);
+                }
+            }
+        }
     }
 
+    Ok(())
+}
+
+fn run_crisis_tests(verbosity: u8) -> Result<(), Box<dyn std::error::Error>> {
+    use full_crisis::crisis::operations::*;
+    use full_crisis::crisis::PlayableCrises;
+    use std::collections::HashSet;
+    
+    println!("Starting crisis validation tests...\n");
+    
+    for pc in PlayableCrises::iter() {
+        let path = pc.as_ref();
+        if path.ends_with("crisis.toml") {
+            let folder_name = path.replace("/crisis.toml", "");
+            println!("Testing crisis: {}", folder_name);
+            
+            match load_crisis(&folder_name) {
+                Ok(crisis) => {
+                    validate_crisis(&crisis, &folder_name, verbosity)?;
+                }
+                Err(e) => {
+                    println!("❌ Failed to load crisis {}: {}", folder_name, e);
+                }
+            }
+            println!();
+        }
+    }
+    
+    Ok(())
+}
+
+fn validate_crisis(
+    crisis: &full_crisis::crisis::CrisisDefinition, 
+    folder_name: &str,
+    verbosity: u8
+) -> Result<(), Box<dyn std::error::Error>> {
+    use full_crisis::crisis::PlayableCrises;
+    use std::collections::HashSet;
+    
+    let mut warnings = Vec::new();
+    let mut scene_names = HashSet::new();
+    let mut referenced_scenes = HashSet::new();
+    
+    // Collect all scene names
+    for scene_name in crisis.scenes.keys() {
+        scene_names.insert(scene_name.clone());
+    }
+    
+    // Add starting scene to referenced scenes
+    referenced_scenes.insert(crisis.story.starting_scene.clone());
+    
+    // Validate each scene
+    for (scene_name, scene) in &crisis.scenes {
+        println!("  Testing scene: {}", scene_name);
+        
+        // Check background image
+        if let Some(bg_img) = &scene.background_image {
+            if PlayableCrises::get(bg_img).is_none() {
+                warnings.push(format!("Scene '{}': Background image file not found: {}", scene_name, bg_img));
+            }
+        }
+        
+        // Check speaking character image
+        if let Some(char_img) = &scene.speaking_character_image {
+            match char_img {
+                full_crisis::crisis::SpeakingCharacterImage::Single(img_path) => {
+                    if PlayableCrises::get(img_path).is_none() {
+                        warnings.push(format!("Scene '{}': Character image file not found: {}", scene_name, img_path));
+                    }
+                }
+                full_crisis::crisis::SpeakingCharacterImage::Animation(img_paths) => {
+                    if img_paths.is_empty() {
+                        warnings.push(format!("Scene '{}': Empty animation array for speaking_character_image", scene_name));
+                    } else {
+                        for (i, img_path) in img_paths.iter().enumerate() {
+                            if PlayableCrises::get(img_path).is_none() {
+                                warnings.push(format!("Scene '{}': Animation frame {} not found: {}", scene_name, i, img_path));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Check choice destinations and collect referenced scenes
+        for (i, choice) in scene.choices.iter().enumerate() {
+            let leads_to = &choice.leads_to;
+            referenced_scenes.insert(leads_to.clone());
+            if !scene_names.contains(leads_to) {
+                warnings.push(format!("Scene '{}' choice {}: References non-existent scene '{}'", scene_name, i, leads_to));
+            }
+        }
+    }
+    
+    // Check for disconnected scenes
+    let disconnected: Vec<_> = scene_names.difference(&referenced_scenes).collect();
+    if !disconnected.is_empty() {
+        println!("  ⚠️  Disconnected scenes (not reachable from starting scene):");
+        for scene in &disconnected {
+            println!("    - {}", scene);
+        }
+    }
+    
+    // Print warnings
+    if !warnings.is_empty() {
+        println!("  ⚠️  Warnings:");
+        for warning in &warnings {
+            println!("    - {}", warning);
+        }
+    }
+    
+    if warnings.is_empty() && disconnected.is_empty() {
+        println!("  ✅ All validations passed");
+    }
+    
+    if verbosity > 0 {
+        println!("  📊 Statistics:");
+        println!("    - Total scenes: {}", scene_names.len());
+        println!("    - Referenced scenes: {}", referenced_scenes.len());
+        println!("    - Starting scene: {}", crisis.story.starting_scene);
+    }
+    
     Ok(())
 }
 
@@ -162,6 +293,7 @@ pub struct Args {
 pub enum Command {
     Gui,
     Cli,
+    Test,
 }
 
 impl std::fmt::Display for Command {
@@ -169,6 +301,7 @@ impl std::fmt::Display for Command {
         match self {
             Command::Gui => write!(f, "gui"),
             Command::Cli => write!(f, "cli"),
+            Command::Test => write!(f, "test"),
         }
     }
 }

@@ -1,0 +1,24 @@
+background_image = "Fire_Dispatch/apartment_complex_night.png"
+speaking_character_image = [
+    "Fire_Dispatch/panicked_caller_character.png",
+    "Fire_Dispatch/panicked_caller_character_2.png",
+]
+
+[text]
+eng = "Caller: 'I think there are about 20-30 people in the building! Most are asleep - it's nearly 3 AM. The elderly couple next to me, they might not hear the alarms!' The caller's voice cracks with panic. You quickly assess: high-occupancy building, nighttime fire, potential mobility issues with residents."
+spa = "Llamador: '¡Creo que hay unas 20-30 personas en el edificio! La mayoría están durmiendo - son casi las 3 AM. ¡La pareja de ancianos junto a mí, puede que no escuchen las alarmas!' La voz del llamador se quiebra de pánico. Rápidamente evalúas: edificio de alta ocupación, incendio nocturno, problemas potenciales de movilidad con residentes."
+
+[[choices]]
+text.eng = "Dispatch full emergency response - 4 trucks, 2 rescue units"
+text.spa = "Despachar respuesta de emergencia completa - 4 camiones, 2 unidades de rescate"
+leads_to = "full_alarm"
+
+[[choices]]
+text.eng = "Send standard response with ambulance standby"
+text.spa = "Enviar respuesta estándar con ambulancia en espera"
+leads_to = "enhanced_response"
+
+[[choices]]
+text.eng = "Ask caller to help evacuate neighbors while help arrives"
+text.spa = "Pedir al llamador que ayude a evacuar a los vecinos mientras llega ayuda"
+leads_to = "citizen_assist"

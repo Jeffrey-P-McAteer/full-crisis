@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/fire_scene_report.png"
+speaking_character_image = "Fire_Dispatch/firefighter_radio.png"
+
+[text]
+eng = "'Dispatch, Engine 12 on scene. We have a working fire, third floor, smoke showing from multiple windows. Building is evacuating, no immediate rescues needed.' Your standard response was appropriate - the situation is manageable with current resources."
+spa = "'Despacho, Camión 12 en el lugar. Tenemos un incendio activo, tercer piso, humo visible desde múltiples ventanas. El edificio se está evacuando, no se necesitan rescates inmediatos.' Tu respuesta estándar fue apropiada - la situación es manejable con los recursos actuales."
+
+[[choices]]
+text.eng = "Maintain current response level"
+text.spa = "Mantener nivel de respuesta actual"
+leads_to = "successful_outcome"
+
+[[choices]]
+text.eng = "Send one additional truck as precaution"
+text.spa = "Enviar un camión adicional como precaución"
+leads_to = "precautionary_backup"
+
+[[choices]]
+text.eng = "Request detailed damage assessment"
+text.spa = "Solicitar evaluación detallada de daños"
+leads_to = "damage_assessment"

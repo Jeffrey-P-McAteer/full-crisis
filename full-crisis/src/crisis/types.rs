@@ -1,7 +1,5 @@
-use serde::{Serialize, Deserialize, Deserializer};
-use serde::de::{self, Visitor};
+use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
-use std::fmt;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CrisisMetadata {
@@ -64,21 +62,13 @@ pub enum TextInputType {
     Number,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum SpeakingCharacterImage {
-    Single(String),
     Animation(Vec<String>),
+    Single(String),
 }
 
-impl<'de> serde::Deserialize<'de> for SpeakingCharacterImage {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_any(SpeakingCharacterImageVisitor)
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CrisisScene {
@@ -100,6 +90,7 @@ pub struct CrisisDefinition {
     pub story: CrisisStory,
     pub mechanics: CrisisMechanics,
     pub conditions: CrisisConditions,
+    #[serde(default)]
     pub scenes: HashMap<String, CrisisScene>,
 }
 
@@ -194,35 +185,4 @@ impl SavedGames {
     }
 }
 
-struct SpeakingCharacterImageVisitor;
-
-impl<'de> Visitor<'de> for SpeakingCharacterImageVisitor {
-    type Value = SpeakingCharacterImage;
-
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("a string or an array of strings")
-    }
-
-    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
-        Ok(SpeakingCharacterImage::Single(value.to_string()))
-    }
-
-    fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
-    where
-        A: de::SeqAccess<'de>,
-    {
-        let mut images = Vec::new();
-        while let Some(image) = seq.next_element::<String>()? {
-            images.push(image);
-        }
-        if images.is_empty() {
-            Err(de::Error::custom("Image array cannot be empty"))
-        } else {
-            Ok(SpeakingCharacterImage::Animation(images))
-        }
-    }
-}
 

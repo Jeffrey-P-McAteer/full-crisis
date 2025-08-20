@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/command_center_monitoring.png"
+speaking_character_image = "Fire_Dispatch/fire_chief_character.png"
+
+[text]
+eng = "You monitor the enhanced response team's progress. 'Command to Dispatch, we have visual on heavy smoke from third floor, evacuation in progress, no entrapments reported at this time.' The coordinated response is working effectively - your resource allocation appears well-suited to the incident."
+spa = "Monitoreas el progreso del equipo de respuesta mejorada. 'Comando a Despacho, tenemos visual de humo pesado del tercer piso, evacuación en progreso, no se reportan personas atrapadas en este momento.' La respuesta coordinada está funcionando efectivamente - tu asignación de recursos parece bien adaptada al incidente."
+
+[[choices]]
+text.eng = "Continue monitoring - response seems adequate"
+text.spa = "Continuar monitoreando - la respuesta parece adecuada"
+leads_to = "successful_outcome"
+
+[[choices]]
+text.eng = "Request status update on evacuation progress"
+text.spa = "Solicitar actualización de estado sobre progreso de evacuación"
+leads_to = "evacuation_status"
+
+[[choices]]
+text.eng = "Prepare for potential escalation if conditions worsen"
+text.spa = "Preparar para potencial escalada si las condiciones empeoran"
+leads_to = "contingency_planning"

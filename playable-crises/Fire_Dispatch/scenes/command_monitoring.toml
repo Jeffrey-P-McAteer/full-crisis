@@ -1,0 +1,21 @@
+background_image = "Fire_Dispatch/battalion_command_scene.png"
+speaking_character_image = "Fire_Dispatch/battalion_chief_character.png"
+
+[text]
+eng = "With full alarm response deployed, you coordinate the massive operation. 'Battalion Chief to all units, fire is contained to floors 3-4, all residents accounted for, no casualties.' Your maximum response prevented a potential disaster, though it left the city temporarily vulnerable to other emergencies."
+spa = "Con respuesta de alarma completa desplegada, coordinas la operación masiva. 'Jefe de Batallón a todas las unidades, incendio contenido a pisos 3-4, todos los residentes están contabilizados, sin víctimas.' Tu respuesta máxima previno un desastre potencial, aunque dejó la ciudad temporalmente vulnerable a otras emergencias."
+
+[[choices]]
+text.eng = "Begin releasing non-essential units back to service"
+text.spa = "Comenzar a liberar unidades no esenciales de vuelta al servicio"
+leads_to = "resource_reallocation"
+
+[[choices]]
+text.eng = "Maintain full response until fire completely extinguished"
+text.spa = "Mantener respuesta completa hasta que el incendio esté completamente extinguido"
+leads_to = "complete_suppression"
+
+[[choices]]
+text.eng = "Conduct after-action review of response effectiveness"
+text.spa = "Realizar revisión post-acción de la efectividad de la respuesta"
+leads_to = "successful_outcome"
