@@ -1,0 +1,344 @@
+# Silent Run Crisis - Banking Emergency Response Story
+
+[metadata]
+id = "silent_run"
+version = "1.0"
+author = "Crisis Game System"
+description_key = "silent_run_desc"
+
+[name]
+eng = "Silent Run"
+spa = "Corrida Silenciosa"
+
+[description]
+eng = "You are a bank teller at First National Bank when unusual security protocols are suddenly implemented. Navigate the delicate balance between following procedures, protecting customers, and uncovering the truth about a potential bank run."
+spa = "Eres cajero bancario en First National Bank cuando de repente se implementan protocolos de seguridad inusuales. Navega el delicado equilibrio entre seguir procedimientos, proteger clientes y descubrir la verdad sobre una posible corrida bancaria."
+
+[character_names]
+male_eng = ["Michael Chen", "David Rodriguez", "James Thompson", "Robert Kim", "Daniel Martinez"]
+female_eng = ["Sarah Williams", "Jessica Anderson", "Maria Gonzalez", "Amanda Lee", "Nicole Johnson"]
+male_spa = ["Miguel Chen", "David Rodríguez", "Santiago Thompson", "Roberto Kim", "Daniel Martínez"]
+female_spa = ["Sara Williams", "Jessica Anderson", "María González", "Amanda Lee", "Nicole Johnson"]
+
+[story]
+starting_scene = "morning_briefing"
+default_language = "eng"
+
+[mechanics]
+time_limit_minutes = 20
+save_progress = true
+allow_restart = true
+track_decisions = true
+
+[conditions]
+variables = ["trust_level", "public_suspicion", "compliance_score", "insider_knowledge", "customer_complaints"]
+
+[conditions.choice_effects]
+"follow_strict_protocol" = { compliance_score = 2, trust_level = -1 }
+"be_helpful_to_customers" = { trust_level = 1, compliance_score = -1 }
+"investigate_suspicious_activity" = { insider_knowledge = 1, compliance_score = -1 }
+"alert_customers_discretely" = { public_suspicion = 2, trust_level = 2 }
+
+[scenes.morning_briefing]
+text.eng = "Monday, 8:45 AM - You are {character_name}, a senior bank teller at First National Bank's downtown branch. As you settle into your station, Branch Manager Patricia Wells calls an unexpected all-staff meeting. 'Due to recent regulatory changes,' she announces tersely, 'we're implementing enhanced security protocols effective immediately. Any withdrawal over $25,000 requires additional verification forms and manager approval. No exceptions.' She hands out new paperwork packets. Something feels off about her nervous demeanor, but you can't quite place what."
+text.spa = "Lunes, 8:45 AM - Eres {character_name}, cajero senior en la sucursal del centro de First National Bank. Mientras te instalas en tu estación, la Gerente de Sucursal Patricia Wells convoca una reunión inesperada de todo el personal. 'Debido a cambios regulatorios recientes,' anuncia tensamente, 'estamos implementando protocolos de seguridad mejorados efectivos inmediatamente. Cualquier retiro sobre $25,000 requiere formularios de verificación adicionales y aprobación del gerente. Sin excepciones.' Entrega paquetes de papeleo nuevo. Algo se siente extraño sobre su comportamiento nervioso, pero no puedes identificar exactamente qué."
+
+[[scenes.morning_briefing.choices]]
+text.eng = "Ask why these changes are being implemented so suddenly"
+text.spa = "Preguntar por qué estos cambios se están implementando tan repentinamente"
+leads_to = "questioning_management"
+
+[[scenes.morning_briefing.choices]]
+text.eng = "Accept the new protocols without question"
+text.spa = "Aceptar los nuevos protocolos sin cuestionarlos"
+leads_to = "compliance_path"
+
+[[scenes.morning_briefing.choices]]
+text.eng = "Quietly observe your colleagues' reactions"
+text.spa = "Observar discretamente las reacciones de tus colegas"
+leads_to = "observation_path"
+
+[[scenes.morning_briefing.choices]]
+text.eng = "Suggest ways to help customers understand the new requirements"
+text.spa = "Sugerir maneras de ayudar a los clientes a entender los nuevos requisitos"
+leads_to = "customer_focus_path"
+
+[scenes.questioning_management]
+text.eng = "Patricia's expression tightens when you ask about the sudden changes. 'These directives came from corporate this morning,' she says curtly. 'Something about federal compliance updates. Just follow the procedures, {character_name}.' As colleagues file out, you notice senior teller Marcus whisper to Janet, 'Did you see the news about Senator Morrison's banking committee announcement?' Your first customer arrives - Mrs. Chen, a regular who wants to withdraw $30,000 for her daughter's wedding."
+text.spa = "La expresión de Patricia se tensa cuando preguntas sobre los cambios repentinos. 'Estas directivas vinieron de corporativo esta mañana,' dice secamente. 'Algo sobre actualizaciones de cumplimiento federal. Solo sigue los procedimientos, {character_name}.' Mientras los colegas se van, notas que el cajero senior Marcus le susurra a Janet, '¿Viste las noticias sobre el anuncio del comité bancario del Senador Morrison?' Tu primer cliente llega - Sra. Chen, una cliente regular que quiere retirar $30,000 para la boda de su hija."
+
+[[scenes.questioning_management.choices]]
+text.eng = "Research Senator Morrison's announcement during your break"
+text.spa = "Investigar el anuncio del Senador Morrison durante tu descanso"
+leads_to = "investigation_branch"
+
+[[scenes.questioning_management.choices]]
+text.eng = "Focus on helping Mrs. Chen with minimal paperwork delays"
+text.spa = "Enfocarse en ayudar a la Sra. Chen con retrasos mínimos de papeleo"
+leads_to = "customer_priority"
+
+[[scenes.questioning_management.choices]]
+text.eng = "Strictly follow the new security protocols with Mrs. Chen"
+text.spa = "Seguir estrictamente los nuevos protocolos de seguridad con la Sra. Chen"
+leads_to = "strict_compliance"
+
+[[scenes.questioning_management.choices]]
+text.eng = "Ask Mrs. Chen if she's heard anything unusual about the bank"
+text.spa = "Preguntarle a la Sra. Chen si ha escuchado algo inusual sobre el banco"
+leads_to = "customer_intelligence"
+
+[scenes.compliance_path]
+text.eng = "You decide to follow orders without question. The morning proceeds smoothly as you process routine transactions, carefully implementing the new verification procedures. Around 10:30 AM, you notice an unusual pattern: three different customers have mentioned seeing 'concerning news' about First National, but none specify details. Your colleague Marcus approaches during a lull. 'Hey, {character_name}, have you noticed anything strange about the vault activity today? Security's been in and out all morning.'"
+text.spa = "Decides seguir órdenes sin cuestionarlas. La mañana procede sin problemas mientras procesas transacciones rutinarias, implementando cuidadosamente los nuevos procedimientos de verificación. Alrededor de las 10:30 AM, notas un patrón inusual: tres clientes diferentes han mencionado ver 'noticias preocupantes' sobre First National, pero ninguno especifica detalles. Tu colega Marcus se acerca durante una pausa. 'Hey, {character_name}, ¿has notado algo extraño sobre la actividad de la bóveda hoy? Seguridad ha estado entrando y saliendo toda la mañana.'"
+
+[[scenes.compliance_path.choices]]
+text.eng = "Investigate the vault activity with Marcus"
+text.spa = "Investigar la actividad de la bóveda con Marcus"
+leads_to = "vault_discovery"
+
+[[scenes.compliance_path.choices]]
+text.eng = "Report Marcus's concerns to management"
+text.spa = "Reportar las preocupaciones de Marcus a la gerencia"
+leads_to = "management_loyalty"
+
+[[scenes.compliance_path.choices]]
+text.eng = "Continue focusing solely on your customer duties"
+text.spa = "Continuar enfocándose únicamente en tus deberes con clientes"
+leads_to = "tunnel_vision"
+
+[[scenes.compliance_path.choices]]
+text.eng = "Ask customers discreetly about the 'concerning news' they mentioned"
+text.spa = "Preguntar discretamente a los clientes sobre las 'noticias preocupantes' que mencionaron"
+leads_to = "customer_intelligence"
+
+[scenes.observation_path]
+text.eng = "You watch your colleagues carefully during the meeting. Janet looks genuinely confused, but Marcus keeps checking his phone with a worried expression. After Patricia dismisses everyone, you overhear fragments of whispered conversations: '...federal investigation...', '...stock price dropping...', '...my retirement account...' The pieces suggest something bigger than routine regulatory changes. Your first customer, Mr. Harrison, approaches looking agitated. 'I need to withdraw $50,000 immediately,' he demands. 'I heard First National might be in trouble.'"
+text.spa = "Observas cuidadosamente a tus colegas durante la reunión. Janet se ve genuinamente confundida, pero Marcus sigue revisando su teléfono con expresión preocupada. Después de que Patricia despide a todos, escuchas fragmentos de conversaciones susurradas: '...investigación federal...', '...precio de acciones cayendo...', '...mi cuenta de jubilación...' Las piezas sugieren algo más grande que cambios regulatorios rutinarios. Tu primer cliente, Sr. Harrison, se acerca luciendo agitado. 'Necesito retirar $50,000 inmediatamente,' exige. 'Escuché que First National podría estar en problemas.'"
+
+[[scenes.observation_path.choices]]
+text.eng = "Reassure Mr. Harrison while processing his withdrawal normally"
+text.spa = "Tranquilizar al Sr. Harrison mientras procesas su retiro normalmente"
+leads_to = "reassurance_strategy"
+
+[[scenes.observation_path.choices]]
+text.eng = "Apply the new security protocols firmly but professionally"
+text.spa = "Aplicar los nuevos protocolos de seguridad firmemente pero profesionalmente"
+leads_to = "protocol_enforcement"
+
+[[scenes.observation_path.choices]]
+text.eng = "Ask Mr. Harrison what specific information he heard"
+text.spa = "Preguntarle al Sr. Harrison qué información específica escuchó"
+leads_to = "information_gathering"
+
+[[scenes.observation_path.choices]]
+text.eng = "Discreetly warn Mr. Harrison about potential issues while helping him"
+text.spa = "Advertir discretamente al Sr. Harrison sobre problemas potenciales mientras lo ayudas"
+leads_to = "whistleblower_path"
+
+[scenes.customer_focus_path]
+text.eng = "Patricia appreciates your customer service focus. 'Good thinking, {character_name}. We need to maintain customer confidence while ensuring compliance.' She assigns you to help train other tellers on explaining the new procedures diplomatically. As you work with customers throughout the morning, you develop a rapport that helps them accept the additional requirements. However, around 11 AM, Mrs. Foster, a wealthy longtime customer, confides: 'Between you and me, dear, I'm worried about keeping all my money here. My financial advisor mentioned some concerning regulatory issues with First National.'"
+text.spa = "Patricia aprecia tu enfoque en servicio al cliente. 'Buen pensamiento, {character_name}. Necesitamos mantener la confianza del cliente mientras aseguramos el cumplimiento.' Te asigna ayudar a entrenar a otros cajeros sobre explicar los nuevos procedimientos diplomáticamente. Mientras trabajas con clientes durante la mañana, desarrollas una relación que les ayuda a aceptar los requisitos adicionales. Sin embargo, alrededor de las 11 AM, Sra. Foster, una cliente rica de mucho tiempo, confía: 'Entre tú y yo, querida, estoy preocupada por mantener todo mi dinero aquí. Mi asesor financiero mencionó algunos problemas regulatorios preocupantes con First National.'"
+
+[[scenes.customer_focus_path.choices]]
+text.eng = "Offer to connect Mrs. Foster with a manager for reassurance"
+text.spa = "Ofrecer conectar a la Sra. Foster con un gerente para tranquilizarla"
+leads_to = "management_referral"
+
+[[scenes.customer_focus_path.choices]]
+text.eng = "Privately research the regulatory issues Mrs. Foster mentioned"
+text.spa = "Investigar privadamente los problemas regulatorios que mencionó la Sra. Foster"
+leads_to = "investigation_branch"
+
+[[scenes.customer_focus_path.choices]]
+text.eng = "Assure Mrs. Foster while documenting her concerns for management"
+text.spa = "Asegurar a la Sra. Foster mientras documentas sus preocupaciones para la gerencia"
+leads_to = "concern_documentation"
+
+[[scenes.customer_focus_path.choices]]
+text.eng = "Confidentially share your own observations with Mrs. Foster"
+text.spa = "Compartir confidencialmente tus propias observaciones con la Sra. Foster"
+leads_to = "mutual_concern"
+
+[scenes.investigation_branch]
+text.eng = "During your lunch break, you search online for Senator Morrison's announcement. The headlines are alarming: 'Senate Banking Committee Launches Investigation into First National's Risk Management Practices' and 'Federal Regulators Question First National's Exposure to Political Lending Scandal.' The articles mention potential FDIC intervention and possible criminal charges against executives. Your phone buzzes with a text from your spouse: 'Should we move our savings? Everyone's talking about First National problems.' When you return from break, the lobby has noticeably more customers than usual, and several look anxious."
+text.spa = "Durante tu descanso de almuerzo, buscas en línea el anuncio del Senador Morrison. Los titulares son alarmantes: 'Comité Bancario del Senado Lanza Investigación sobre Prácticas de Gestión de Riesgo de First National' y 'Reguladores Federales Cuestionan Exposición de First National a Escándalo de Préstamos Políticos.' Los artículos mencionan posible intervención del FDIC y posibles cargos criminales contra ejecutivos. Tu teléfono vibra con un texto de tu cónyuge: '¿Deberíamos mover nuestros ahorros? Todos están hablando de problemas de First National.' Cuando regresas del descanso, el vestíbulo tiene notablemente más clientes de lo usual, y varios lucen ansiosos."
+
+[[scenes.investigation_branch.choices]]
+text.eng = "Quietly alert trusted colleagues about what you discovered"
+text.spa = "Alertar discretamente a colegas de confianza sobre lo que descubriste"
+leads_to = "colleague_alliance"
+
+[[scenes.investigation_branch.choices]]
+text.eng = "Focus on providing exceptional customer service to maintain calm"
+text.spa = "Enfocarse en brindar servicio excepcional al cliente para mantener la calma"
+leads_to = "damage_control"
+
+[[scenes.investigation_branch.choices]]
+text.eng = "Approach management with your findings and concerns"
+text.spa = "Acercarse a la gerencia con tus hallazgos y preocupaciones"
+leads_to = "management_confrontation"
+
+[[scenes.investigation_branch.choices]]
+text.eng = "Begin discreetly helping customers protect their assets"
+text.spa = "Comenzar a ayudar discretamente a los clientes a proteger sus activos"
+leads_to = "protective_action"
+
+[scenes.customer_priority]
+text.eng = "You expedite Mrs. Chen's transaction, helping her complete the necessary forms quickly while maintaining a friendly demeanor. She's grateful: 'Thank you so much, {character_name}. You've always taken such good care of us.' However, as the day progresses, you notice the line growing longer and several customers seem on edge. Around noon, Patricia pulls you aside: 'I've been watching your station. While I appreciate your efficiency, we need to be extra careful with documentation today. Corporate is monitoring everything closely.' Her stress is palpable."
+text.spa = "Aceleras la transacción de la Sra. Chen, ayudándola a completar los formularios necesarios rápidamente mientras mantienes un comportamiento amigable. Ella está agradecida: 'Muchas gracias, {character_name}. Siempre nos has cuidado tan bien.' Sin embargo, mientras avanza el día, notas que la fila se hace más larga y varios clientes parecen nerviosos. Alrededor del mediodía, Patricia te lleva aparte: 'He estado observando tu estación. Aunque aprecio tu eficiencia, necesitamos ser extra cuidadosos con la documentación hoy. Corporativo está monitoreando todo de cerca.' Su estrés es palpable."
+
+[[scenes.customer_priority.choices]]
+text.eng = "Ask Patricia directly what corporate is monitoring for"
+text.spa = "Preguntarle directamente a Patricia qué está monitoreando corporativo"
+leads_to = "direct_confrontation"
+
+[[scenes.customer_priority.choices]]
+text.eng = "Adjust your approach to balance speed with strict documentation"
+text.spa = "Ajustar tu enfoque para equilibrar velocidad con documentación estricta"
+leads_to = "balanced_approach"
+
+[[scenes.customer_priority.choices]]
+text.eng = "Continue prioritizing customer experience despite the warning"
+text.spa = "Continuar priorizando la experiencia del cliente a pesar de la advertencia"
+leads_to = "customer_advocacy"
+
+[[scenes.customer_priority.choices]]
+text.eng = "Document the unusual corporate monitoring for potential whistleblowing"
+text.spa = "Documentar el monitoreo corporativo inusual para posible denuncia"
+leads_to = "evidence_gathering"
+
+[scenes.strict_compliance]
+text.eng = "You meticulously follow every new protocol with Mrs. Chen, explaining each form and requirement thoroughly. While she's initially frustrated by the delays, your professional handling helps her understand the importance of the procedures. 'I suppose security is important,' she concedes. As other customers observe your careful process, some appear reassured by the thoroughness, while others seem increasingly impatient. Patricia notices your approach and nods approvingly, but you can't shake the feeling that you're buying time for something bigger than routine compliance."
+text.spa = "Sigues meticulosamente cada nuevo protocolo con la Sra. Chen, explicando cada formulario y requisito minuciosamente. Aunque inicialmente se frustra por los retrasos, tu manejo profesional la ayuda a entender la importancia de los procedimientos. 'Supongo que la seguridad es importante,' concede. Mientras otros clientes observan tu proceso cuidadoso, algunos parecen tranquilizados por la minuciosidad, mientras otros parecen cada vez más impacientes. Patricia nota tu enfoque y asiente aprobadoramente, pero no puedes sacudirte la sensación de que estás ganando tiempo para algo más grande que cumplimiento rutinario."
+
+[[scenes.strict_compliance.choices]]
+text.eng = "Continue the methodical approach to build customer confidence"
+text.spa = "Continuar el enfoque metódico para construir confianza del cliente"
+leads_to = "confidence_building"
+
+[[scenes.strict_compliance.choices]]
+text.eng = "Speed up slightly while maintaining compliance standards"
+text.spa = "Acelerar ligeramente mientras mantienes estándares de cumplimiento"
+leads_to = "efficiency_optimization"
+
+[[scenes.strict_compliance.choices]]
+text.eng = "Use the extended interaction time to gauge customer concerns"
+text.spa = "Usar el tiempo de interacción extendido para evaluar preocupaciones del cliente"
+leads_to = "intelligence_gathering"
+
+[[scenes.strict_compliance.choices]]
+text.eng = "Discretely observe management's reactions to your compliance"
+text.spa = "Observar discretamente las reacciones de la gerencia a tu cumplimiento"
+leads_to = "management_analysis"
+
+[scenes.customer_intelligence]
+text.eng = "Through careful questioning, you piece together concerning information. Customers mention news reports about federal investigations, social media rumors about political lending scandals, and financial advisor warnings about First National's stability. The pattern becomes clear: word is spreading quickly about potential bank problems, and people are starting to panic. By 1 PM, withdrawal requests have increased dramatically, and you notice security guards positioning themselves more prominently. The situation is escalating toward a full bank run."
+text.spa = "A través de preguntas cuidadosas, juntas información preocupante. Los clientes mencionan reportes de noticias sobre investigaciones federales, rumores de redes sociales sobre escándalos de préstamos políticos, y advertencias de asesores financieros sobre la estabilidad de First National. El patrón se vuelve claro: la palabra se está extendiendo rápidamente sobre problemas bancarios potenciales, y la gente está empezando a entrar en pánico. Para la 1 PM, las solicitudes de retiro han aumentado dramáticamente, y notas guardias de seguridad posicionándose más prominentemente. La situación está escalando hacia una corrida bancaria completa."
+
+[[scenes.customer_intelligence.choices]]
+text.eng = "Immediately report your intelligence to Patricia"
+text.spa = "Reportar inmediatamente tu inteligencia a Patricia"
+leads_to = "crisis_escalation"
+
+[[scenes.customer_intelligence.choices]]
+text.eng = "Work with colleagues to develop customer retention strategies"
+text.spa = "Trabajar con colegas para desarrollar estrategias de retención de clientes"
+leads_to = "collaborative_response"
+
+[[scenes.customer_intelligence.choices]]
+text.eng = "Prepare for the worst while maintaining professional composure"
+text.spa = "Prepararse para lo peor mientras mantienes compostura profesional"
+leads_to = "calm_preparation"
+
+[[scenes.customer_intelligence.choices]]
+text.eng = "Discretely warn select customers about the developing situation"
+text.spa = "Advertir discretamente a clientes selectos sobre la situación en desarrollo"
+leads_to = "selective_warning"
+
+[scenes.vault_discovery]
+text.eng = "You and Marcus discretely observe the vault area during a brief break. What you see is disturbing: armored car personnel are making multiple trips, loading significantly more cash than usual for transport. Federal bank examiners with official badges are photographing documents and interviewing vault staff. Marcus whispers, 'This looks like preparation for emergency liquidity measures or... closure protocols.' When you return to your stations, Patricia announces over the intercom: 'Attention staff: we're experiencing higher than normal transaction volume. Please maintain efficiency while ensuring complete accuracy in all documentation.'"
+text.spa = "Tú y Marcus observan discretamente el área de la bóveda durante un breve descanso. Lo que ven es perturbador: personal de carros blindados está haciendo múltiples viajes, cargando significativamente más efectivo de lo usual para transporte. Examinadores bancarios federales con credenciales oficiales están fotografiando documentos y entrevistando al personal de la bóveda. Marcus susurra, 'Esto parece preparación para medidas de liquidez de emergencia o... protocolos de cierre.' Cuando regresan a sus estaciones, Patricia anuncia por el intercomunicador: 'Atención personal: estamos experimentando volumen de transacciones más alto de lo normal. Por favor mantengan eficiencia mientras aseguran completa precisión en toda documentación.'"
+
+[[scenes.vault_discovery.choices]]
+text.eng = "Confront Patricia about the vault activity and federal presence"
+text.spa = "Confrontar a Patricia sobre la actividad de la bóveda y presencia federal"
+leads_to = "direct_confrontation"
+
+[[scenes.vault_discovery.choices]]
+text.eng = "Focus on serving customers while mentally preparing for bank closure"
+text.spa = "Enfocarse en servir clientes mientras te preparas mentalmente para cierre bancario"
+leads_to = "closure_preparation"
+
+[[scenes.vault_discovery.choices]]
+text.eng = "Coordinate with Marcus to protect customer interests"
+text.spa = "Coordinar con Marcus para proteger intereses de los clientes"
+leads_to = "customer_protection_alliance"
+
+[[scenes.vault_discovery.choices]]
+text.eng = "Document everything you've observed for potential legal purposes"
+text.spa = "Documentar todo lo que has observado para propósitos legales potenciales"
+leads_to = "evidence_gathering"
+
+[scenes.whistleblower_path]
+text.eng = "You take a calculated risk and quietly share your concerns with Mr. Harrison. 'I can't say much officially,' you whisper, 'but you might want to consider diversifying where you keep your funds.' His eyes widen as he processes this information. 'Are you telling me the bank is in real trouble?' he asks quietly. Before you can respond, Patricia appears behind you: '{character_name}, may I see you in my office immediately?' Your heart races as you realize your conversation may have been overheard. The situation has become much more complex and personally risky."
+text.spa = "Tomas un riesgo calculado y compartes discretamente tus preocupaciones con el Sr. Harrison. 'No puedo decir mucho oficialmente,' susurras, 'pero podrías considerar diversificar dónde mantienes tus fondos.' Sus ojos se agrandan mientras procesa esta información. '¿Me estás diciendo que el banco está en problemas reales?' pregunta silenciosamente. Antes de que puedas responder, Patricia aparece detrás de ti: '{character_name}, ¿puedo verte en mi oficina inmediatamente?' Tu corazón se acelera al darte cuenta de que tu conversación pudo haber sido escuchada. La situación se ha vuelto mucho más compleja y personalmente riesgosa."
+
+[[scenes.whistleblower_path.choices]]
+text.eng = "Admit to Patricia that you warned the customer"
+text.spa = "Admitir a Patricia que advertiste al cliente"
+leads_to = "honest_confession"
+
+[[scenes.whistleblower_path.choices]]
+text.eng = "Deny any inappropriate communication with customers"
+text.spa = "Negar cualquier comunicación inapropiada con clientes"
+leads_to = "denial_strategy"
+
+[[scenes.whistleblower_path.choices]]
+text.eng = "Turn the conversation to your concerns about bank stability"
+text.spa = "Dirigir la conversación a tus preocupaciones sobre estabilidad bancaria"
+leads_to = "concern_redirection"
+
+[[scenes.whistleblower_path.choices]]
+text.eng = "Prepare to resign rather than compromise your ethics"
+text.spa = "Prepararse para renunciar en lugar de comprometer tu ética"
+leads_to = "ethical_resignation"
+
+[scenes.crisis_escalation]
+text.eng = "Patricia listens grimly to your intelligence report. 'This is exactly what we feared,' she admits quietly. 'Corporate warned us this morning that social media is amplifying rumors about the federal investigation. We're implementing crisis protocols to maintain liquidity and public confidence.' She explains that your role is now critical: delay large withdrawals through documentation requirements while identifying customers who might cause the most damage if they panic. 'We have about 6 hours before this becomes uncontainable,' she concludes. 'Every decision you make could determine whether this branch survives the day.'"
+text.spa = "Patricia escucha sombríamente tu reporte de inteligencia. 'Esto es exactamente lo que temíamos,' admite silenciosamente. 'Corporativo nos advirtió esta mañana que las redes sociales están amplificando rumores sobre la investigación federal. Estamos implementando protocolos de crisis para mantener liquidez y confianza pública.' Explica que tu papel ahora es crítico: retrasar retiros grandes a través de requisitos de documentación mientras identificas clientes que podrían causar el mayor daño si entran en pánico. 'Tenemos aproximadamente 6 horas antes de que esto se vuelva incontrolable,' concluye. 'Cada decisión que tomes podría determinar si esta sucursal sobrevive el día.'"
+
+[[scenes.crisis_escalation.choices]]
+text.eng = "Accept the crisis role and work to save the bank"
+text.spa = "Aceptar el papel de crisis y trabajar para salvar el banco"
+leads_to = "bank_loyalty_ending"
+
+[[scenes.crisis_escalation.choices]]
+text.eng = "Refuse to participate in delaying legitimate customer withdrawals"
+text.spa = "Rehusarse a participar en retrasar retiros legítimos de clientes"
+leads_to = "customer_advocate_ending"
+
+[[scenes.crisis_escalation.choices]]
+text.eng = "Negotiate for honest disclosure to customers about the situation"
+text.spa = "Negociar revelación honesta a los clientes sobre la situación"
+leads_to = "transparency_ending"
+
+[[scenes.crisis_escalation.choices]]
+text.eng = "Agree to help while secretly documenting potential wrongdoing"
+text.spa = "Acordar ayudar mientras documentas secretamente posibles irregularidades"
+leads_to = "double_agent_ending"
+
+[scenes.bank_loyalty_ending]
+text.eng = "You commit fully to protecting First National Bank. Working closely with management, you implement sophisticated delay tactics while maintaining customer confidence. Your professional skills and psychological insight help identify potential panic-causers, allowing management to address concerns proactively. Through careful coordination with colleagues, you help the branch weather the immediate crisis. By evening, federal regulators announce a managed intervention that preserves customer deposits while restructuring bank operations. Your loyalty and competence under pressure earn recognition from both management and federal authorities, positioning you for advancement in the post-crisis bank structure. However, you can't shake the ethical questions about whether delaying customer access to their money was truly justified."
+text.spa = "Te comprometes completamente a proteger First National Bank. Trabajando estrechamente con la gerencia, implementas tácticas de retraso sofisticadas mientras mantienes la confianza del cliente. Tus habilidades profesionales y perspicacia psicológica ayudan a identificar causantes potenciales de pánico, permitiendo a la gerencia abordar preocupaciones proactivamente. A través de coordinación cuidadosa con colegas, ayudas a la sucursal capear la crisis inmediata. Para la noche, reguladores federales anuncian una intervención manejada que preserva depósitos de clientes mientras reestructura operaciones bancarias. Tu lealtad y competencia bajo presión ganan reconocimiento tanto de la gerencia como de autoridades federales, posicionándote para avance en la estructura bancaria post-crisis. Sin embargo, no puedes sacudirte las preguntas éticas sobre si retrasar el acceso de clientes a su dinero fue verdaderamente justificado."
+
+[scenes.customer_advocate_ending]
+text.eng = "You refuse to participate in delaying legitimate withdrawals and instead focus on honest, transparent service to customers. When Patricia threatens your job, you stand firm: 'These people trust us with their life savings. I won't betray that trust.' Your principled stance inspires several colleagues to follow suit, creating a small rebellion within the branch. Word spreads quickly among customers about your integrity, and many specifically request your assistance. While the bank faces serious liquidity challenges, your transparent approach helps maintain genuine customer confidence among those who choose to stay. The crisis resolution is messier, but customer trust in you personally remains intact. You emerge as a local hero, eventually starting your own financial consulting firm built on the transparency and integrity you demonstrated during the crisis."
+text.spa = "Te rehúsas a participar en retrasar retiros legítimos y en su lugar te enfocas en servicio honesto y transparente a los clientes. Cuando Patricia amenaza tu trabajo, te mantienes firme: 'Esta gente confía en nosotros con los ahorros de su vida. No traicionaré esa confianza.' Tu postura de principios inspira a varios colegas a seguir tu ejemplo, creando una pequeña rebelión dentro de la sucursal. La palabra se extiende rápidamente entre clientes sobre tu integridad, y muchos específicamente solicitan tu asistencia. Mientras el banco enfrenta desafíos serios de liquidez, tu enfoque transparente ayuda a mantener confianza genuina del cliente entre aquellos que eligen quedarse. La resolución de la crisis es más complicada, pero la confianza del cliente en ti personalmente permanece intacta. Emerges como un héroe local, eventualmente comenzando tu propia firma de consultoría financiera construida sobre la transparencia e integridad que demostraste durante la crisis."
+
+[scenes.transparency_ending]
+text.eng = "You successfully negotiate a compromise: controlled transparency. Patricia agrees to provide honest but measured information to customers about the bank's challenges while emphasizing FDIC protection and the bank's commitment to meeting obligations. You help craft carefully worded communications that acknowledge concerns without causing panic. This balanced approach proves effective - while some customers do withdraw funds, many appreciate the honesty and choose to maintain their accounts. The federal intervention proceeds more smoothly because of the established trust between bank and customers. You become a model for crisis communication in banking, eventually advancing to a regional management position where you implement customer-first crisis protocols. Your career flourishes because you proved that honesty and transparency, properly managed, can be more effective than deception during financial crises."
+text.spa = "Negocias exitosamente un compromiso: transparencia controlada. Patricia acepta proporcionar información honesta pero medida a los clientes sobre los desafíos del banco mientras enfatiza la protección del FDIC y el compromiso del banco de cumplir obligaciones. Ayudas a elaborar comunicaciones cuidadosamente redactadas que reconocen preocupaciones sin causar pánico. Este enfoque equilibrado resulta efectivo - mientras algunos clientes sí retiran fondos, muchos aprecian la honestidad y eligen mantener sus cuentas. La intervención federal procede más suavemente debido a la confianza establecida entre banco y clientes. Te conviertes en un modelo para comunicación de crisis en banca, eventualmente avanzando a una posición de gerencia regional donde implementas protocolos de crisis que priorizan al cliente. Tu carrera florece porque probaste que la honestidad y transparencia, apropiadamente manejadas, pueden ser más efectivas que el engaño durante crisis financieras."
+
+[scenes.double_agent_ending]
+text.eng = "You agree to help the bank while secretly documenting everything for potential whistleblowing. Working within the system, you gather evidence of questionable practices while maintaining your cover as a loyal employee. Your documentation reveals a pattern of misleading customers, potential regulatory violations, and excessive risk-taking by bank executives. When federal investigators arrive, you discretely provide your evidence, which proves crucial for their case. The bank faces significant penalties, and several executives are prosecuted, but customer deposits are protected through FDIC intervention. Your evidence helps regulators implement new safeguards across the industry. Though you initially face retaliation from bank management, federal whistleblower protections and eventual public recognition of your role lead to opportunities with regulatory agencies. You become a financial industry compliance specialist, using your insider knowledge to help prevent future banking crises."
+text.spa = "Acuerdas ayudar al banco mientras documentas secretamente todo para posible denuncia. Trabajando dentro del sistema, reúnes evidencia de prácticas cuestionables mientras mantienes tu cobertura como empleado leal. Tu documentación revela un patrón de engaño a clientes, posibles violaciones regulatorias, y toma excesiva de riesgos por ejecutivos bancarios. Cuando llegan investigadores federales, proporcionas discretamente tu evidencia, que resulta crucial para su caso. El banco enfrenta penalidades significativas, y varios ejecutivos son procesados, pero los depósitos de clientes están protegidos a través de intervención del FDIC. Tu evidencia ayuda a reguladores implementar nuevas salvaguardas a través de la industria. Aunque inicialmente enfrentas represalias de la gerencia bancaria, protecciones federales para denunciantes y eventual reconocimiento público de tu papel llevan a oportunidades con agencias regulatorias. Te conviertes en especialista de cumplimiento de la industria financiera, usando tu conocimiento interno para ayudar a prevenir futuras crisis bancarias."
