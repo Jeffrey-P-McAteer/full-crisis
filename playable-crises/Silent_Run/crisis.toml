@@ -1467,3 +1467,157 @@ leads_to = "customer_advocate_ending"
 text.eng = "Seek professional organization support"
 text.spa = "Buscar apoyo de organización profesional"
 leads_to = "external_reporting"
+
+[scenes.principled_departure]
+text.eng = "You decide to leave the bank rather than compromise your ethical standards. Your principled departure sends a clear message about the importance of integrity in banking. While this choice involves personal cost, it preserves your values and may inspire others to take similar stands. Your resignation letter becomes a document of ethical clarity in uncertain times."
+text.spa = "Decides dejar el banco en lugar de comprometer tus estándares éticos. Tu partida de principios envía un mensaje claro sobre la importancia de la integridad en la banca. Aunque esta elección involucra costo personal, preserva tus valores y puede inspirar a otros a tomar posturas similares. Tu carta de renuncia se convierte en un documento de claridad ética en tiempos inciertos."
+
+[[scenes.principled_departure.choices]]
+text.eng = "Document concerns in resignation letter for regulatory review"
+text.spa = "Documentar preocupaciones en carta de renuncia para revisión regulatoria"
+leads_to = "transparency_ending"
+
+[[scenes.principled_departure.choices]]
+text.eng = "Leave quietly to avoid further institutional disruption"
+text.spa = "Irse silenciosamente para evitar más disrupción institucional"
+leads_to = "bank_loyalty_ending"
+
+[scenes.ethical_negotiation]
+text.eng = "You engage in ethical negotiation with management to find solutions that protect both customer interests and institutional stability. Your diplomatic approach seeks win-win outcomes that address underlying concerns while maintaining operational effectiveness. This path requires patience and skill but can lead to sustainable improvements in banking practices."
+text.spa = "Te involucras en negociación ética con la gerencia para encontrar soluciones que protejan tanto los intereses del cliente como la estabilidad institucional. Tu enfoque diplomático busca resultados ganar-ganar que aborden preocupaciones subyacentes mientras mantienen la efectividad operacional. Este camino requiere paciencia y habilidad pero puede llevar a mejoras sostenibles en prácticas bancarias."
+
+[[scenes.ethical_negotiation.choices]]
+text.eng = "Propose formal policy changes based on ethical principles"
+text.spa = "Proponer cambios formales de política basados en principios éticos"
+leads_to = "transparency_ending"
+
+[[scenes.ethical_negotiation.choices]]
+text.eng = "Seek gradual implementation of ethical improvements"
+text.spa = "Buscar implementación gradual de mejoras éticas"
+leads_to = "balanced_approach"
+
+[scenes.unified_front]
+text.eng = "You and your colleagues present a unified front in addressing banking concerns, leveraging collective action to advocate for customers and ethical practices. Your coordinated approach provides strength in numbers and demonstrates widespread commitment to proper banking principles. This unity creates momentum for positive institutional change."
+text.spa = "Tú y tus colegas presentan un frente unificado al abordar preocupaciones bancarias, aprovechando la acción colectiva para abogar por clientes y prácticas éticas. Tu enfoque coordinado proporciona fuerza en números y demuestra compromiso generalizado con principios bancarios apropiados. Esta unidad crea impulso para cambio institucional positivo."
+
+[[scenes.unified_front.choices]]
+text.eng = "Lead formal proposal for policy reforms"
+text.spa = "Liderar propuesta formal para reformas de política"
+leads_to = "transparency_ending"
+
+[[scenes.unified_front.choices]]
+text.eng = "Focus on protecting customers through collective action"
+text.spa = "Enfocarse en proteger clientes a través de acción colectiva"
+leads_to = "customer_advocate_ending"
+
+[scenes.protection_planning]
+text.eng = "You develop comprehensive protection planning to safeguard customers, colleagues, and institutional integrity during uncertain times. Your strategic approach anticipates potential problems and creates preventive measures that benefit all stakeholders. This planning process demonstrates foresight and responsibility in banking management."
+text.spa = "Desarrollas planificación comprensiva de protección para salvaguardar clientes, colegas e integridad institucional durante tiempos inciertos. Tu enfoque estratégico anticipa problemas potenciales y crea medidas preventivas que benefician a todas las partes interesadas. Este proceso de planificación demuestra previsión y responsabilidad en la gestión bancaria."
+
+[[scenes.protection_planning.choices]]
+text.eng = "Implement comprehensive safety protocols"
+text.spa = "Implementar protocolos comprensivos de seguridad"
+leads_to = "transparency_ending"
+
+[[scenes.protection_planning.choices]]
+text.eng = "Focus protection efforts on most vulnerable customers"
+text.spa = "Enfocar esfuerzos de protección en clientes más vulnerables"
+leads_to = "customer_advocate_ending"
+
+[scenes.intelligence_network]
+text.eng = "You establish an intelligence network among colleagues to gather and share information about banking operations and potential concerns. Your network provides valuable insights while maintaining discretion and professionalism. This collaborative intelligence approach helps everyone make better-informed decisions during uncertain times."
+text.spa = "Estableces una red de inteligencia entre colegas para recopilar y compartir información sobre operaciones bancarias y preocupaciones potenciales. Tu red proporciona información valiosa mientras mantiene discreción y profesionalismo. Este enfoque colaborativo de inteligencia ayuda a todos a tomar decisiones mejor informadas durante tiempos inciertos."
+
+[[scenes.intelligence_network.choices]]
+text.eng = "Expand network to include customer insights"
+text.spa = "Expandir la red para incluir información de clientes"
+leads_to = "customer_advocate_ending"
+
+[[scenes.intelligence_network.choices]]
+text.eng = "Focus network on institutional analysis"
+text.spa = "Enfocar la red en análisis institucional"
+leads_to = "advisor_intelligence"
+
+[scenes.protective_delay]
+text.eng = "You implement protective delays in certain banking processes to provide customers with more time to consider their decisions and access better information. Your careful timing helps prevent hasty financial decisions while maintaining service quality. This protective approach demonstrates care for customer welfare without compromising institutional requirements."
+text.spa = "Implementas retrasos protectores en ciertos procesos bancarios para proporcionar a los clientes más tiempo para considerar sus decisiones y acceder a mejor información. Tu cronometraje cuidadoso ayuda a prevenir decisiones financieras apresuradas mientras mantiene la calidad del servicio. Este enfoque protector demuestra cuidado por el bienestar del cliente sin comprometer los requisitos institucionales."
+
+[[scenes.protective_delay.choices]]
+text.eng = "Develop systematic approach to protective timing"
+text.spa = "Desarrollar enfoque sistemático para cronometraje protector"
+leads_to = "customer_advocate_ending"
+
+[[scenes.protective_delay.choices]]
+text.eng = "Balance protection with operational efficiency"
+text.spa = "Equilibrar protección con eficiencia operacional"
+leads_to = "balanced_approach"
+
+[scenes.colleague_briefing]
+text.eng = "You conduct colleague briefings to share important information and coordinate responses to banking challenges. Your briefings help maintain team unity and ensure everyone has access to relevant information for decision-making. This communication approach strengthens institutional resilience and professional effectiveness."
+text.spa = "Conduces sesiones informativas de colegas para compartir información importante y coordinar respuestas a desafíos bancarios. Tus sesiones informativas ayudan a mantener unidad del equipo y aseguran que todos tengan acceso a información relevante para la toma de decisiones. Este enfoque de comunicación fortalece la resistencia institucional y efectividad profesional."
+
+[[scenes.colleague_briefing.choices]]
+text.eng = "Focus briefings on customer protection strategies"
+text.spa = "Enfocar sesiones informativas en estrategias de protección del cliente"
+leads_to = "customer_advocate_ending"
+
+[[scenes.colleague_briefing.choices]]
+text.eng = "Develop comprehensive information sharing protocols"
+text.spa = "Desarrollar protocolos comprensivos de intercambio de información"
+leads_to = "transparency_ending"
+
+[scenes.scenario_planning]
+text.eng = "You engage in comprehensive scenario planning to prepare for various potential banking developments and their implications. Your forward-thinking approach helps identify optimal responses to different situations before they occur. This strategic planning process enhances institutional preparedness and decision-making capability."
+text.spa = "Te involucras en planificación comprensiva de escenarios para prepararte para varios desarrollos bancarios potenciales y sus implicaciones. Tu enfoque de pensamiento futuro ayuda a identificar respuestas óptimas a diferentes situaciones antes de que ocurran. Este proceso de planificación estratégica mejora la preparación institucional y capacidad de toma de decisiones."
+
+[[scenes.scenario_planning.choices]]
+text.eng = "Implement comprehensive crisis management protocols"
+text.spa = "Implementar protocolos comprensivos de gestión de crisis"
+leads_to = "transparency_ending"
+
+[[scenes.scenario_planning.choices]]
+text.eng = "Focus scenarios on customer protection outcomes"
+text.spa = "Enfocar escenarios en resultados de protección del cliente"
+leads_to = "customer_advocate_ending"
+
+[scenes.team_unity]
+text.eng = "You build strong team unity among banking colleagues to create a supportive work environment and effective customer service. Your efforts to bring people together strengthen institutional culture and improve outcomes for everyone. This unity approach creates positive momentum and resilience during challenging times."
+text.spa = "Construyes fuerte unidad del equipo entre colegas bancarios para crear un ambiente de trabajo de apoyo y servicio al cliente efectivo. Tus esfuerzos para unir a las personas fortalecen la cultura institucional y mejoran resultados para todos. Este enfoque de unidad crea impulso positivo y resistencia durante tiempos desafiantes."
+
+[[scenes.team_unity.choices]]
+text.eng = "Expand unity efforts across entire institution"
+text.spa = "Expandir esfuerzos de unidad a través de toda la institución"
+leads_to = "transparency_ending"
+
+[[scenes.team_unity.choices]]
+text.eng = "Focus unity on customer advocacy goals"
+text.spa = "Enfocar unidad en objetivos de defensa del cliente"
+leads_to = "customer_advocate_ending"
+
+[scenes.advisor_intelligence]
+text.eng = "You develop advisor-level intelligence capabilities to provide strategic insights and guidance to colleagues and management. Your analytical approach helps identify patterns, opportunities, and risks that inform better banking decisions. This intelligence role positions you as a valuable resource for institutional improvement."
+text.spa = "Desarrollas capacidades de inteligencia a nivel de asesor para proporcionar información estratégica y orientación a colegas y gerencia. Tu enfoque analítico ayuda a identificar patrones, oportunidades y riesgos que informan mejores decisiones bancarias. Este papel de inteligencia te posiciona como un recurso valioso para la mejora institucional."
+
+[[scenes.advisor_intelligence.choices]]
+text.eng = "Use intelligence to advocate for policy reforms"
+text.spa = "Usar inteligencia para abogar por reformas de política"
+leads_to = "transparency_ending"
+
+[[scenes.advisor_intelligence.choices]]
+text.eng = "Focus intelligence on customer benefit analysis"
+text.spa = "Enfocar inteligencia en análisis de beneficio del cliente"
+leads_to = "customer_advocate_ending"
+
+[scenes.concern_analysis]
+text.eng = "You conduct systematic analysis of banking concerns to understand their scope, implications, and potential solutions. Your analytical approach helps separate legitimate issues from speculation while identifying actionable improvement opportunities. This analysis process supports evidence-based decision-making and problem-solving."
+text.spa = "Conduces análisis sistemático de preocupaciones bancarias para entender su alcance, implicaciones y soluciones potenciales. Tu enfoque analítico ayuda a separar problemas legítimos de especulación mientras identifica oportunidades de mejora accionables. Este proceso de análisis apoya la toma de decisiones basada en evidencia y resolución de problemas."
+
+[[scenes.concern_analysis.choices]]
+text.eng = "Present analysis findings to appropriate authorities"
+text.spa = "Presentar hallazgos de análisis a autoridades apropiadas"
+leads_to = "transparency_ending"
+
+[[scenes.concern_analysis.choices]]
+text.eng = "Use analysis to improve customer protection measures"
+text.spa = "Usar análisis para mejorar medidas de protección del cliente"
+leads_to = "customer_advocate_ending"
