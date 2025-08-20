@@ -342,3 +342,424 @@ text.spa = "Negocias exitosamente un compromiso: transparencia controlada. Patri
 [scenes.double_agent_ending]
 text.eng = "You agree to help the bank while secretly documenting everything for potential whistleblowing. Working within the system, you gather evidence of questionable practices while maintaining your cover as a loyal employee. Your documentation reveals a pattern of misleading customers, potential regulatory violations, and excessive risk-taking by bank executives. When federal investigators arrive, you discretely provide your evidence, which proves crucial for their case. The bank faces significant penalties, and several executives are prosecuted, but customer deposits are protected through FDIC intervention. Your evidence helps regulators implement new safeguards across the industry. Though you initially face retaliation from bank management, federal whistleblower protections and eventual public recognition of your role lead to opportunities with regulatory agencies. You become a financial industry compliance specialist, using your insider knowledge to help prevent future banking crises."
 text.spa = "Acuerdas ayudar al banco mientras documentas secretamente todo para posible denuncia. Trabajando dentro del sistema, reúnes evidencia de prácticas cuestionables mientras mantienes tu cobertura como empleado leal. Tu documentación revela un patrón de engaño a clientes, posibles violaciones regulatorias, y toma excesiva de riesgos por ejecutivos bancarios. Cuando llegan investigadores federales, proporcionas discretamente tu evidencia, que resulta crucial para su caso. El banco enfrenta penalidades significativas, y varios ejecutivos son procesados, pero los depósitos de clientes están protegidos a través de intervención del FDIC. Tu evidencia ayuda a reguladores implementar nuevas salvaguardas a través de la industria. Aunque inicialmente enfrentas represalias de la gerencia bancaria, protecciones federales para denunciantes y eventual reconocimiento público de tu papel llevan a oportunidades con agencias regulatorias. Te conviertes en especialista de cumplimiento de la industria financiera, usando tu conocimiento interno para ayudar a prevenir futuras crisis bancarias."
+
+[scenes.balanced_approach]
+text.eng = "You adjust your approach to find the right balance between speed and documentation compliance. This proves to be the sweet spot - customers appreciate your efficiency while Patricia sees that you're taking the new protocols seriously. Your measured approach helps build trust on both sides. As the afternoon progresses, you notice other tellers adopting similar strategies. However, around 2 PM, a well-dressed woman approaches your station with urgency: 'I need to make a large withdrawal immediately. My financial advisor called and said I should move my money out of First National today.'"
+text.spa = "Ajustas tu enfoque para encontrar el equilibrio correcto entre velocidad y cumplimiento de documentación. Esto resulta ser el punto óptimo - los clientes aprecian tu eficiencia mientras Patricia ve que estás tomando en serio los nuevos protocolos. Tu enfoque medido ayuda a construir confianza en ambos lados. Mientras avanza la tarde, notas que otros cajeros adoptan estrategias similares. Sin embargo, alrededor de las 2 PM, una mujer bien vestida se acerca a tu estación con urgencia: 'Necesito hacer un retiro grande inmediatamente. Mi asesor financiero llamó y dijo que debería sacar mi dinero de First National hoy.'"
+
+[[scenes.balanced_approach.choices]]
+text.eng = "Process her withdrawal quickly while gathering intelligence about her advisor"
+text.spa = "Procesar su retiro rápidamente mientras reúnes inteligencia sobre su asesor"
+leads_to = "advisor_intelligence"
+
+[[scenes.balanced_approach.choices]]
+text.eng = "Apply strict protocols to delay while assessing the situation"
+text.spa = "Aplicar protocolos estrictos para retrasar mientras evalúas la situación"
+leads_to = "protective_delay"
+
+[[scenes.balanced_approach.choices]]
+text.eng = "Engage her in conversation about the source of her concerns"
+text.spa = "Entablar conversación sobre la fuente de sus preocupaciones"
+leads_to = "concern_analysis"
+
+[scenes.management_loyalty]
+text.eng = "You decide to report Marcus's concerns to Patricia, demonstrating your loyalty to management. Patricia appreciates your communication: 'Thank you for bringing this to my attention, {character_name}. Marcus sometimes overthinks situations.' However, your action creates tension with Marcus, who feels betrayed. Later, Patricia pulls you aside: 'I need someone I can trust to help monitor staff morale and identify potential problems. Can I count on you?' This positions you as management's eyes and ears among the tellers."
+text.spa = "Decides reportar las preocupaciones de Marcus a Patricia, demostrando tu lealtad a la gerencia. Patricia aprecia tu comunicación: 'Gracias por traer esto a mi atención, {character_name}. Marcus a veces sobrepiensa las situaciones.' Sin embargo, tu acción crea tensión con Marcus, quien se siente traicionado. Más tarde, Patricia te lleva aparte: 'Necesito alguien en quien pueda confiar para ayudar a monitorear la moral del personal e identificar problemas potenciales. ¿Puedo contar contigo?' Esto te posiciona como los ojos y oídos de la gerencia entre los cajeros."
+
+[[scenes.management_loyalty.choices]]
+text.eng = "Accept the role as management's informant"
+text.spa = "Aceptar el papel como informante de la gerencia"
+leads_to = "informant_role"
+
+[[scenes.management_loyalty.choices]]
+text.eng = "Politely decline to avoid conflicts with colleagues"
+text.spa = "Declinar cortésmente para evitar conflictos con colegas"
+leads_to = "neutral_position"
+
+[scenes.tunnel_vision]
+text.eng = "You decide to focus exclusively on your customer duties, blocking out the office drama and speculation. This approach keeps you busy and productive, but you remain unaware of the bigger picture developing around you. As you work diligently through the afternoon, you fail to notice several warning signs: increased security presence, hushed management conversations, and growing customer anxiety. By 3 PM, the situation has escalated significantly, and you're caught off guard when Patricia announces an emergency staff meeting."
+text.spa = "Decides enfocarte exclusivamente en tus deberes con clientes, bloqueando el drama de oficina y especulación. Este enfoque te mantiene ocupado y productivo, pero permaneces inconsciente del panorama general que se desarrolla a tu alrededor. Mientras trabajas diligentemente durante la tarde, fallas en notar varias señales de advertencia: mayor presencia de seguridad, conversaciones de gerencia en voz baja, y creciente ansiedad de clientes. Para las 3 PM, la situación ha escalado significativamente, y te toman desprevenido cuando Patricia anuncia una reunión de emergencia del personal."
+
+[[scenes.tunnel_vision.choices]]
+text.eng = "Admit you've been out of the loop and ask for guidance"
+text.spa = "Admitir que has estado fuera del circuito y pedir orientación"
+leads_to = "catch_up_mode"
+
+[[scenes.tunnel_vision.choices]]
+text.eng = "Quickly try to piece together what you've missed"
+text.spa = "Tratar rápidamente de juntar lo que te has perdido"
+leads_to = "rapid_assessment"
+
+[scenes.reassurance_strategy]
+text.eng = "You focus on reassuring Mr. Harrison while processing his withdrawal normally, using your professional skills to calm his anxiety. 'Mr. Harrison, I understand your concerns, but First National has been serving customers like yourself for over 50 years. Your funds are FDIC insured, and we're implementing these new protocols to ensure even greater security.' Your calm confidence helps ease his worries, and he decides to withdraw only half of what he initially requested. Word spreads among other customers about your reassuring demeanor."
+text.spa = "Te enfocas en tranquilizar al Sr. Harrison mientras procesas su retiro normalmente, usando tus habilidades profesionales para calmar su ansiedad. 'Sr. Harrison, entiendo sus preocupaciones, pero First National ha estado sirviendo a clientes como usted por más de 50 años. Sus fondos están asegurados por el FDIC, y estamos implementando estos nuevos protocolos para asegurar aún mayor seguridad.' Tu confianza tranquila ayuda a aliviar sus preocupaciones, y decide retirar solo la mitad de lo que inicialmente solicitó. La palabra se extiende entre otros clientes sobre tu comportamiento tranquilizador."
+
+[[scenes.reassurance_strategy.choices]]
+text.eng = "Continue building customer confidence throughout the day"
+text.spa = "Continuar construyendo confianza del cliente durante el día"
+leads_to = "confidence_champion"
+
+[[scenes.reassurance_strategy.choices]]
+text.eng = "Document successful reassurance techniques for other staff"
+text.spa = "Documentar técnicas de tranquilización exitosas para otro personal"
+leads_to = "best_practices"
+
+[scenes.protocol_enforcement]
+text.eng = "You apply the new security protocols firmly but professionally with Mr. Harrison. 'I understand your urgency, sir, but federal regulations require us to complete additional verification for withdrawals of this size. This is for your protection and ours.' While he's initially frustrated, your professional handling of the situation demonstrates the bank's commitment to security. However, the detailed process takes considerable time, and other customers in line begin to grow impatient as they witness the extensive documentation requirements."
+text.spa = "Aplicas los nuevos protocolos de seguridad firmemente pero profesionalmente con el Sr. Harrison. 'Entiendo su urgencia, señor, pero regulaciones federales requieren que completemos verificación adicional para retiros de este tamaño. Esto es para su protección y la nuestra.' Aunque inicialmente se frustra, tu manejo profesional de la situación demuestra el compromiso del banco con la seguridad. Sin embargo, el proceso detallado toma tiempo considerable, y otros clientes en la fila comienzan a impacientarse mientras presencian los extensos requisitos de documentación."
+
+[[scenes.protocol_enforcement.choices]]
+text.eng = "Maintain strict protocols despite customer pressure"
+text.spa = "Mantener protocolos estrictos a pesar de presión del cliente"
+leads_to = "protocol_champion"
+
+[[scenes.protocol_enforcement.choices]]
+text.eng = "Find ways to streamline the process without compromising security"
+text.spa = "Encontrar maneras de agilizar el proceso sin comprometer seguridad"
+leads_to = "efficiency_balance"
+
+[scenes.information_gathering]
+text.eng = "You carefully question Mr. Harrison about the specific information he heard, gathering valuable intelligence. 'A friend in the financial industry told me there's federal investigators looking into First National's loan practices,' he reveals. 'Something about political connections and risky investments.' This intelligence confirms your suspicions about the morning's unusual protocols. As you process his transaction, you realize you're now privy to information that could be crucial for navigating the developing crisis."
+text.spa = "Interrogas cuidadosamente al Sr. Harrison sobre la información específica que escuchó, reuniendo inteligencia valiosa. 'Un amigo en la industria financiera me dijo que hay investigadores federales examinando las prácticas de préstamos de First National,' revela. 'Algo sobre conexiones políticas e inversiones riesgosas.' Esta inteligencia confirma tus sospechas sobre los protocolos inusuales de la mañana. Mientras procesas su transacción, te das cuenta de que ahora eres parte de información que podría ser crucial para navegar la crisis en desarrollo."
+
+[[scenes.information_gathering.choices]]
+text.eng = "Discreetly gather more intelligence from other customers"
+text.spa = "Reunir discretamente más inteligencia de otros clientes"
+leads_to = "intelligence_network"
+
+[[scenes.information_gathering.choices]]
+text.eng = "Share this intelligence with trusted colleagues"
+text.spa = "Compartir esta inteligencia con colegas de confianza"
+leads_to = "colleague_briefing"
+
+[scenes.management_referral]
+text.eng = "You offer to connect Mrs. Foster with a manager for reassurance, demonstrating your commitment to customer service. 'Let me arrange for you to speak with our branch manager, Patricia Wells. She can provide you with the most current information about our security measures and federal compliance.' Patricia appreciates your referral and spends time personally reassuring Mrs. Foster about the bank's stability. However, during their conversation, Patricia seems more nervous than usual, and Mrs. Foster leaves looking only partially convinced."
+text.spa = "Ofreces conectar a la Sra. Foster con un gerente para tranquilizarla, demostrando tu compromiso con el servicio al cliente. 'Permíteme arreglar que hables con nuestra gerente de sucursal, Patricia Wells. Ella puede proporcionarte la información más actual sobre nuestras medidas de seguridad y cumplimiento federal.' Patricia aprecia tu referencia y pasa tiempo tranquilizando personalmente a la Sra. Foster sobre la estabilidad del banco. Sin embargo, durante su conversación, Patricia parece más nerviosa de lo usual, y la Sra. Foster se va luciendo solo parcialmente convencida."
+
+[[scenes.management_referral.choices]]
+text.eng = "Follow up with Mrs. Foster to ensure her concerns were addressed"
+text.spa = "Hacer seguimiento con la Sra. Foster para asegurar que sus preocupaciones fueron atendidas"
+leads_to = "customer_follow_up"
+
+[[scenes.management_referral.choices]]
+text.eng = "Observe Patricia's behavior for signs of the real problem"
+text.spa = "Observar el comportamiento de Patricia por señales del problema real"
+leads_to = "management_observation"
+
+[scenes.concern_documentation]
+text.eng = "You assure Mrs. Foster while carefully documenting her concerns for management, balancing customer service with institutional loyalty. 'I understand your worries, Mrs. Foster. Let me make sure management is aware of these concerns so they can address them properly.' You create a detailed report of her specific concerns and the source of her information. Patricia reviews your documentation and commends your thoroughness, but you notice her expression growing more troubled as she reads the details."
+text.spa = "Tranquilizas a la Sra. Foster mientras documentas cuidadosamente sus preocupaciones para la gerencia, equilibrando servicio al cliente con lealtad institucional. 'Entiendo sus preocupaciones, Sra. Foster. Permíteme asegurar que la gerencia esté consciente de estas preocupaciones para que puedan abordarlas apropiadamente.' Creas un reporte detallado de sus preocupaciones específicas y la fuente de su información. Patricia revisa tu documentación y elogia tu minuciosidad, pero notas que su expresión se vuelve más preocupada mientras lee los detalles."
+
+[[scenes.concern_documentation.choices]]
+text.eng = "Analyze patterns in customer concerns to predict problems"
+text.spa = "Analizar patrones en preocupaciones de clientes para predecir problemas"
+leads_to = "pattern_analysis"
+
+[[scenes.concern_documentation.choices]]
+text.eng = "Prepare strategies to address common customer fears"
+text.spa = "Preparar estrategias para abordar temores comunes de clientes"
+leads_to = "fear_mitigation"
+
+[scenes.mutual_concern]
+text.eng = "You take a calculated risk and confidentially share your observations with Mrs. Foster, creating a bond of mutual concern. 'Between you and me, Mrs. Foster, I've noticed some unusual activities today as well. I think your caution is wise.' This honest approach builds significant trust with Mrs. Foster, who becomes an ally rather than a potential panic-causer. She shares additional information from her financial advisor network, giving you valuable insights into how the crisis is perceived in the broader financial community."
+text.spa = "Tomas un riesgo calculado y compartes confidencialmente tus observaciones con la Sra. Foster, creando un vínculo de preocupación mutua. 'Entre tú y yo, Sra. Foster, también he notado algunas actividades inusuales hoy. Creo que tu precaución es sabia.' Este enfoque honesto construye confianza significativa con la Sra. Foster, quien se convierte en una aliada en lugar de una causante potencial de pánico. Ella comparte información adicional de su red de asesores financieros, dándote perspicacias valiosas sobre cómo la crisis es percibida en la comunidad financiera más amplia."
+
+[[scenes.mutual_concern.choices]]
+text.eng = "Build a network of informed, calm customers"
+text.spa = "Construir una red de clientes informados y tranquilos"
+leads_to = "customer_alliance"
+
+[[scenes.mutual_concern.choices]]
+text.eng = "Use the intelligence to protect other vulnerable customers"
+text.spa = "Usar la inteligencia para proteger otros clientes vulnerables"
+leads_to = "protective_intervention"
+
+[scenes.colleague_alliance]
+text.eng = "You quietly alert trusted colleagues about your discoveries, forming a small alliance within the bank staff. Marcus, Janet, and senior teller Linda listen intently as you share the intelligence about federal investigations and political lending scandals. 'We need to stick together on this,' Marcus agrees. 'Whatever's happening, we should coordinate our responses to protect both customers and ourselves.' Your colleague alliance becomes a valuable support network as the crisis intensifies, allowing you to share information and strategies."
+text.spa = "Alertas discretamente a colegas de confianza sobre tus descubrimientos, formando una pequeña alianza dentro del personal bancario. Marcus, Janet, y la cajera senior Linda escuchan atentamente mientras compartes la inteligencia sobre investigaciones federales y escándalos de préstamos políticos. 'Necesitamos mantenernos unidos en esto,' acepta Marcus. 'Pase lo que pase, deberíamos coordinar nuestras respuestas para proteger tanto clientes como a nosotros mismos.' Tu alianza de colegas se convierte en una red de apoyo valiosa mientras la crisis se intensifica, permitiéndote compartir información y estrategias."
+
+[[scenes.colleague_alliance.choices]]
+text.eng = "Coordinate responses to maintain customer confidence"
+text.spa = "Coordinar respuestas para mantener confianza del cliente"
+leads_to = "unified_front"
+
+[[scenes.colleague_alliance.choices]]
+text.eng = "Plan protection strategies for staff and customers"
+text.spa = "Planear estrategias de protección para personal y clientes"
+leads_to = "protection_planning"
+
+[scenes.damage_control]
+text.eng = "You focus on providing exceptional customer service to maintain calm, using your professional skills to create a sense of normalcy. Despite the concerning news, you maintain a positive demeanor, efficiently processing transactions while engaging customers in pleasant conversation about non-banking topics. Your approach helps create an island of calm in an increasingly tense environment. However, as more customers arrive with worried expressions and urgent withdrawal requests, maintaining this facade becomes increasingly challenging."
+text.spa = "Te enfocas en brindar servicio excepcional al cliente para mantener la calma, usando tus habilidades profesionales para crear una sensación de normalidad. A pesar de las noticias preocupantes, mantienes un comportamiento positivo, procesando eficientemente transacciones mientras involucras a clientes en conversación agradable sobre temas no bancarios. Tu enfoque ayuda a crear una isla de calma en un ambiente cada vez más tenso. Sin embargo, mientras más clientes llegan con expresiones preocupadas y solicitudes urgentes de retiro, mantener esta fachada se vuelve cada vez más desafiante."
+
+[[scenes.damage_control.choices]]
+text.eng = "Maintain the positive facade despite increasing pressure"
+text.spa = "Mantener la fachada positiva a pesar de presión creciente"
+leads_to = "pressure_endurance"
+
+[[scenes.damage_control.choices]]
+text.eng = "Gradually shift to more honest but reassuring communication"
+text.spa = "Cambiar gradualmente a comunicación más honesta pero tranquilizadora"
+leads_to = "honest_reassurance"
+
+[scenes.management_confrontation]
+text.eng = "You decide to approach management directly with your findings and concerns, risking your position for the sake of transparency. Patricia's face grows pale as you present your research about the federal investigation and political lending scandal. 'You shouldn't have been investigating this, {character_name},' she says quietly. 'But since you know... yes, we're facing potential federal intervention. We're trying to prevent a panic that could destroy the bank and thousands of jobs. I need to know - are you with us or against us?'"
+text.spa = "Decides acercarte directamente a la gerencia con tus hallazgos y preocupaciones, arriesgando tu posición por el bien de la transparencia. El rostro de Patricia se pone pálido mientras presentas tu investigación sobre la investigación federal y el escándalo de préstamos políticos. 'No deberías haber estado investigando esto, {character_name},' dice calladamente. 'Pero ya que sabes... sí, estamos enfrentando posible intervención federal. Estamos tratando de prevenir un pánico que podría destruir el banco y miles de empleos. Necesito saber - ¿estás con nosotros o contra nosotros?'"
+
+[[scenes.management_confrontation.choices]]
+text.eng = "Commit to helping the bank through the crisis"
+text.spa = "Comprometerse a ayudar al banco a través de la crisis"
+leads_to = "management_partnership"
+
+[[scenes.management_confrontation.choices]]
+text.eng = "Demand full transparency to customers before helping"
+text.spa = "Exigir transparencia completa a los clientes antes de ayudar"
+leads_to = "transparency_ultimatum"
+
+[[scenes.management_confrontation.choices]]
+text.eng = "Express concerns about the ethical implications"
+text.spa = "Expresar preocupaciones sobre las implicaciones éticas"
+leads_to = "ethical_discussion"
+
+[scenes.protective_action]
+text.eng = "You begin discreetly helping customers protect their assets, providing subtle guidance without explicitly violating bank policy. When customers express concerns, you offer information about FDIC protection limits, suggest they diversify their holdings across multiple institutions, and provide general financial safety advice. Your protective actions help several customers make informed decisions about their money while maintaining plausible deniability about any policy violations."
+text.spa = "Comienzas a ayudar discretamente a los clientes a proteger sus activos, proporcionando orientación sutil sin violar explícitamente la política bancaria. Cuando los clientes expresan preocupaciones, ofreces información sobre límites de protección del FDIC, sugieres que diversifiquen sus tenencias entre múltiples instituciones, y proporcionas consejos generales de seguridad financiera. Tus acciones protectoras ayudan a varios clientes a tomar decisiones informadas sobre su dinero mientras mantienes negación plausible sobre cualquier violación de política."
+
+[[scenes.protective_action.choices]]
+text.eng = "Expand protective guidance to more customers"
+text.spa = "Expandir orientación protectora a más clientes"
+leads_to = "guardian_role"
+
+[[scenes.protective_action.choices]]
+text.eng = "Document customer protections for potential legal defense"
+text.spa = "Documentar protecciones de clientes para potencial defensa legal"
+leads_to = "legal_preparation"
+
+[scenes.direct_confrontation]
+text.eng = "You decide to ask Patricia directly about the vault activity and federal presence, putting your cards on the table. Patricia looks around nervously before pulling you into her office. 'What you've observed is part of a federal examination that could determine our future,' she admits. 'We're walking a tightrope between maintaining liquidity and preventing panic. The vault activity is precautionary - moving assets to secure locations in case of emergency intervention. I need staff I can trust to help us through this. Can I count on you?'"
+text.spa = "Decides preguntarle directamente a Patricia sobre la actividad de la bóveda y presencia federal, poniendo tus cartas sobre la mesa. Patricia mira alrededor nerviosamente antes de llevarte a su oficina. 'Lo que has observado es parte de un examen federal que podría determinar nuestro futuro,' admite. 'Estamos caminando en la cuerda floja entre mantener liquidez y prevenir pánico. La actividad de la bóveda es precautoria - moviendo activos a ubicaciones seguras en caso de intervención de emergencia. Necesito personal en el que pueda confiar para ayudarnos a superar esto. ¿Puedo contar contigo?'"
+
+[[scenes.direct_confrontation.choices]]
+text.eng = "Agree to help with full knowledge of the situation"
+text.spa = "Acordar ayudar con conocimiento completo de la situación"
+leads_to = "informed_assistance"
+
+[[scenes.direct_confrontation.choices]]
+text.eng = "Demand guarantees about customer protection"
+text.spa = "Exigir garantías sobre protección del cliente"
+leads_to = "customer_protection_terms"
+
+[[scenes.direct_confrontation.choices]]
+text.eng = "Ask to see official documentation of the federal examination"
+text.spa = "Pedir ver documentación oficial del examen federal"
+leads_to = "documentation_request"
+
+[scenes.customer_advocacy]
+text.eng = "Despite Patricia's warning, you continue prioritizing customer experience, believing that treating customers fairly is your primary duty. You maintain efficient, friendly service while being transparent about the new requirements. Your principled stance resonates with customers, who appreciate your honesty and dedication to their needs. However, this puts you at odds with management's crisis management strategy, creating tension that comes to a head when Patricia confronts you about 'undermining bank policy during a critical period.'"
+text.spa = "A pesar de la advertencia de Patricia, continúas priorizando la experiencia del cliente, creyendo que tratar a los clientes justamente es tu deber principal. Mantienes servicio eficiente y amigable mientras eres transparente sobre los nuevos requisitos. Tu postura de principios resuena con los clientes, quienes aprecian tu honestidad y dedicación a sus necesidades. Sin embargo, esto te pone en desacuerdo con la estrategia de manejo de crisis de la gerencia, creando tensión que llega al punto crítico cuando Patricia te confronta sobre 'socavar la política bancaria durante un período crítico.'"
+
+[[scenes.customer_advocacy.choices]]
+text.eng = "Stand firm on your customer-first principles"
+text.spa = "Mantenerte firme en tus principios de clientes primero"
+leads_to = "principled_stand"
+
+[[scenes.customer_advocacy.choices]]
+text.eng = "Try to find a compromise between customer service and bank needs"
+text.spa = "Tratar de encontrar un compromiso entre servicio al cliente y necesidades del banco"
+leads_to = "compromise_attempt"
+
+[scenes.evidence_gathering]
+text.eng = "You begin systematically documenting everything you observe, creating a detailed record of the unusual corporate monitoring, vault activities, and management behavior. Your meticulous notes include timestamps, specific actions, and overheard conversations. This documentation could prove valuable for legal protection, whistleblowing, or understanding the full scope of the crisis. However, your careful observation and note-taking don't go unnoticed by management, creating potential risks to your position."
+text.spa = "Comienzas a documentar sistemáticamente todo lo que observas, creando un registro detallado del monitoreo corporativo inusual, actividades de la bóveda, y comportamiento de la gerencia. Tus notas meticulosas incluyen marcas de tiempo, acciones específicas, y conversaciones escuchadas. Esta documentación podría resultar valiosa para protección legal, denuncia, o entender el alcance completo de la crisis. Sin embargo, tu observación cuidadosa y toma de notas no pasa desapercibida por la gerencia, creando riesgos potenciales a tu posición."
+
+[[scenes.evidence_gathering.choices]]
+text.eng = "Continue gathering evidence while maintaining a low profile"
+text.spa = "Continuar reuniendo evidencia mientras mantienes un perfil bajo"
+leads_to = "covert_documentation"
+
+[[scenes.evidence_gathering.choices]]
+text.eng = "Prepare to present evidence to external authorities"
+text.spa = "Prepararse para presentar evidencia a autoridades externas"
+leads_to = "external_reporting"
+
+[scenes.confidence_building]
+text.eng = "You continue your methodical approach, using the detailed processes to build genuine customer confidence in the bank's security measures. Your thorough explanations help customers understand that the new protocols demonstrate the bank's commitment to their safety. Several customers comment positively on the enhanced security, and word spreads about your professional, careful service. This approach successfully slows withdrawals while maintaining customer trust, exactly what management hopes to achieve."
+text.spa = "Continúas tu enfoque metódico, usando los procesos detallados para construir confianza genuina del cliente en las medidas de seguridad del banco. Tus explicaciones minuciosas ayudan a los clientes a entender que los nuevos protocolos demuestran el compromiso del banco con su seguridad. Varios clientes comentan positivamente sobre la seguridad mejorada, y se extiende la palabra sobre tu servicio profesional y cuidadoso. Este enfoque reduce exitosamente los retiros mientras mantiene la confianza del cliente, exactamente lo que la gerencia espera lograr."
+
+[[scenes.confidence_building.choices]]
+text.eng = "Train other tellers in confidence-building techniques"
+text.spa = "Entrenar a otros cajeros en técnicas de construcción de confianza"
+leads_to = "teaching_role"
+
+[[scenes.confidence_building.choices]]
+text.eng = "Document successful strategies for crisis management"
+text.spa = "Documentar estrategias exitosas para manejo de crisis"
+leads_to = "strategy_documentation"
+
+[scenes.efficiency_optimization]
+text.eng = "You find ways to speed up the process slightly while maintaining all compliance standards, creating an optimal balance between security and customer service. Your innovations include pre-filling routine information, streamlining signature verification, and organizing paperwork more efficiently. Other tellers begin adopting your methods, and Patricia notices the improved flow. Your problem-solving skills position you as a valuable asset during the crisis, demonstrating leadership potential under pressure."
+text.spa = "Encuentras maneras de acelerar el proceso ligeramente mientras mantienes todos los estándares de cumplimiento, creando un equilibrio óptimo entre seguridad y servicio al cliente. Tus innovaciones incluyen pre-llenar información rutinaria, agilizar verificación de firmas, y organizar papeleo más eficientemente. Otros cajeros comienzan a adoptar tus métodos, y Patricia nota el flujo mejorado. Tus habilidades de resolución de problemas te posicionan como un activo valioso durante la crisis, demostrando potencial de liderazgo bajo presión."
+
+[[scenes.efficiency_optimization.choices]]
+text.eng = "Propose system-wide improvements to bank operations"
+text.spa = "Proponer mejoras sistema-amplio a operaciones bancarias"
+leads_to = "operational_innovation"
+
+[[scenes.efficiency_optimization.choices]]
+text.eng = "Focus on training others in efficient compliance methods"
+text.spa = "Enfocarse en entrenar a otros en métodos eficientes de cumplimiento"
+leads_to = "efficiency_mentor"
+
+[scenes.intelligence_gathering]
+text.eng = "You use the extended interaction time with customers to subtly gauge their concerns and gather information about the broader market sentiment. Through careful conversation, you learn about social media rumors, financial advisor warnings, and news reports that customers have seen. This intelligence gathering reveals the scope of public awareness about the bank's problems and helps you understand how quickly information is spreading through various channels."
+text.spa = "Usas el tiempo de interacción extendido con clientes para evaluar sutilmente sus preocupaciones y reunir información sobre el sentimiento más amplio del mercado. A través de conversación cuidadosa, aprendes sobre rumores de redes sociales, advertencias de asesores financieros, y reportes de noticias que los clientes han visto. Esta recopilación de inteligencia revela el alcance de la conciencia pública sobre los problemas del banco y te ayuda a entender qué tan rápido se está extendiendo la información a través de varios canales."
+
+[[scenes.intelligence_gathering.choices]]
+text.eng = "Compile intelligence into a comprehensive threat assessment"
+text.spa = "Compilar inteligencia en una evaluación integral de amenazas"
+leads_to = "threat_analysis"
+
+[[scenes.intelligence_gathering.choices]]
+text.eng = "Use intelligence to develop counter-narrative strategies"
+text.spa = "Usar inteligencia para desarrollar estrategias de contra-narrativa"
+leads_to = "narrative_control"
+
+[scenes.management_analysis]
+text.eng = "You discretely observe management's reactions to your compliance efforts, trying to understand their true motivations and concerns. Patricia's relieved expressions when you demonstrate strict protocol adherence, combined with her nervous glances toward the vault area, confirm your suspicions that the situation is more serious than publicly acknowledged. You notice her checking her phone frequently and engaging in hushed conversations with corporate representatives who visit throughout the day."
+text.spa = "Observas discretamente las reacciones de la gerencia a tus esfuerzos de cumplimiento, tratando de entender sus verdaderas motivaciones y preocupaciones. Las expresiones aliviadas de Patricia cuando demuestras adherencia estricta al protocolo, combinadas con sus miradas nerviosas hacia el área de la bóveda, confirman tus sospechas de que la situación es más seria de lo que se reconoce públicamente. Notas que revisa su teléfono frecuentemente y se involucra en conversaciones susurradas con representantes corporativos que visitan durante el día."
+
+[[scenes.management_analysis.choices]]
+text.eng = "Approach Patricia with your observations and offer support"
+text.spa = "Acercarse a Patricia con tus observaciones y ofrecer apoyo"
+leads_to = "supportive_approach"
+
+[[scenes.management_analysis.choices]]
+text.eng = "Continue observing to gather more complete information"
+text.spa = "Continuar observando para reunir información más completa"
+leads_to = "extended_surveillance"
+
+[scenes.collaborative_response]
+text.eng = "You work with colleagues to develop customer retention strategies, pooling your knowledge and experience to address the crisis collectively. Together, you create talking points about FDIC protection, develop scripts for addressing common concerns, and establish signals for alerting each other to potential problems. Your collaborative approach strengthens the entire team's ability to handle the situation while maintaining a united front for customers."
+text.spa = "Trabajas con colegas para desarrollar estrategias de retención de clientes, combinando tu conocimiento y experiencia para abordar la crisis colectivamente. Juntos, crean puntos de conversación sobre protección del FDIC, desarrollan guiones para abordar preocupaciones comunes, y establecen señales para alertarse mutuamente sobre problemas potenciales. Tu enfoque colaborativo fortalece la capacidad de todo el equipo para manejar la situación mientras mantiene un frente unido para los clientes."
+
+[[scenes.collaborative_response.choices]]
+text.eng = "Expand the collaborative approach to include management"
+text.spa = "Expandir el enfoque colaborativo para incluir a la gerencia"
+leads_to = "team_unity"
+
+[[scenes.collaborative_response.choices]]
+text.eng = "Prepare contingency plans for various crisis scenarios"
+text.spa = "Preparar planes de contingencia para varios escenarios de crisis"
+leads_to = "scenario_planning"
+
+[scenes.calm_preparation]
+text.eng = "You prepare for the worst-case scenario while maintaining your professional composure, creating mental contingency plans and ensuring you're ready for whatever develops. You organize your workstation for maximum efficiency, review emergency procedures, and mentally prepare responses to potential customer panic situations. Your calm preparation helps you feel more confident and in control, even as the situation around you becomes increasingly tense."
+text.spa = "Te preparas para el peor escenario mientras mantienes tu compostura profesional, creando planes mentales de contingencia y asegurando que estés listo para lo que se desarrolle. Organizas tu estación de trabajo para máxima eficiencia, revisas procedimientos de emergencia, y preparas mentalmente respuestas a situaciones potenciales de pánico de clientes. Tu preparación tranquila te ayuda a sentirte más confiado y en control, incluso mientras la situación a tu alrededor se vuelve cada vez más tensa."
+
+[[scenes.calm_preparation.choices]]
+text.eng = "Share preparation strategies with other staff members"
+text.spa = "Compartir estrategias de preparación con otros miembros del personal"
+leads_to = "preparation_leadership"
+
+[[scenes.calm_preparation.choices]]
+text.eng = "Focus on being a stabilizing presence for customers"
+text.spa = "Enfocarse en ser una presencia estabilizadora para los clientes"
+leads_to = "stability_anchor"
+
+[scenes.selective_warning]
+text.eng = "You make calculated decisions about discretely warning select customers about the developing situation, choosing those you believe can handle the information responsibly. Your warnings help several valued long-term customers protect their assets while avoiding panic-inducing behavior. However, word of your selective warnings spreads among customers, creating both gratitude from those you helped and suspicion from those you didn't warn, potentially complicating the bank's crisis management efforts."
+text.spa = "Tomas decisiones calculadas sobre advertir discretamente a clientes selectos sobre la situación en desarrollo, eligiendo aquellos que crees pueden manejar la información responsablemente. Tus advertencias ayudan a varios clientes valiosos de largo plazo a proteger sus activos mientras evitan comportamiento inductor de pánico. Sin embargo, la palabra de tus advertencias selectivas se extiende entre clientes, creando tanto gratitud de aquellos que ayudaste como sospecha de aquellos que no advertiste, potencialmente complicando los esfuerzos de manejo de crisis del banco."
+
+[[scenes.selective_warning.choices]]
+text.eng = "Expand warnings to protect more vulnerable customers"
+text.spa = "Expandir advertencias para proteger más clientes vulnerables"
+leads_to = "broader_protection"
+
+[[scenes.selective_warning.choices]]
+text.eng = "Stop warning customers to avoid complications"
+text.spa = "Dejar de advertir clientes para evitar complicaciones"
+leads_to = "warning_cessation"
+
+[scenes.closure_preparation]
+text.eng = "You focus on serving customers while mentally preparing for the possibility of bank closure, understanding that federal intervention might be inevitable. You review FDIC procedures, consider customer transition processes, and prepare yourself psychologically for potential job loss. Your realistic assessment of the situation helps you provide authentic, measured responses to customer concerns while avoiding false reassurances that might prove harmful later."
+text.spa = "Te enfocas en servir clientes mientras te preparas mentalmente para la posibilidad de cierre bancario, entendiendo que la intervención federal podría ser inevitable. Revisas procedimientos del FDIC, consideras procesos de transición de clientes, y te preparas psicológicamente para potencial pérdida de empleo. Tu evaluación realista de la situación te ayuda a proporcionar respuestas auténticas y medidas a preocupaciones de clientes mientras evitas falsas tranquilidades que podrían resultar dañinas más tarde."
+
+[[scenes.closure_preparation.choices]]
+text.eng = "Help customers understand FDIC protection processes"
+text.spa = "Ayudar a clientes a entender procesos de protección del FDIC"
+leads_to = "fdic_education"
+
+[[scenes.closure_preparation.choices]]
+text.eng = "Prepare documentation to ensure smooth customer transitions"
+text.spa = "Preparar documentación para asegurar transiciones suaves de clientes"
+leads_to = "transition_planning"
+
+[scenes.customer_protection_alliance]
+text.eng = "You coordinate with Marcus to protect customer interests, forming a partnership focused on ethical customer service regardless of institutional pressures. Together, you develop strategies to provide customers with accurate information about their rights, FDIC protection, and financial options. Your alliance creates a pocket of integrity within the bank, though it potentially puts you both at odds with management's crisis management approach."
+text.spa = "Coordinas con Marcus para proteger intereses de clientes, formando una sociedad enfocada en servicio ético al cliente independientemente de presiones institucionales. Juntos, desarrollan estrategias para proporcionar a los clientes información precisa sobre sus derechos, protección del FDIC, y opciones financieras. Tu alianza crea un bolsillo de integridad dentro del banco, aunque potencialmente los pone a ambos en desacuerdo con el enfoque de manejo de crisis de la gerencia."
+
+[[scenes.customer_protection_alliance.choices]]
+text.eng = "Expand the protection alliance to include more staff"
+text.spa = "Expandir la alianza de protección para incluir más personal"
+leads_to = "protection_movement"
+
+[[scenes.customer_protection_alliance.choices]]
+text.eng = "Focus on helping customers understand their legal rights"
+text.spa = "Enfocarse en ayudar a clientes a entender sus derechos legales"
+leads_to = "rights_education"
+
+[scenes.honest_confession]
+text.eng = "You decide to be honest with Patricia about warning the customer, accepting responsibility for your actions. 'I told Mr. Harrison he should consider diversifying his holdings,' you admit. 'I felt it was my ethical duty to help him protect his finances.' Patricia's expression is a mixture of disappointment and understanding. 'I appreciate your honesty, {character_name}, but you've put us in a difficult position. That kind of advice could accelerate customer withdrawals and worsen our situation. However, your integrity is noted.'"
+text.spa = "Decides ser honesto con Patricia sobre advertir al cliente, aceptando responsabilidad por tus acciones. 'Le dije al Sr. Harrison que debería considerar diversificar sus tenencias,' admites. 'Sentí que era mi deber ético ayudarlo a proteger sus finanzas.' La expresión de Patricia es una mezcla de decepción y comprensión. 'Aprecio tu honestidad, {character_name}, pero nos has puesto en una posición difícil. Ese tipo de consejo podría acelerar retiros de clientes y empeorar nuestra situación. Sin embargo, tu integridad es notada.'"
+
+[[scenes.honest_confession.choices]]
+text.eng = "Accept consequences while maintaining ethical stance"
+text.spa = "Aceptar consecuencias mientras mantienes postura ética"
+leads_to = "ethical_consequences"
+
+[[scenes.honest_confession.choices]]
+text.eng = "Propose alternative ways to help customers ethically"
+text.spa = "Proponer maneras alternativas de ayudar a clientes éticamente"
+leads_to = "ethical_alternatives"
+
+[scenes.denial_strategy]
+text.eng = "You decide to deny any inappropriate communication with customers, protecting yourself while potentially compromising your integrity. 'I was simply explaining our standard security procedures, nothing more,' you tell Patricia. While this protects your immediate position, you're troubled by the deception. Patricia seems partially convinced but warns you to be more careful about customer interactions during this sensitive period."
+text.spa = "Decides negar cualquier comunicación inapropiada con clientes, protegiéndote mientras potencialmente comprometes tu integridad. 'Simplemente estaba explicando nuestros procedimientos estándar de seguridad, nada más,' le dices a Patricia. Aunque esto protege tu posición inmediata, te preocupa el engaño. Patricia parece parcialmente convencida pero te advierte que seas más cuidadoso sobre interacciones con clientes durante este período sensible."
+
+[[scenes.denial_strategy.choices]]
+text.eng = "Continue being more careful while maintaining the deception"
+text.spa = "Continuar siendo más cuidadoso mientras mantienes el engaño"
+leads_to = "careful_deception"
+
+[[scenes.denial_strategy.choices]]
+text.eng = "Resolve to be more honest going forward despite the risks"
+text.spa = "Resolverse a ser más honesto en adelante a pesar de los riesgos"
+leads_to = "delayed_honesty"
+
+[scenes.concern_redirection]
+text.eng = "You turn the conversation toward your concerns about bank stability, deflecting from the specific customer interaction. 'Patricia, I'm worried about the unusual activities I've observed today. Shouldn't we be more transparent with customers about what's happening?' This approach shifts focus from your potential policy violation to the broader institutional issues, allowing you to advocate for customer interests while addressing your own situation."
+text.spa = "Diriges la conversación hacia tus preocupaciones sobre estabilidad bancaria, desviando de la interacción específica con el cliente. 'Patricia, estoy preocupado por las actividades inusuales que he observado hoy. ¿No deberíamos ser más transparentes con los clientes sobre lo que está pasando?' Este enfoque cambia el enfoque de tu potencial violación de política a los problemas institucionales más amplios, permitiéndote abogar por intereses de clientes mientras abordas tu propia situación."
+
+[[scenes.concern_redirection.choices]]
+text.eng = "Press for more information about the bank's situation"
+text.spa = "Presionar por más información sobre la situación del banco"
+leads_to = "information_push"
+
+[[scenes.concern_redirection.choices]]
+text.eng = "Offer to help develop better customer communication strategies"
+text.spa = "Ofrecer ayudar a desarrollar mejores estrategias de comunicación con clientes"
+leads_to = "communication_improvement"
+
+[scenes.ethical_resignation]
+text.eng = "You prepare to resign rather than compromise your ethical principles, deciding that your integrity is more valuable than your job security. 'Patricia, if the bank expects me to mislead customers or withhold important information, I can't continue working here,' you state firmly. Your principled stance surprises Patricia, who realizes she's dealing with someone who won't be easily pressured into questionable actions. This forces her to either find ethical ways to work with you or accept your resignation."
+text.spa = "Te preparas para renunciar en lugar de comprometer tus principios éticos, decidiendo que tu integridad es más valiosa que tu seguridad laboral. 'Patricia, si el banco espera que engañe a clientes u oculte información importante, no puedo continuar trabajando aquí,' declaras firmemente. Tu postura de principios sorprende a Patricia, quien se da cuenta de que está tratando con alguien que no será fácilmente presionado a acciones cuestionables. Esto la fuerza a encontrar maneras éticas de trabajar contigo o aceptar tu renuncia."
+
+[[scenes.ethical_resignation.choices]]
+text.eng = "Follow through with resignation to maintain principles"
+text.spa = "Seguir adelante con la renuncia para mantener principios"
+leads_to = "principled_departure"
+
+[[scenes.ethical_resignation.choices]]
+text.eng = "Negotiate terms that allow ethical customer service"
+text.spa = "Negociar términos que permitan servicio ético al cliente"
+leads_to = "ethical_negotiation"
