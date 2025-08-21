@@ -2,7 +2,22 @@ use super::types::*;
 use iced::{Task, Element};
 
 #[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
+use once_cell::sync::OnceCell;
+
+#[cfg(target_arch = "wasm32")]
+static PLAY_BACKGROUND_AUDIO: OnceCell<Box<dyn Fn(&[u8]) + Send + Sync>> = OnceCell::new();
+
+#[cfg(target_arch = "wasm32")]
+static STOP_BACKGROUND_AUDIO: OnceCell<Box<dyn Fn() + Send + Sync>> = OnceCell::new();
+
+#[cfg(target_arch = "wasm32")]
+pub fn set_audio_callbacks(
+    play_fn: Box<dyn Fn(&[u8]) + Send + Sync>,
+    stop_fn: Box<dyn Fn() + Send + Sync>,
+) {
+    let _ = PLAY_BACKGROUND_AUDIO.set(play_fn);
+    let _ = STOP_BACKGROUND_AUDIO.set(stop_fn);
+}
 
 #[cfg(not(target_arch = "wasm32"))]
 use rodio::{Decoder, OutputStream, OutputStreamBuilder, Sink, Source};
@@ -512,20 +527,14 @@ impl GameWindow {
     
     #[cfg(target_arch = "wasm32")]
     fn update_audio_playback(&self) {
-        // Use wasm_bindgen to call JavaScript audio functions
         if self.current_background_audio.is_empty() {
-            // Use extern declaration from full-crisis-web crate
-            extern "C" {
-                #[wasm_bindgen::wasm_bindgen]
-                fn stop_background_audio();
+            if let Some(stop_fn) = STOP_BACKGROUND_AUDIO.get() {
+                stop_fn();
             }
-            stop_background_audio();
         } else {
-            extern "C" {
-                #[wasm_bindgen::wasm_bindgen]
-                fn play_background_audio(bytes: &[u8]);
+            if let Some(play_fn) = PLAY_BACKGROUND_AUDIO.get() {
+                play_fn(&self.current_background_audio);
             }
-            play_background_audio(&self.current_background_audio);
         }
     }
     

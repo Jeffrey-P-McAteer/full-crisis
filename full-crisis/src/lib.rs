@@ -49,6 +49,10 @@ pub static GAME: OnceCell<game::GameState> = OnceCell::new();
 pub static OS_COLOR_THEME: OnceCell<game::OSColorTheme> = OnceCell::new();
 pub static VERBOSITY: OnceCell<u8> = OnceCell::new();
 
+// Re-export WASM audio callback setter
+#[cfg(target_arch = "wasm32")]
+pub use gui::event_handlers::set_audio_callbacks;
+
 pub fn init_global_vars() {
 
   // TODO likely do not want to do this now, push down to web query of state or FS read op in bin
