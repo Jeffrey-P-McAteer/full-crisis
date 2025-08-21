@@ -162,6 +162,15 @@ fn validate_crisis(
             }
         }
         
+        // Check background audio
+        if let Some(bg_audio) = &scene.background_audio {
+            if PlayableCrises::get(bg_audio).is_none() {
+                warnings.push(format!("Scene '{}': Background audio file not found: {}", scene_name, bg_audio));
+            }
+        } else {
+            warnings.push(format!("Scene '{}': No background_audio defined", scene_name));
+        }
+        
         // Check speaking character image
         if let Some(char_img) = &scene.speaking_character_image {
             match char_img {

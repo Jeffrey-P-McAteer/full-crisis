@@ -31,6 +31,7 @@ impl GameWindow {
         if let Some(current_scene) = crisis.scenes.get(&story_state.current_scene) {
             let mut error_messages = Vec::new();
             
+            self.validate_background_audio(current_scene, story_state, &mut error_messages);
             let background_layer = self.create_background_layer(current_scene, story_state, &mut error_messages);
             let main_layout = self.create_main_game_layout(crisis, current_scene, story_state, &mut error_messages);
             
@@ -412,7 +413,7 @@ impl GameWindow {
     fn create_error_display(&self, error_messages: &[String]) -> Container<GameMessage, Theme, iced::Renderer> {
         let error_text = error_messages.join("; ");
         container(
-            text(format!("Image Loading Errors: {}", error_text))
+            text(format!("Media Loading Errors: {}", error_text))
                 .size(12)
                 .color(iced::Color::from_rgb(0.8, 0.2, 0.2))
                 .wrapping(iced::widget::text::Wrapping::Word)
@@ -428,6 +429,16 @@ impl GameWindow {
                 ..iced::widget::container::Style::default()
             }
         })
+    }
+
+    fn validate_background_audio(&self, current_scene: &crate::crisis::CrisisScene, story_state: &crate::crisis::GameState, error_messages: &mut Vec<String>) {
+        if let Some(ref audio_path) = current_scene.background_audio {
+            if crate::crisis::PlayableCrises::get(audio_path).is_none() {
+                error_messages.push(format!("Scene '{}': Background audio file not found: {}", story_state.current_scene, audio_path));
+            }
+        } else {
+            error_messages.push(format!("Scene '{}': No background_audio defined", story_state.current_scene));
+        }
     }
 
     fn render_scene_not_found(&self, story_state: &crate::crisis::GameState) -> iced::Element<'_, GameMessage> {

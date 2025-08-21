@@ -400,6 +400,7 @@ fn parse_scene_from_toml_value(value: &toml::Value) -> Result<CrisisScene, Box<d
         continue_in_subfolder,
         background_image,
         speaking_character_image,
+        background_audio: None,
     })
 }
 

@@ -79,6 +79,7 @@ pub struct CrisisScene {
     pub background_image: Option<String>,
     #[serde(default)]
     pub speaking_character_image: Option<SpeakingCharacterImage>,
+    pub background_audio: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

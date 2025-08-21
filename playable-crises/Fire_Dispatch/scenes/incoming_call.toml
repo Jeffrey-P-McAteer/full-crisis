@@ -4,6 +4,8 @@ speaking_character_image = [
     "Fire_Dispatch/panicked_caller_character_2.png",
 ]
 
+background_audio = "Fire_Dispatch/fire-sound-effects-224089.mp3"
+
 [text]
 eng = "{character_name}, you're working the night shift at Central Emergency Dispatch. It's 2:47 AM when your console lights up with an incoming 911 call. You have 12 fire trucks available across the city. The caller sounds panicked: 'Help! There's a fire at my apartment building! I think it's spreading!'"
 spa = "{character_name}, estás trabajando el turno nocturno en Despacho Central de Emergencias. Son las 2:47 AM cuando tu consola se ilumina con una llamada entrante al 911. Tienes 12 camiones de bomberos disponibles en la ciudad. La persona que llama suena en pánico: '¡Ayuda! ¡Hay un incendio en mi edificio de apartamentos! ¡Creo que se está extendiendo!'"
