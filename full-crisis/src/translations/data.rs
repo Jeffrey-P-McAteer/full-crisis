@@ -281,6 +281,30 @@ pub fn get_builtin_translations() -> Vec<Translation> {
             .add_translation("kor", "열기")
             .add_translation("zho", "打开"),
         
+        Translation::new(TranslationKey::SettingsStoragePath)
+            .add_translation("eng", "Settings Storage Path:")
+            .add_translation("spa", "Ruta de Almacenamiento de Configuración:")
+            .add_translation("fra", "Chemin de Stockage des Paramètres:")
+            .add_translation("deu", "Einstellungs-Speicherpfad:")
+            .add_translation("ita", "Percorso di Archiviazione Impostazioni:")
+            .add_translation("por", "Caminho de Armazenamento de Configurações:")
+            .add_translation("rus", "Путь Хранения Настроек:")
+            .add_translation("jpn", "設定保存パス:")
+            .add_translation("kor", "설정 저장 경로:")
+            .add_translation("zho", "设置存储路径:"),
+        
+        Translation::new(TranslationKey::SettingsStorageExplanation)
+            .add_translation("eng", "This is where your game settings and save files are stored.")
+            .add_translation("spa", "Aquí es donde se almacenan la configuración del juego y los archivos guardados.")
+            .add_translation("fra", "C'est ici que vos paramètres de jeu et fichiers de sauvegarde sont stockés.")
+            .add_translation("deu", "Hier werden Ihre Spieleinstellungen und Speicherdateien gespeichert.")
+            .add_translation("ita", "Qui vengono archiviate le impostazioni del gioco e i file di salvataggio.")
+            .add_translation("por", "Aqui são armazenadas as configurações do jogo e arquivos de salvamento.")
+            .add_translation("rus", "Здесь хранятся настройки игры и файлы сохранений.")
+            .add_translation("jpn", "ここにゲーム設定とセーブファイルが保存されます。")
+            .add_translation("kor", "여기에 게임 설정과 저장 파일이 저장됩니다.")
+            .add_translation("zho", "这里存储着您的游戏设置和保存文件。"),
+        
         Translation::new(TranslationKey::DifficultyLevel)
             .add_translation("eng", "Difficulty Level:")
             .add_translation("spa", "Nivel de Dificultad:")

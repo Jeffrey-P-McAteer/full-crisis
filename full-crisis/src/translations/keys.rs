@@ -31,6 +31,8 @@ pub enum TranslationKey {
     EnterCrisesFolderPath,
     CrisesFolderExplanation,
     OpenFolder,
+    SettingsStoragePath,
+    SettingsStorageExplanation,
     DifficultyLevel,
     SelectDifficulty,
     Autosave,

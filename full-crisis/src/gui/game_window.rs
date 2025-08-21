@@ -94,4 +94,19 @@ impl GameWindow {
             iced::Subscription::none()
         }
     }
+    
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn get_settings_storage_path() -> String {
+        use directories::ProjectDirs;
+        
+        if let Some(proj_dirs) = ProjectDirs::from("com.jmcateer.full-crisis", "Full-Crisis", "Full-Crisis") {
+            if let Some(cache_dir) = proj_dirs.cache_dir().to_str() {
+                cache_dir.to_string()
+            } else {
+                "Unable to get cache directory path".to_string()
+            }
+        } else {
+            "Unable to get project directories".to_string()
+        }
+    }
 }

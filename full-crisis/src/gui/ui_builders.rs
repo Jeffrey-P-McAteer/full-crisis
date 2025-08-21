@@ -394,14 +394,62 @@ impl GameWindow {
         .spacing(10)
         .align_y(Center);
 
-        let layout = iced::widget::Column::new()
+        // Create settings storage path components (non-wasm32 only)
+        #[cfg(not(target_arch = "wasm32"))]
+        let (settings_storage_row, settings_storage_explanation) = {
+            let storage_path = Self::get_settings_storage_path();
+            let storage_path_label = crate::translations::t(crate::translations::TranslationKey::SettingsStoragePath, user_language);
+            
+            let storage_path_input = text_input("", &storage_path)
+                .width(Length::Fill)
+                .padding(10)
+                .style(|theme: &Theme, _status| {
+                    // Make it look read-only
+                    let palette = theme.extended_palette();
+                    iced::widget::text_input::Style {
+                        background: palette.background.weak.color.into(),
+                        border: iced::border::rounded(4)
+                            .color(palette.background.strong.color)
+                            .width(1),
+                        icon: palette.background.strong.text,
+                        placeholder: palette.background.weak.text,
+                        value: palette.background.base.text,
+                        selection: palette.primary.weak.color,
+                    }
+                });
+                
+            let storage_row = row![
+                Text::new(storage_path_label),
+                storage_path_input,
+            ]
+            .spacing(10)
+            .align_y(Center);
+            
+            let storage_explanation = Text::new(crate::translations::t(crate::translations::TranslationKey::SettingsStorageExplanation, user_language))
+                .size(12)
+                .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
+                
+            (storage_row, storage_explanation)
+        };
+
+        let mut layout = iced::widget::Column::new()
             .spacing(20)
             .padding(20)
             .push(save_folder_row)
             .push(crises_folder_explanation)
             .push(difficulty_row)
             .push(autosave_row)
-            .push(language_row)
+            .push(language_row);
+            
+        // Add settings storage path on non-wasm32 platforms
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            layout = layout
+                .push(settings_storage_row)
+                .push(settings_storage_explanation);
+        }
+        
+        let layout = layout
             .height(Length::Fill)
             .align_x(Left);
 
