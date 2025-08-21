@@ -143,7 +143,7 @@ fn validate_file_exists(scene_name: &str, file_path: &str, file_type: &str) -> O
 
 fn validate_crisis(
     crisis: &full_crisis::crisis::CrisisDefinition, 
-    folder_name: &str,
+    _folder_name: &str,
     verbosity: u8
 ) -> Result<(), Box<dyn std::error::Error>> {
     use full_crisis::crisis::PlayableCrises;

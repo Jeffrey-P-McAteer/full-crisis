@@ -6,26 +6,28 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen(start)]
 pub fn start() -> Result<(), JsValue> {
-    console_error_panic_hook::set_once();
+    #[cfg(target_arch = "wasm32")]
+    {
+        console_error_panic_hook::set_once();
 
-    full_crisis::init_global_vars();
+        full_crisis::init_global_vars();
 
-    // Initialize audio callbacks
-    full_crisis::set_audio_callbacks(
-        Box::new(|bytes: &[u8]| {
-            play_background_audio(bytes);
-        }),
-        Box::new(|| {
-            stop_background_audio();
-        }),
-    );
+        // Initialize audio callbacks
+        full_crisis::set_audio_callbacks(
+            Box::new(|bytes: &[u8]| {
+                play_background_audio(bytes);
+            }),
+            Box::new(|| {
+                stop_background_audio();
+            }),
+        );
 
-    // Detect browser theme + store in variable
-    let _ = full_crisis::OS_COLOR_THEME.set(
-        if os_prefers_dark() { full_crisis::game::OSColorTheme::Dark }
-        else                 { full_crisis::game::OSColorTheme::Light }
-    );
-
+        // Detect browser theme + store in variable
+        let _ = full_crisis::OS_COLOR_THEME.set(
+            if os_prefers_dark() { full_crisis::game::OSColorTheme::Dark }
+            else                 { full_crisis::game::OSColorTheme::Light }
+        );
+    }
 
     // Iced wants to own the GUI thread and insists on using the main thread; so we let it.
     iced::application(
