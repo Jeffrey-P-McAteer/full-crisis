@@ -11,6 +11,11 @@ Join historic disasters as emergency response personnel and hone your crisis-sol
 
 - **[Crisis Game Format Documentation](playable-crises/README.md)** - Complete guide to creating and structuring crisis scenarios
 
+# TODO
+
+- [ ] Sound
+
+
 # Development Dependencies
 
 The following programs must be installed and available on your system's `PATH`
