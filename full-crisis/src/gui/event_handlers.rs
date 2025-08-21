@@ -485,7 +485,7 @@ impl GameWindow {
         self.choice_text_inputs.clear();
         self.animation_frame_index = 0;
         self.current_background_audio.clear(); // Stop any playing audio
-        self.update_web_audio_playback(); // Update web playback to stop audio
+        self.update_audio_playback(); // Update audio playback to stop audio
     }
     
     fn load_scene_background_audio(&mut self, crisis: &crate::crisis::CrisisDefinition, scene_name: &str) {
@@ -506,12 +506,12 @@ impl GameWindow {
             self.current_background_audio.clear();
         }
         
-        // Update web audio playback
-        self.update_web_audio_playback();
+        // Update audio playback
+        self.update_audio_playback();
     }
     
     #[cfg(target_arch = "wasm32")]
-    fn update_web_audio_playback(&self) {
+    fn update_audio_playback(&self) {
         // Use wasm_bindgen to call JavaScript audio functions
         if self.current_background_audio.is_empty() {
             // Use extern declaration from full-crisis-web crate
@@ -530,12 +530,7 @@ impl GameWindow {
     }
     
     #[cfg(not(target_arch = "wasm32"))]
-    fn update_web_audio_playback(&self) {
-        self.update_desktop_audio_playback();
-    }
-    
-    #[cfg(not(target_arch = "wasm32"))]
-    fn update_desktop_audio_playback(&self) {
+    fn update_audio_playback(&self) {
         use std::io::Cursor;
         use std::sync::{Arc, Mutex};
         use std::thread;
@@ -547,14 +542,14 @@ impl GameWindow {
         let current_audio = self.current_background_audio.clone();
         
         thread::spawn(move || {
-            let mut state = audio_state.lock().unwrap();
-            
-            if current_audio.is_empty() {
-                // Stop current audio playback
-                state.stop_audio();
-            } else {
-                // Start new audio playback
-                state.play_audio(current_audio);
+            if let Ok(mut state) = audio_state.lock() {
+                if current_audio.is_empty() {
+                    // Stop current audio playback
+                    state.stop_audio();
+                } else {
+                    // Start new audio playback
+                    state.play_audio(current_audio);
+                }
             }
         });
     }

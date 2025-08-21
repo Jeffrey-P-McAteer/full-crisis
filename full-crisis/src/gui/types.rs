@@ -75,22 +75,29 @@ pub struct GameWindow {
 #[derive(Debug, Clone)]
 pub enum GameMessage {
     Nop,
+    
+    // Menu actions
     Menu_NewGameRequested,
-        Menu_NewGamePlayerNameAltered(String),
-        Menu_NewGameTemplateChoiceAltered(String),
-        Menu_NewGameStartClicked,
+    Menu_NewGamePlayerNameAltered(String),
+    Menu_NewGameTemplateChoiceAltered(String),
+    Menu_NewGameStartClicked,
+    
     Menu_ContinueGameRequested,
-        Menu_ContinueGameChoiceAltered(String),
-        Menu_ContinueGameStartClicked,
-        Menu_ContinueGameDeleteRequested(String),
-        Menu_ContinueGameDeleteConfirmed(String),
+    Menu_ContinueGameChoiceAltered(String),
+    Menu_ContinueGameStartClicked,
+    Menu_ContinueGameDeleteRequested(String),
+    Menu_ContinueGameDeleteConfirmed(String),
+    
     Menu_SettingsRequested,
-        Menu_SettingsGameSaveFolderChanged(String),
-        Menu_SettingsDifficultyLevelChanged(DifficultyLevel),
-        Menu_SettingsAutosaveToggled(bool),
-        Menu_SettingsLanguageChanged(String),
+    Menu_SettingsGameSaveFolderChanged(String),
+    Menu_SettingsDifficultyLevelChanged(DifficultyLevel),
+    Menu_SettingsAutosaveToggled(bool),
+    Menu_SettingsLanguageChanged(String),
+    
     Menu_LicensesRequested,
     QuitGameRequested,
+    
+    // Game actions
     Game_ChoiceSelected(usize),
     Game_TextInputChanged(usize, String), // (choice_index, input_value)
     Game_TextInputSubmitted(usize, String), // (choice_index, input_value)

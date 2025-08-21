@@ -91,11 +91,11 @@ impl GameWindow {
                 .width(Length::Fill)
                 .height(Length::Fill))
             } else {
-                error_messages.push(format!("Scene '{}': Background image file not found: {}", story_state.current_scene, bg_path));
+                self.add_scene_error(error_messages, &story_state.current_scene, &format!("Background image file not found: {}", bg_path));
                 None
             }
         } else {
-            error_messages.push(format!("Scene '{}': No background_image defined", story_state.current_scene));
+            self.add_scene_error(error_messages, &story_state.current_scene, "No background_image defined");
             None
         }
     }
@@ -370,7 +370,7 @@ impl GameWindow {
                             .padding(20)
                             .align_x(Center)
                     } else {
-                        error_messages.push(format!("Scene '{}': Character image file not found: {}", story_state.current_scene, char_path));
+                        self.add_scene_error(error_messages, &story_state.current_scene, &format!("Character image file not found: {}", char_path));
                         container(Space::with_width(Length::Fill))
                     }
                 }
@@ -388,17 +388,17 @@ impl GameWindow {
                                 .padding(20)
                                 .align_x(Center)
                         } else {
-                            error_messages.push(format!("Scene '{}': Character animation image file not found: {}", story_state.current_scene, char_path));
+                            self.add_scene_error(error_messages, &story_state.current_scene, &format!("Character animation image file not found: {}", char_path));
                             container(Space::with_width(Length::Fill))
                         }
                     } else {
-                        error_messages.push(format!("Scene '{}': Empty animation array for speaking_character_image", story_state.current_scene));
+                        self.add_scene_error(error_messages, &story_state.current_scene, "Empty animation array for speaking_character_image");
                         container(Space::with_width(Length::Fill))
                     }
                 }
             }
         } else {
-            error_messages.push(format!("Scene '{}': No speaking_character_image defined", story_state.current_scene));
+            self.add_scene_error(error_messages, &story_state.current_scene, "No speaking_character_image defined");
             container(Space::with_width(Length::Fill))
         };
 
@@ -431,13 +431,17 @@ impl GameWindow {
         })
     }
 
+    fn add_scene_error(&self, error_messages: &mut Vec<String>, scene_name: &str, message: &str) {
+        error_messages.push(format!("Scene '{}': {}", scene_name, message));
+    }
+
     fn validate_background_audio(&self, current_scene: &crate::crisis::CrisisScene, story_state: &crate::crisis::GameState, error_messages: &mut Vec<String>) {
         if let Some(ref audio_path) = current_scene.background_audio {
             if crate::crisis::PlayableCrises::get(audio_path).is_none() {
-                error_messages.push(format!("Scene '{}': Background audio file not found: {}", story_state.current_scene, audio_path));
+                self.add_scene_error(error_messages, &story_state.current_scene, &format!("Background audio file not found: {}", audio_path));
             }
         } else {
-            error_messages.push(format!("Scene '{}': No background_audio defined", story_state.current_scene));
+            self.add_scene_error(error_messages, &story_state.current_scene, "No background_audio defined");
         }
     }
 

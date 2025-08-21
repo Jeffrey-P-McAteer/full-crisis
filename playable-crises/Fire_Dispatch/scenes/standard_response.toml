@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/two_firetrucks_responding.png"
 speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+background_audio = "Fire_Dispatch/fire-truck-siren-sfx-336508.mp3"
 
 [text]
 eng = "You dispatch 2 fire trucks to the Riverside Apartments. 'Engine 12 and Truck 4, respond to structure fire, 6-story apartment building, third floor reported, multiple occupants.' The response launches within 90 seconds. This is protocol for apartment fires - sufficient for most situations but may be limited if conditions escalate."

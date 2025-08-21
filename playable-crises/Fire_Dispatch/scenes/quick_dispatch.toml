@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/firetruck_rushing_night.png"
 speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+background_audio = "Fire_Dispatch/fire-truck-siren-sfx-336508.mp3"
 
 [text]
 eng = "You immediately dispatch Engine 7 to the scene. 'Engine 7, respond to apartment fire, exact location unknown, caller disconnected.' As the truck races through the night, you realize you may have acted too quickly without gathering crucial details about the building layout, potential hazards, or number of people at risk."

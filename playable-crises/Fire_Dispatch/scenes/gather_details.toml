@@ -3,6 +3,7 @@ speaking_character_image = [
     "Fire_Dispatch/panicked_caller_character.png",
     "Fire_Dispatch/panicked_caller_character_2.png",
 ]
+background_audio = "Fire_Dispatch/fire-sound-effects-224089.mp3"
 
 [text]
 eng = "Caller: 'It's the Riverside Apartments on Oak Street! Third floor, but the smoke is getting thicker. I can see flames from the window!' You note this is a 6-story building with 48 units. Your database shows it's an older building without modern fire suppression systems."

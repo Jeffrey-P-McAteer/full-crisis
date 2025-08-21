@@ -131,6 +131,16 @@ fn run_crisis_tests(verbosity: u8) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+fn validate_file_exists(scene_name: &str, file_path: &str, file_type: &str) -> Option<String> {
+    use full_crisis::crisis::PlayableCrises;
+    
+    if PlayableCrises::get(file_path).is_none() {
+        Some(format!("Scene '{}': {} file not found: {}", scene_name, file_type, file_path))
+    } else {
+        None
+    }
+}
+
 fn validate_crisis(
     crisis: &full_crisis::crisis::CrisisDefinition, 
     folder_name: &str,
@@ -157,15 +167,15 @@ fn validate_crisis(
         
         // Check background image
         if let Some(bg_img) = &scene.background_image {
-            if PlayableCrises::get(bg_img).is_none() {
-                warnings.push(format!("Scene '{}': Background image file not found: {}", scene_name, bg_img));
+            if let Some(warning) = validate_file_exists(scene_name, bg_img, "Background image") {
+                warnings.push(warning);
             }
         }
         
         // Check background audio
         if let Some(bg_audio) = &scene.background_audio {
-            if PlayableCrises::get(bg_audio).is_none() {
-                warnings.push(format!("Scene '{}': Background audio file not found: {}", scene_name, bg_audio));
+            if let Some(warning) = validate_file_exists(scene_name, bg_audio, "Background audio") {
+                warnings.push(warning);
             }
         } else {
             warnings.push(format!("Scene '{}': No background_audio defined", scene_name));
@@ -175,8 +185,8 @@ fn validate_crisis(
         if let Some(char_img) = &scene.speaking_character_image {
             match char_img {
                 full_crisis::crisis::SpeakingCharacterImage::Single(img_path) => {
-                    if PlayableCrises::get(img_path).is_none() {
-                        warnings.push(format!("Scene '{}': Character image file not found: {}", scene_name, img_path));
+                    if let Some(warning) = validate_file_exists(scene_name, img_path, "Character image") {
+                        warnings.push(warning);
                     }
                 }
                 full_crisis::crisis::SpeakingCharacterImage::Animation(img_paths) => {
@@ -184,7 +194,7 @@ fn validate_crisis(
                         warnings.push(format!("Scene '{}': Empty animation array for speaking_character_image", scene_name));
                     } else {
                         for (i, img_path) in img_paths.iter().enumerate() {
-                            if PlayableCrises::get(img_path).is_none() {
+                            if let Some(_) = validate_file_exists(scene_name, img_path, &format!("Animation frame {}", i)) {
                                 warnings.push(format!("Scene '{}': Animation frame {} not found: {}", scene_name, i, img_path));
                             }
                         }
