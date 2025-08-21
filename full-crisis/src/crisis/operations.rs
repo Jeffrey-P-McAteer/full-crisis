@@ -373,6 +373,10 @@ fn parse_scene_from_toml_value(value: &toml::Value) -> Result<CrisisScene, Box<d
     let background_image = table.get("background_image")
         .and_then(|v| v.as_str())
         .map(|s| s.to_string());
+
+    let background_audio = table.get("background_audio")
+        .and_then(|v| v.as_str())
+        .map(|s| s.to_string());
     
     // Parse speaking_character_image with flexible handling
     let speaking_character_image = table.get("speaking_character_image")
@@ -400,7 +404,7 @@ fn parse_scene_from_toml_value(value: &toml::Value) -> Result<CrisisScene, Box<d
         continue_in_subfolder,
         background_image,
         speaking_character_image,
-        background_audio: None,
+        background_audio,
     })
 }
 
