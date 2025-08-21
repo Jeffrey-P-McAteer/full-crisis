@@ -90,6 +90,7 @@ pub enum GameMessage {
     
     Menu_SettingsRequested,
     Menu_SettingsGameCrisesFolderChanged(String),
+    Menu_SettingsOpenCrisesFolder,
     Menu_SettingsDifficultyLevelChanged(DifficultyLevel),
     Menu_SettingsAutosaveToggled(bool),
     Menu_SettingsLanguageChanged(String),

@@ -299,6 +299,23 @@ impl GameWindow {
             .padding(10)
             .width(Length::Fill);
 
+        // Create the save folder row with optional Open button
+        #[cfg(not(target_arch = "wasm32"))]
+        let save_folder_row = {
+            let open_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::OpenFolder, user_language)))
+                .on_press(GameMessage::Menu_SettingsOpenCrisesFolder)
+                .padding([10, 15]);
+
+            row![
+                Text::new(save_folder_label), 
+                save_folder_input,
+                open_button
+            ]
+            .spacing(10)
+            .align_y(Center)
+        };
+
+        #[cfg(target_arch = "wasm32")]
         let save_folder_row = row![
             Text::new(save_folder_label), 
             save_folder_input

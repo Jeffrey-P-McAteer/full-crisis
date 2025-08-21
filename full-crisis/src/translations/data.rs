@@ -269,6 +269,18 @@ pub fn get_builtin_translations() -> Vec<Translation> {
             .add_translation("kor", "이 폴더에는 플레이할 수 있는 추가 위기 게임이 저장됩니다.")
             .add_translation("zho", "此文件夹将包含可以玩的额外危机游戏。"),
         
+        Translation::new(TranslationKey::OpenFolder)
+            .add_translation("eng", "Open")
+            .add_translation("spa", "Abrir")
+            .add_translation("fra", "Ouvrir")
+            .add_translation("deu", "Öffnen")
+            .add_translation("ita", "Apri")
+            .add_translation("por", "Abrir")
+            .add_translation("rus", "Открыть")
+            .add_translation("jpn", "開く")
+            .add_translation("kor", "열기")
+            .add_translation("zho", "打开"),
+        
         Translation::new(TranslationKey::DifficultyLevel)
             .add_translation("eng", "Difficulty Level:")
             .add_translation("spa", "Nivel de Dificultad:")

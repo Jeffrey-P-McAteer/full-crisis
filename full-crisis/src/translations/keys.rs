@@ -30,6 +30,7 @@ pub enum TranslationKey {
     GameCrisesFolder,
     EnterCrisesFolderPath,
     CrisesFolderExplanation,
+    OpenFolder,
     DifficultyLevel,
     SelectDifficulty,
     Autosave,

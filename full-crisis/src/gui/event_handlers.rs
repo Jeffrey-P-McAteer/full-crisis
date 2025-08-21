@@ -149,6 +149,14 @@ impl GameWindow {
                 self.save_settings();
                 Task::none()
             }
+            GameMessage::Menu_SettingsOpenCrisesFolder => {
+                eprintln!("Settings: Open Crises Folder requested");
+                #[cfg(not(target_arch = "wasm32"))]
+                {
+                    Self::open_crises_folder(&self.settings_game_crises_folder);
+                }
+                Task::none()
+            }
             GameMessage::Menu_SettingsDifficultyLevelChanged(difficulty) => {
                 eprintln!("Settings: Difficulty Level changed to: {:?}", difficulty);
                 self.settings_difficulty_level = difficulty;
@@ -561,5 +569,37 @@ impl GameWindow {
                 }
             }
         });
+    }
+    
+    #[cfg(not(target_arch = "wasm32"))]
+    fn open_crises_folder(folder_path: &str) {
+        use std::path::Path;
+        use std::process::Command;
+        
+        let path = Path::new(folder_path);
+        
+        if !path.exists() {
+            // Try to create the directory
+            if let Err(e) = std::fs::create_dir_all(path) {
+                eprintln!("Failed to create crises folder '{}': {}", folder_path, e);
+                return;
+            }
+            eprintln!("Created crises folder: {}", folder_path);
+        }
+        
+        // Try to open the folder in the system file manager
+        let result = if cfg!(target_os = "windows") {
+            Command::new("explorer").arg(folder_path).spawn()
+        } else if cfg!(target_os = "macos") {
+            Command::new("open").arg(folder_path).spawn()
+        } else {
+            // Linux and other Unix-like systems
+            Command::new("xdg-open").arg(folder_path).spawn()
+        };
+        
+        match result {
+            Ok(_) => eprintln!("Opened crises folder: {}", folder_path),
+            Err(e) => eprintln!("Failed to open crises folder '{}': {}", folder_path, e),
+        }
     }
 }
