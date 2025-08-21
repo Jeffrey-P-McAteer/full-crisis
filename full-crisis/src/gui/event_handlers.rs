@@ -1,6 +1,9 @@
 use super::types::*;
 use iced::{Task, Element};
 
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
+
 impl GameWindow {
     pub fn update(&mut self, message: GameMessage) -> Task<GameMessage> {
         #[cfg(not(target_arch = "wasm32"))]
@@ -163,6 +166,9 @@ impl GameWindow {
                     story_state.current_scene = crisis.story.starting_scene.clone();
                     story_state.character_name = character_name;
                     
+                    // Load background audio for the starting scene
+                    self.load_scene_background_audio(&crisis, &crisis.story.starting_scene);
+                    
                     self.current_crisis = Some(crisis);
                     self.story_state = Some(story_state);
                     
@@ -188,6 +194,9 @@ impl GameWindow {
                 Ok(loaded_story_state) => {
                     match crate::crisis::load_crisis(&loaded_story_state.template_name) {
                         Ok(crisis) => {
+                            // Load background audio for the current scene
+                            self.load_scene_background_audio(&crisis, &loaded_story_state.current_scene);
+                            
                             self.current_crisis = Some(crisis);
                             self.story_state = Some(loaded_story_state);
                             
@@ -244,28 +253,50 @@ impl GameWindow {
     }
 
     fn handle_choice_selection(&mut self, choice_index: usize) -> Task<GameMessage> {
-        if let (Some(crisis), Some(story_state)) = (&self.current_crisis, &mut self.story_state) {
+        // Clone the needed data to avoid borrowing issues
+        let leads_to = if let (Some(crisis), Some(story_state)) = (&self.current_crisis, &self.story_state) {
             if let Some(current_scene) = crisis.scenes.get(&story_state.current_scene) {
                 if let Some(choice) = current_scene.choices.get(choice_index) {
-                    if let Some(ref choice_effects) = crisis.conditions.choice_effects {
-                        if let Some(effects) = choice_effects.get(&choice.leads_to) {
-                            for (var, value) in effects {
-                                *story_state.variables.entry(var.clone()).or_insert(0) += value;
+                    Some(choice.leads_to.clone())
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        
+        if let Some(leads_to) = leads_to {
+            if let (Some(crisis), Some(story_state)) = (&self.current_crisis, &mut self.story_state) {
+                if let Some(current_scene) = crisis.scenes.get(&story_state.current_scene) {
+                    if let Some(choice) = current_scene.choices.get(choice_index) {
+                        if let Some(ref choice_effects) = crisis.conditions.choice_effects {
+                            if let Some(effects) = choice_effects.get(&choice.leads_to) {
+                                for (var, value) in effects {
+                                    *story_state.variables.entry(var.clone()).or_insert(0) += value;
+                                }
                             }
                         }
-                    }
-                    
-                    story_state.current_scene = choice.leads_to.clone();
-                    
-                    if let Some(ref char_type) = choice.character_type {
-                        story_state.character_type = Some(char_type.clone());
-                        story_state.character_name = crate::crisis::get_random_character_name(
-                            crisis, 
-                            Some(char_type), 
-                            &story_state.language
-                        );
+                        
+                        story_state.current_scene = choice.leads_to.clone();
+                        
+                        if let Some(ref char_type) = choice.character_type {
+                            story_state.character_type = Some(char_type.clone());
+                            story_state.character_name = crate::crisis::get_random_character_name(
+                                crisis, 
+                                Some(char_type), 
+                                &story_state.language
+                            );
+                        }
                     }
                 }
+            }
+            
+            // Load background audio for the new scene after updating the state
+            if let Some(crisis) = self.current_crisis.clone() {
+                self.load_scene_background_audio(&crisis, &leads_to);
             }
         }
         Task::none()
@@ -392,5 +423,53 @@ impl GameWindow {
         self.new_game_selected_description = None;
         self.choice_text_inputs.clear();
         self.animation_frame_index = 0;
+        self.current_background_audio.clear(); // Stop any playing audio
+        self.update_web_audio_playback(); // Update web playback to stop audio
+    }
+    
+    fn load_scene_background_audio(&mut self, crisis: &crate::crisis::CrisisDefinition, scene_name: &str) {
+        if let Some(scene) = crisis.scenes.get(scene_name) {
+            if let Some(ref audio_path) = scene.background_audio {
+                if let Some(audio_file) = crate::crisis::PlayableCrises::get(audio_path) {
+                    self.current_background_audio = audio_file.data.as_ref().to_vec();
+                } else {
+                    // Audio file not found, clear current audio to stop playing
+                    self.current_background_audio.clear();
+                }
+            } else {
+                // No background audio defined, clear current audio to stop playing
+                self.current_background_audio.clear();
+            }
+        } else {
+            // Scene not found, clear current audio to stop playing
+            self.current_background_audio.clear();
+        }
+        
+        // Update web audio playback
+        self.update_web_audio_playback();
+    }
+    
+    #[cfg(target_arch = "wasm32")]
+    fn update_web_audio_playback(&self) {
+        // Use wasm_bindgen to call JavaScript audio functions
+        if self.current_background_audio.is_empty() {
+            // Use extern declaration from full-crisis-web crate
+            extern "C" {
+                #[wasm_bindgen::wasm_bindgen]
+                fn stop_background_audio();
+            }
+            stop_background_audio();
+        } else {
+            extern "C" {
+                #[wasm_bindgen::wasm_bindgen]
+                fn play_background_audio(bytes: &[u8]);
+            }
+            play_background_audio(&self.current_background_audio);
+        }
+    }
+    
+    #[cfg(not(target_arch = "wasm32"))]
+    fn update_web_audio_playback(&self) {
+        // No-op for non-web targets
     }
 }

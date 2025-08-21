@@ -36,6 +36,7 @@ impl GameWindow {
                 story_state: None,
                 choice_text_inputs: std::collections::HashMap::new(),
                 animation_frame_index: 0,
+                current_background_audio: Vec::new(),
             },
             Task::batch([
                 widget::focus_next(),

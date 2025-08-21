@@ -69,6 +69,7 @@ pub struct GameWindow {
     pub story_state: Option<crate::crisis::GameState>,
     pub choice_text_inputs: std::collections::HashMap<usize, String>, // Track text input values by choice index
     pub animation_frame_index: usize, // Current frame index for character animation
+    pub current_background_audio: Vec<u8>, // Current background audio data to play
 }
 
 #[derive(Debug, Clone)]
