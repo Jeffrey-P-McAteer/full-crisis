@@ -3,7 +3,7 @@ use crate::gui::types::*;
 impl GameWindow {
     pub fn save_settings(&self) {
         let settings = GameSettings {
-            game_save_folder: self.settings_game_save_folder.clone(),
+            game_crises_folder: self.settings_game_crises_folder.clone(),
             difficulty_level: self.settings_difficulty_level,
             autosave: self.settings_autosave,
             language: self.settings_language.clone(),

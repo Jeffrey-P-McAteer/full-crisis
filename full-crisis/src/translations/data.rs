@@ -233,29 +233,41 @@ pub fn get_builtin_translations() -> Vec<Translation> {
             .add_translation("zho", "取消"),
         
         // Settings UI
-        Translation::new(TranslationKey::GameSaveFolder)
-            .add_translation("eng", "Game Save Folder:")
-            .add_translation("spa", "Carpeta de Guardado:")
-            .add_translation("fra", "Dossier de Sauvegarde:")
-            .add_translation("deu", "Speicher-Ordner:")
-            .add_translation("ita", "Cartella Salvataggi:")
-            .add_translation("por", "Pasta de Salvamento:")
-            .add_translation("rus", "Папка Сохранений:")
-            .add_translation("jpn", "セーブフォルダ:")
-            .add_translation("kor", "저장 폴더:")
-            .add_translation("zho", "游戏存档文件夹:"),
+        Translation::new(TranslationKey::GameCrisesFolder)
+            .add_translation("eng", "Crises Folder:")
+            .add_translation("spa", "Carpeta de Crisis:")
+            .add_translation("fra", "Dossier de Crises:")
+            .add_translation("deu", "Krisen-Ordner:")
+            .add_translation("ita", "Cartella Crisi:")
+            .add_translation("por", "Pasta de Crises:")
+            .add_translation("rus", "Папка Кризисов:")
+            .add_translation("jpn", "クライシスフォルダ:")
+            .add_translation("kor", "위기 폴더:")
+            .add_translation("zho", "危机文件夹:"),
         
-        Translation::new(TranslationKey::EnterSaveFolderPath)
-            .add_translation("eng", "Enter save folder path...")
-            .add_translation("spa", "Ingresa ruta de carpeta...")
-            .add_translation("fra", "Entrez le chemin du dossier...")
-            .add_translation("deu", "Ordnerpfad eingeben...")
-            .add_translation("ita", "Inserisci percorso cartella...")
-            .add_translation("por", "Digite o caminho da pasta...")
-            .add_translation("rus", "Введите путь к папке...")
-            .add_translation("jpn", "フォルダパスを入力...")
-            .add_translation("kor", "폴더 경로 입력...")
-            .add_translation("zho", "输入文件夹路径..."),
+        Translation::new(TranslationKey::EnterCrisesFolderPath)
+            .add_translation("eng", "Enter crises folder path...")
+            .add_translation("spa", "Ingresa ruta de carpeta de crisis...")
+            .add_translation("fra", "Entrez le chemin du dossier de crises...")
+            .add_translation("deu", "Krisen-Ordnerpfad eingeben...")
+            .add_translation("ita", "Inserisci percorso cartella crisi...")
+            .add_translation("por", "Digite o caminho da pasta de crises...")
+            .add_translation("rus", "Введите путь к папке кризисов...")
+            .add_translation("jpn", "クライシスフォルダパスを入力...")
+            .add_translation("kor", "위기 폴더 경로 입력...")
+            .add_translation("zho", "输入危机文件夹路径..."),
+        
+        Translation::new(TranslationKey::CrisesFolderExplanation)
+            .add_translation("eng", "This folder will hold additional Crisis games which can be played.")
+            .add_translation("spa", "Esta carpeta contendrá juegos de Crisis adicionales que se pueden jugar.")
+            .add_translation("fra", "Ce dossier contiendra des jeux de Crise supplémentaires qui peuvent être joués.")
+            .add_translation("deu", "Dieser Ordner wird zusätzliche Krisen-Spiele enthalten, die gespielt werden können.")
+            .add_translation("ita", "Questa cartella conterrà giochi di Crisi aggiuntivi che possono essere giocati.")
+            .add_translation("por", "Esta pasta conterá jogos de Crise adicionais que podem ser jogados.")
+            .add_translation("rus", "Эта папка будет содержать дополнительные игры Кризисов, в которые можно играть.")
+            .add_translation("jpn", "このフォルダには、プレイできる追加のクライシスゲームが格納されます。")
+            .add_translation("kor", "이 폴더에는 플레이할 수 있는 추가 위기 게임이 저장됩니다.")
+            .add_translation("zho", "此文件夹将包含可以玩的额外危机游戏。"),
         
         Translation::new(TranslationKey::DifficultyLevel)
             .add_translation("eng", "Difficulty Level:")

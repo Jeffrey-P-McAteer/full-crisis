@@ -283,8 +283,8 @@ impl GameWindow {
         let user_language = &self.settings_language;
         
         // Pre-translate all strings to avoid lifetime issues
-        let save_folder_placeholder = crate::translations::t(crate::translations::TranslationKey::EnterSaveFolderPath, user_language);
-        let save_folder_label = crate::translations::t(crate::translations::TranslationKey::GameSaveFolder, user_language);
+        let save_folder_placeholder = crate::translations::t(crate::translations::TranslationKey::EnterCrisesFolderPath, user_language);
+        let save_folder_label = crate::translations::t(crate::translations::TranslationKey::GameCrisesFolder, user_language);
         let difficulty_label = crate::translations::t(crate::translations::TranslationKey::DifficultyLevel, user_language);
         let difficulty_placeholder = crate::translations::t(crate::translations::TranslationKey::SelectDifficulty, user_language);
         let autosave_label = crate::translations::t(crate::translations::TranslationKey::Autosave, user_language);
@@ -293,9 +293,9 @@ impl GameWindow {
         
         let save_folder_input = text_input(
             &save_folder_placeholder, 
-            &self.settings_game_save_folder
+            &self.settings_game_crises_folder
         )
-            .on_input(GameMessage::Menu_SettingsGameSaveFolderChanged)
+            .on_input(GameMessage::Menu_SettingsGameCrisesFolderChanged)
             .padding(10)
             .width(Length::Fill);
 
@@ -305,6 +305,10 @@ impl GameWindow {
         ]
         .spacing(10)
         .align_y(Center);
+
+        let crises_folder_explanation = Text::new(crate::translations::t(crate::translations::TranslationKey::CrisesFolderExplanation, user_language))
+            .size(12)
+            .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
 
         // Create difficulty options with translations
         let difficulty_options: Vec<String> = DifficultyLevel::ALL.iter()
@@ -377,6 +381,7 @@ impl GameWindow {
             .spacing(20)
             .padding(20)
             .push(save_folder_row)
+            .push(crises_folder_explanation)
             .push(difficulty_row)
             .push(autosave_row)
             .push(language_row)

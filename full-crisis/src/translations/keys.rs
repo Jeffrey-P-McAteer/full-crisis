@@ -27,8 +27,9 @@ pub enum TranslationKey {
     Cancel,
     
     // Settings UI
-    GameSaveFolder,
-    EnterSaveFolderPath,
+    GameCrisesFolder,
+    EnterCrisesFolderPath,
+    CrisesFolderExplanation,
     DifficultyLevel,
     SelectDifficulty,
     Autosave,

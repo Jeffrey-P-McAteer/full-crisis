@@ -28,7 +28,7 @@ impl GameWindow {
                 new_game_selected_description: None,
                 continue_game_game_choice: None,
                 continue_game_delete_confirmation: None,
-                settings_game_save_folder: loaded_settings.game_save_folder,
+                settings_game_crises_folder: loaded_settings.game_crises_folder,
                 settings_difficulty_level: loaded_settings.difficulty_level,
                 settings_autosave: loaded_settings.autosave,
                 settings_language: loaded_settings.language,

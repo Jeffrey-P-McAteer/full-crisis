@@ -143,9 +143,9 @@ impl GameWindow {
                 }
                 Task::none()
             }
-            GameMessage::Menu_SettingsGameSaveFolderChanged(folder_path) => {
-                eprintln!("Settings: Game Save Folder changed to: {}", folder_path);
-                self.settings_game_save_folder = folder_path;
+            GameMessage::Menu_SettingsGameCrisesFolderChanged(folder_path) => {
+                eprintln!("Settings: Game Crises Folder changed to: {}", folder_path);
+                self.settings_game_crises_folder = folder_path;
                 self.save_settings();
                 Task::none()
             }

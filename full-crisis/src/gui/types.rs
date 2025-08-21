@@ -34,7 +34,7 @@ impl DifficultyLevel {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameSettings {
-    pub game_save_folder: String,
+    pub game_crises_folder: String,
     pub difficulty_level: DifficultyLevel,
     pub autosave: bool,
     pub language: String,
@@ -44,7 +44,7 @@ pub struct GameSettings {
 impl Default for GameSettings {
     fn default() -> Self {
         Self {
-            game_save_folder: String::from("./saves"),
+            game_crises_folder: String::from("./crises"),
             difficulty_level: DifficultyLevel::Medium,
             autosave: true,
             language: crate::language::detect_system_language(),
@@ -61,7 +61,7 @@ pub struct GameWindow {
     pub new_game_selected_description: Option<String>,
     pub continue_game_game_choice: Option<String>,
     pub continue_game_delete_confirmation: Option<String>,
-    pub settings_game_save_folder: String,
+    pub settings_game_crises_folder: String,
     pub settings_difficulty_level: DifficultyLevel,
     pub settings_autosave: bool,
     pub settings_language: String,
@@ -89,7 +89,7 @@ pub enum GameMessage {
     Menu_ContinueGameDeleteConfirmed(String),
     
     Menu_SettingsRequested,
-    Menu_SettingsGameSaveFolderChanged(String),
+    Menu_SettingsGameCrisesFolderChanged(String),
     Menu_SettingsDifficultyLevelChanged(DifficultyLevel),
     Menu_SettingsAutosaveToggled(bool),
     Menu_SettingsLanguageChanged(String),
