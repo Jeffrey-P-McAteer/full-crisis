@@ -4,6 +4,67 @@ use iced::{Task, Element};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
+#[cfg(not(target_arch = "wasm32"))]
+use rodio::{Decoder, OutputStream, OutputStreamBuilder, Sink, Source};
+
+#[cfg(not(target_arch = "wasm32"))]
+#[derive(Default)]
+struct DesktopAudioState {
+    _stream: Option<OutputStream>,
+    sink: Option<Sink>,
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+impl DesktopAudioState {
+    fn stop_audio(&mut self) {
+        if let Some(sink) = &self.sink {
+            sink.stop();
+        }
+        self.sink = None;
+    }
+    
+    fn play_audio(&mut self, audio_data: Vec<u8>) {
+        use std::io::Cursor;
+        
+        // Stop any currently playing audio
+        self.stop_audio();
+        
+        // Initialize audio output if needed
+        if self._stream.is_none() {
+            match OutputStreamBuilder::open_default_stream() {
+                Ok(stream) => {
+                    self._stream = Some(stream);
+                }
+                Err(e) => {
+                    eprintln!("Failed to initialize audio output: {}", e);
+                    return;
+                }
+            }
+        }
+        
+        if let Some(stream) = &self._stream {
+            // Create cursor from audio data
+            let cursor = Cursor::new(audio_data);
+            
+            // Decode the audio
+            match Decoder::new(cursor) {
+                Ok(source) => {
+                    // Create a new sink for this audio
+                    let sink = Sink::connect_new(&stream.mixer());
+                    
+                    // Add the source to the sink with infinite looping
+                    sink.append(source.repeat_infinite());
+                    sink.play();
+                    self.sink = Some(sink);
+                }
+                Err(e) => {
+                    eprintln!("Failed to decode audio data: {}", e);
+                }
+            }
+        }
+    }
+}
+
 impl GameWindow {
     pub fn update(&mut self, message: GameMessage) -> Task<GameMessage> {
         #[cfg(not(target_arch = "wasm32"))]
@@ -470,6 +531,31 @@ impl GameWindow {
     
     #[cfg(not(target_arch = "wasm32"))]
     fn update_web_audio_playback(&self) {
-        // No-op for non-web targets
+        self.update_desktop_audio_playback();
+    }
+    
+    #[cfg(not(target_arch = "wasm32"))]
+    fn update_desktop_audio_playback(&self) {
+        use std::io::Cursor;
+        use std::sync::{Arc, Mutex};
+        use std::thread;
+        
+        static DESKTOP_AUDIO_STATE: once_cell::sync::Lazy<Arc<Mutex<DesktopAudioState>>> = 
+            once_cell::sync::Lazy::new(|| Arc::new(Mutex::new(DesktopAudioState::default())));
+        
+        let audio_state = DESKTOP_AUDIO_STATE.clone();
+        let current_audio = self.current_background_audio.clone();
+        
+        thread::spawn(move || {
+            let mut state = audio_state.lock().unwrap();
+            
+            if current_audio.is_empty() {
+                // Stop current audio playback
+                state.stop_audio();
+            } else {
+                // Start new audio playback
+                state.play_audio(current_audio);
+            }
+        });
     }
 }

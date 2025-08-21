@@ -53,4 +53,5 @@ web-sys = { version = "0.3", features = ["console", "Navigator", "Window", "Loca
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 directories = { version = "5.0" }
 sys-locale = "0.3"
+rodio = { version = "0.21", features = ["minimp3", "wav"] }
 
