@@ -27,14 +27,14 @@ impl GameWindow {
                     _ => {
                         Container::<GameMessage, Theme, iced::Renderer>::new(text(
                             crate::translations::t(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
-                        ))
+                        ).size(22))
                     }
                 }
             }
             else {
                 Container::<GameMessage, Theme, iced::Renderer>::new(text(
                     crate::translations::t(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
-                ))
+                ).size(22))
             }
         }
         else {
@@ -58,18 +58,18 @@ impl GameWindow {
         .width(Length::Fill);
 
         let game_type_row = row![
-            Text::new(crate::translations::t(crate::translations::TranslationKey::SavedGame, user_language)), 
+            Text::new(crate::translations::t(crate::translations::TranslationKey::SavedGame, user_language)).size(22), 
             game_type_picker,
         ]
             .spacing(10)
             .align_y(Center);
 
-        let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Play, user_language)))
+        let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Play, user_language)).size(22))
             .on_press(GameMessage::Menu_ContinueGameStartClicked)
             .padding(10);
 
         let delete_button = if self.continue_game_game_choice.is_some() {
-            button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)))
+            button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)).size(22))
                 .on_press(GameMessage::Menu_ContinueGameDeleteRequested(
                     self.continue_game_game_choice.clone().unwrap_or_default()
                 ))
@@ -88,7 +88,7 @@ impl GameWindow {
                     }
                 })
         } else {
-            button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)))
+            button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)).size(22))
                 .padding(10)
                 .style(move |theme: &Theme, _status| {
                     let palette = theme.extended_palette();
@@ -114,12 +114,12 @@ impl GameWindow {
 
         // Add confirmation dialog if delete is requested
         if let Some(ref game_name) = self.continue_game_delete_confirmation {
-            let confirmation_text = Text::new(crate::translations::t(crate::translations::TranslationKey::DeleteGame, user_language));
+            let confirmation_text = Text::new(crate::translations::t(crate::translations::TranslationKey::DeleteGame, user_language)).size(22);
             let game_info_text = Text::new(format!("\"{}\"", game_name))
-                .size(16)
+                .size(22)
                 .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
             
-            let confirm_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::ConfirmDelete, user_language)))
+            let confirm_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::ConfirmDelete, user_language)).size(22))
                 .on_press(GameMessage::Menu_ContinueGameDeleteConfirmed(game_name.clone()))
                 .padding(10)
                 .style(move |theme: &Theme, status| {
@@ -136,7 +136,7 @@ impl GameWindow {
                     }
                 });
             
-            let cancel_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Cancel, user_language)))
+            let cancel_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Cancel, user_language)).size(22))
                 .on_press(GameMessage::Menu_ContinueGameDeleteRequested("".to_string())) // Cancel by clearing
                 .padding(10);
             
@@ -195,7 +195,7 @@ impl GameWindow {
             .width(Length::Fill);
 
         let name_row = row![
-                Text::new(crate::translations::t(crate::translations::TranslationKey::PlayerName, user_language)), 
+                Text::new(crate::translations::t(crate::translations::TranslationKey::PlayerName, user_language)).size(22), 
                 name_input
             ]
             .spacing(10)
@@ -223,13 +223,13 @@ impl GameWindow {
         .width(Length::Fill);
 
         let game_type_row = row![
-            Text::new(crate::translations::t(crate::translations::TranslationKey::GameType, user_language)), 
+            Text::new(crate::translations::t(crate::translations::TranslationKey::GameType, user_language)).size(22), 
             game_type_picker,
         ]
             .spacing(10)
             .align_y(Center);
 
-        let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Go, user_language)))
+        let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Go, user_language)).size(22))
             .on_press(GameMessage::Menu_NewGameStartClicked)
             .padding(10);
 
@@ -242,7 +242,7 @@ impl GameWindow {
         // Add description area if a crisis is selected
         if let Some(ref description) = self.new_game_selected_description {
             let description_text = Text::new(description)
-                .size(14)
+                .size(22)
                 .wrapping(iced::widget::text::Wrapping::Word)
                 .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
             
@@ -302,12 +302,12 @@ impl GameWindow {
         // Create the save folder row with optional Open button
         #[cfg(not(target_arch = "wasm32"))]
         let save_folder_row = {
-            let open_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::OpenFolder, user_language)))
+            let open_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::OpenFolder, user_language)).size(22))
                 .on_press(GameMessage::Menu_SettingsOpenCrisesFolder)
                 .padding([10, 15]);
 
             row![
-                Text::new(save_folder_label), 
+                Text::new(save_folder_label).size(22), 
                 save_folder_input,
                 open_button
             ]
@@ -324,7 +324,7 @@ impl GameWindow {
         .align_y(Center);
 
         let crises_folder_explanation = Text::new(crate::translations::t(crate::translations::TranslationKey::CrisesFolderExplanation, user_language))
-            .size(12)
+            .size(16)
             .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
 
         // Create difficulty options with translations
@@ -351,7 +351,7 @@ impl GameWindow {
         .width(Length::Fill);
 
         let difficulty_row = row![
-            Text::new(difficulty_label), 
+            Text::new(difficulty_label).size(22), 
             difficulty_picker,
         ]
         .spacing(10)
@@ -362,7 +362,7 @@ impl GameWindow {
             .width(Length::Shrink);
 
         let autosave_row = row![
-            Text::new(autosave_label), 
+            Text::new(autosave_label).size(22), 
             autosave_toggle,
         ]
         .spacing(10)
@@ -388,7 +388,7 @@ impl GameWindow {
         .width(Length::Fill);
 
         let language_row = row![
-            Text::new(language_label), 
+            Text::new(language_label).size(22), 
             language_picker,
         ]
         .spacing(10)
@@ -419,14 +419,14 @@ impl GameWindow {
                 });
                 
             let storage_row = row![
-                Text::new(storage_path_label),
+                Text::new(storage_path_label).size(22),
                 storage_path_input,
             ]
             .spacing(10)
             .align_y(Center);
             
             let storage_explanation = Text::new(crate::translations::t(crate::translations::TranslationKey::SettingsStorageExplanation, user_language))
-                .size(12)
+                .size(16)
                 .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
                 
             (storage_row, storage_explanation)
@@ -464,7 +464,7 @@ impl GameWindow {
     pub fn build_licenses_ui(&self) -> Container<'_, GameMessage> {
         
         let license_content = text(Self::get_license_content())
-            .size(14)
+            .size(22)
             .wrapping(iced::widget::text::Wrapping::Word);
         
         let scrollable_content = iced::widget::Scrollable::new(

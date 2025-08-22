@@ -22,22 +22,22 @@ impl GameWindow {
         let user_language = &self.settings_language;
         
         let buttons = column![
-            button(text(crate::translations::t(crate::translations::TranslationKey::ContinueGame, user_language)))
+            button(text(crate::translations::t(crate::translations::TranslationKey::ContinueGame, user_language)).size(22))
                 .on_press(GameMessage::Menu_ContinueGameRequested)
                 .width(Length::Fill),
-            button(text(crate::translations::t(crate::translations::TranslationKey::NewGame, user_language)))
+            button(text(crate::translations::t(crate::translations::TranslationKey::NewGame, user_language)).size(22))
                 .on_press(GameMessage::Menu_NewGameRequested)
                 .width(Length::Fill),
-            button(text(crate::translations::t(crate::translations::TranslationKey::Settings, user_language)))
+            button(text(crate::translations::t(crate::translations::TranslationKey::Settings, user_language)).size(22))
                 .on_press(GameMessage::Menu_SettingsRequested)
                 .width(Length::Fill),
-            button(text(crate::translations::t(crate::translations::TranslationKey::Licenses, user_language)))
+            button(text(crate::translations::t(crate::translations::TranslationKey::Licenses, user_language)).size(22))
                 .on_press(GameMessage::Menu_LicensesRequested)
                 .width(Length::Fill),
-            button(text(crate::translations::t(crate::translations::TranslationKey::QuitGame, user_language)))
+            button(text(crate::translations::t(crate::translations::TranslationKey::QuitGame, user_language)).size(22))
                 .on_press(GameMessage::QuitGameRequested)
                 .width(Length::Fill),
-            text(format!("Version {}", app_version))
+            text(format!("Version {}", app_version)).size(16)
                 .width(Length::Fill),
         ]
         .spacing(10)
