@@ -11,8 +11,8 @@ impl GameWindow {
         } else {
             container(
                 column![
-                    text(crate::translations::t(crate::translations::TranslationKey::LoadingCrisis, &self.settings_language)).size(28),
-                    button(text(crate::translations::t(crate::translations::TranslationKey::ReturnToMenu, &self.settings_language)).size(22))
+                    text(crate::translations::t(crate::translations::TranslationKey::LoadingCrisis, &self.settings_language)).size(self.font_size_large()),
+                    button(text(crate::translations::t(crate::translations::TranslationKey::ReturnToMenu, &self.settings_language)).size(self.font_size_base()))
                         .on_press(GameMessage::Game_RestartRequested)
                         .padding(10)
                 ]
@@ -129,7 +129,7 @@ impl GameWindow {
         let character_info = text(
             crate::translations::t_vars(crate::translations::TranslationKey::PlayingAs, &story_state.language, &vars)
         )
-            .size(22)
+            .size(self.font_size_base())
             .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
         
         let variables_text = if !story_state.variables.is_empty() {
@@ -144,12 +144,12 @@ impl GameWindow {
             container(control_buttons).align_x(iced::alignment::Horizontal::Left),
             container(
                 column![
-                    text(title.clone()).size(28).align_x(Center),
+                    text(title.clone()).size(self.font_size_large()).align_x(Center),
                     character_info.align_x(Center),
                     if !variables_text.is_empty() {
-                        text(variables_text.clone()).size(16).color(iced::Color::from_rgb(0.5, 0.5, 0.5))
+                        text(variables_text.clone()).size(self.font_size_small()).color(iced::Color::from_rgb(0.5, 0.5, 0.5))
                     } else {
-                        text("").size(22)
+                        text("").size(self.font_size_base())
                     }
                 ]
                 .spacing(5)
@@ -167,7 +167,7 @@ impl GameWindow {
 
     fn create_control_buttons(&self, story_state: &crate::crisis::GameState) -> iced::widget::Row<GameMessage, Theme, iced::Renderer> {
         let save_button = button(
-                text(crate::translations::t(crate::translations::TranslationKey::SaveAndQuit, &story_state.language)).size(22)
+                text(crate::translations::t(crate::translations::TranslationKey::SaveAndQuit, &story_state.language)).size(self.font_size_base())
                     .align_x(Center)
             )
             .on_press(GameMessage::Game_SaveAndQuitRequested)
@@ -175,7 +175,7 @@ impl GameWindow {
             .width(Length::Fixed(140.0));
             
         let quit_button = button(
-                text(crate::translations::t(crate::translations::TranslationKey::Quit, &story_state.language)).size(22)
+                text(crate::translations::t(crate::translations::TranslationKey::Quit, &story_state.language)).size(self.font_size_base())
                     .align_x(Center)
             )
             .on_press(GameMessage::Game_QuitWithoutSaveRequested)
@@ -205,7 +205,7 @@ impl GameWindow {
         let story_text_display = container(
             container(
                 text(scene_text.clone())
-                    .size(22)
+                    .size(self.font_size_base())
                     .wrapping(iced::widget::text::Wrapping::Word)
             )
             .padding(20)
@@ -241,8 +241,8 @@ impl GameWindow {
         if current_scene.choices.is_empty() {
             choices_column = choices_column.push(
                 column![
-                    text(crate::translations::t(crate::translations::TranslationKey::End, &story_state.language)).size(28),
-                    button(text(crate::translations::t(crate::translations::TranslationKey::ReturnToMenu, &story_state.language)).size(22))
+                    text(crate::translations::t(crate::translations::TranslationKey::End, &story_state.language)).size(self.font_size_large()),
+                    button(text(crate::translations::t(crate::translations::TranslationKey::ReturnToMenu, &story_state.language)).size(self.font_size_base()))
                         .on_press(GameMessage::Game_RestartRequested)
                         .padding(10)
                         .width(Length::Fill)
@@ -252,7 +252,7 @@ impl GameWindow {
         } else {
             choices_column = choices_column.push(
                 text(crate::translations::t(crate::translations::TranslationKey::WhatDoYouChoose, &story_state.language))
-                    .size(22)
+                    .size(self.font_size_base())
             );
             
             for (index, choice) in current_scene.choices.iter().enumerate() {
@@ -309,12 +309,12 @@ impl GameWindow {
             .width(Length::Fill);
         
         let submit_button = if available && !input_value.is_empty() {
-            button(text(choice_text.clone()).size(22))
+            button(text(choice_text.clone()).size(self.font_size_base()))
                 .on_press(GameMessage::Game_TextInputSubmitted(index, input_value.clone()))
                 .padding(10)
                 .width(Length::Fixed(120.0))
         } else {
-            button(text(choice_text.clone()).size(22))
+            button(text(choice_text.clone()).size(self.font_size_base()))
                 .padding(10)
                 .width(Length::Fixed(120.0))
                 .style(self.create_disabled_button_style())
@@ -328,7 +328,7 @@ impl GameWindow {
 
     fn create_regular_choice_button(&self, choice_text: String, index: usize, available: bool, story_state: &crate::crisis::GameState) -> iced::Element<'_, GameMessage> {
         if available {
-            button(text(choice_text.clone()).size(22))
+            button(text(choice_text.clone()).size(self.font_size_base()))
                 .on_press(GameMessage::Game_ChoiceSelected(index))
                 .padding(10)
                 .width(Length::Fill)
@@ -414,7 +414,7 @@ impl GameWindow {
         let error_text = error_messages.join("; ");
         container(
             text(format!("Media Loading Errors: {}", error_text))
-                .size(16)
+                .size(self.font_size_small())
                 .color(iced::Color::from_rgb(0.8, 0.2, 0.2))
                 .wrapping(iced::widget::text::Wrapping::Word)
         )
@@ -452,7 +452,7 @@ impl GameWindow {
                     crate::translations::t(crate::translations::TranslationKey::SceneNotFound, &story_state.language).replace("!", ""),
                     story_state.current_scene,
                     "!"
-                )).size(28),
+                )).size(self.font_size_large()),
                 button(text(crate::translations::t(crate::translations::TranslationKey::ReturnToMenu, &story_state.language)))
                     .on_press(GameMessage::Game_RestartRequested)
                     .padding(10)

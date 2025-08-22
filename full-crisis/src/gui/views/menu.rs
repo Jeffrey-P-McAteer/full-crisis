@@ -22,22 +22,22 @@ impl GameWindow {
         let user_language = &self.settings_language;
         
         let buttons = column![
-            button(text(crate::translations::t(crate::translations::TranslationKey::ContinueGame, user_language)).size(22))
+            button(text(crate::translations::t(crate::translations::TranslationKey::ContinueGame, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_ContinueGameRequested)
                 .width(Length::Fill),
-            button(text(crate::translations::t(crate::translations::TranslationKey::NewGame, user_language)).size(22))
+            button(text(crate::translations::t(crate::translations::TranslationKey::NewGame, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_NewGameRequested)
                 .width(Length::Fill),
-            button(text(crate::translations::t(crate::translations::TranslationKey::Settings, user_language)).size(22))
+            button(text(crate::translations::t(crate::translations::TranslationKey::Settings, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_SettingsRequested)
                 .width(Length::Fill),
-            button(text(crate::translations::t(crate::translations::TranslationKey::Licenses, user_language)).size(22))
+            button(text(crate::translations::t(crate::translations::TranslationKey::Licenses, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_LicensesRequested)
                 .width(Length::Fill),
-            button(text(crate::translations::t(crate::translations::TranslationKey::QuitGame, user_language)).size(22))
+            button(text(crate::translations::t(crate::translations::TranslationKey::QuitGame, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::QuitGameRequested)
                 .width(Length::Fill),
-            text(format!("Version {}", app_version)).size(16)
+            text(format!("Version {}", app_version)).size(self.font_size_small())
                 .width(Length::Fill),
         ]
         .spacing(10)

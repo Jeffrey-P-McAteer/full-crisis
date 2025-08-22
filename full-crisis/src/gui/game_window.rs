@@ -32,6 +32,7 @@ impl GameWindow {
                 settings_difficulty_level: loaded_settings.difficulty_level,
                 settings_autosave: loaded_settings.autosave,
                 settings_language: loaded_settings.language,
+                settings_font_scale: loaded_settings.font_scale,
                 current_crisis: None,
                 story_state: None,
                 choice_text_inputs: std::collections::HashMap::new(),
@@ -108,5 +109,24 @@ impl GameWindow {
         } else {
             "Unable to get project directories".to_string()
         }
+    }
+    
+    // Font scaling helper functions
+    pub fn scaled_font_size(&self, base_size: f32) -> f32 {
+        let scaled = base_size * self.settings_font_scale;
+        // Ensure minimum readable size and maximum reasonable size
+        scaled.max(8.0).min(200.0)
+    }
+    
+    pub fn font_size_small(&self) -> f32 {
+        self.scaled_font_size(16.0)
+    }
+    
+    pub fn font_size_base(&self) -> f32 {
+        self.scaled_font_size(22.0)
+    }
+    
+    pub fn font_size_large(&self) -> f32 {
+        self.scaled_font_size(28.0)
     }
 }

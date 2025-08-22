@@ -365,6 +365,30 @@ pub fn get_builtin_translations() -> Vec<Translation> {
             .add_translation("kor", "언어 선택")
             .add_translation("zho", "选择语言"),
         
+        Translation::new(TranslationKey::FontScale)
+            .add_translation("eng", "Font Scale:")
+            .add_translation("spa", "Escala de Fuente:")
+            .add_translation("fra", "Échelle de Police:")
+            .add_translation("deu", "Schriftgröße:")
+            .add_translation("ita", "Scala Font:")
+            .add_translation("por", "Escala da Fonte:")
+            .add_translation("rus", "Масштаб Шрифта:")
+            .add_translation("jpn", "フォントスケール:")
+            .add_translation("kor", "글꼴 크기:")
+            .add_translation("zho", "字体大小:"),
+        
+        Translation::new(TranslationKey::FontScaleExplanation)
+            .add_translation("eng", "Adjust the size of text throughout the application (0.1x - 10.0x)")
+            .add_translation("spa", "Ajustar el tamaño del texto en toda la aplicación (0.1x - 10.0x)")
+            .add_translation("fra", "Ajuster la taille du texte dans toute l'application (0.1x - 10.0x)")
+            .add_translation("deu", "Textgröße in der gesamten Anwendung anpassen (0.1x - 10.0x)")
+            .add_translation("ita", "Regola la dimensione del testo in tutta l'applicazione (0.1x - 10.0x)")
+            .add_translation("por", "Ajustar o tamanho do texto em toda a aplicação (0.1x - 10.0x)")
+            .add_translation("rus", "Настройка размера текста во всем приложении (0.1x - 10.0x)")
+            .add_translation("jpn", "アプリケーション全体のテキストサイズを調整 (0.1x - 10.0x)")
+            .add_translation("kor", "애플리케이션 전체 텍스트 크기 조정 (0.1x - 10.0x)")
+            .add_translation("zho", "调整整个应用程序的文本大小 (0.1x - 10.0x)"),
+        
         // Game Interface
         Translation::new(TranslationKey::WhatDoYouChoose)
             .add_translation("eng", "What do you choose?")

@@ -39,6 +39,7 @@ pub struct GameSettings {
     pub autosave: bool,
     pub language: String,
     pub last_username: String,
+    pub font_scale: f32,
 }
 
 impl Default for GameSettings {
@@ -49,6 +50,7 @@ impl Default for GameSettings {
             autosave: true,
             language: crate::language::detect_system_language(),
             last_username: String::new(),
+            font_scale: 1.0,
         }
     }
 }
@@ -65,6 +67,7 @@ pub struct GameWindow {
     pub settings_difficulty_level: DifficultyLevel,
     pub settings_autosave: bool,
     pub settings_language: String,
+    pub settings_font_scale: f32,
     pub current_crisis: Option<crate::crisis::CrisisDefinition>,
     pub story_state: Option<crate::crisis::GameState>,
     pub choice_text_inputs: std::collections::HashMap<usize, String>, // Track text input values by choice index
@@ -94,6 +97,7 @@ pub enum GameMessage {
     Menu_SettingsDifficultyLevelChanged(DifficultyLevel),
     Menu_SettingsAutosaveToggled(bool),
     Menu_SettingsLanguageChanged(String),
+    Menu_SettingsFontScaleChanged(f32),
     
     Menu_LicensesRequested,
     QuitGameRequested,

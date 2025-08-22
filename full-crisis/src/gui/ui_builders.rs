@@ -1,11 +1,11 @@
 use crate::gui::types::*;
 use iced::widget::{
-    Button, Container, Text, button, center_x, column, pick_list, row, text, text_input, toggler,
+    Button, Container, Text, button, center_x, column, pick_list, row, text, text_input, toggler, slider, scrollable,
 };
 use iced::{Center, Element, Length, Left, Theme};
 
-pub const MAIN_MENU_RIGHT_WIDTH_PX: f32 = 720.0;
-pub const MAIN_MENU_HEIGHT_PX: f32 = 460.0;
+pub const MAIN_MENU_RIGHT_WIDTH_PX: f32 = 840.0;
+pub const MAIN_MENU_HEIGHT_PX: f32 = 580.0;
 
 impl GameWindow {
     pub fn build_menu_screen_right_ui(&self) -> Container<'_, GameMessage> {
@@ -27,14 +27,14 @@ impl GameWindow {
                     _ => {
                         Container::<GameMessage, Theme, iced::Renderer>::new(text(
                             crate::translations::t(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
-                        ).size(22))
+                        ).size(self.font_size_base()))
                     }
                 }
             }
             else {
                 Container::<GameMessage, Theme, iced::Renderer>::new(text(
                     crate::translations::t(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
-                ).size(22))
+                ).size(self.font_size_base()))
             }
         }
         else {
@@ -58,18 +58,18 @@ impl GameWindow {
         .width(Length::Fill);
 
         let game_type_row = row![
-            Text::new(crate::translations::t(crate::translations::TranslationKey::SavedGame, user_language)).size(22), 
+            Text::new(crate::translations::t(crate::translations::TranslationKey::SavedGame, user_language)).size(self.font_size_base()),
             game_type_picker,
         ]
             .spacing(10)
             .align_y(Center);
 
-        let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Play, user_language)).size(22))
+        let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Play, user_language)).size(self.font_size_base()))
             .on_press(GameMessage::Menu_ContinueGameStartClicked)
             .padding(10);
 
         let delete_button = if self.continue_game_game_choice.is_some() {
-            button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)).size(22))
+            button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_ContinueGameDeleteRequested(
                     self.continue_game_game_choice.clone().unwrap_or_default()
                 ))
@@ -88,7 +88,7 @@ impl GameWindow {
                     }
                 })
         } else {
-            button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)).size(22))
+            button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)).size(self.font_size_base()))
                 .padding(10)
                 .style(move |theme: &Theme, _status| {
                     let palette = theme.extended_palette();
@@ -114,12 +114,12 @@ impl GameWindow {
 
         // Add confirmation dialog if delete is requested
         if let Some(ref game_name) = self.continue_game_delete_confirmation {
-            let confirmation_text = Text::new(crate::translations::t(crate::translations::TranslationKey::DeleteGame, user_language)).size(22);
+            let confirmation_text = Text::new(crate::translations::t(crate::translations::TranslationKey::DeleteGame, user_language)).size(self.font_size_base());
             let game_info_text = Text::new(format!("\"{}\"", game_name))
-                .size(22)
+                .size(self.font_size_base())
                 .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
             
-            let confirm_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::ConfirmDelete, user_language)).size(22))
+            let confirm_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::ConfirmDelete, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_ContinueGameDeleteConfirmed(game_name.clone()))
                 .padding(10)
                 .style(move |theme: &Theme, status| {
@@ -136,7 +136,7 @@ impl GameWindow {
                     }
                 });
             
-            let cancel_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Cancel, user_language)).size(22))
+            let cancel_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Cancel, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_ContinueGameDeleteRequested("".to_string())) // Cancel by clearing
                 .padding(10);
             
@@ -195,7 +195,7 @@ impl GameWindow {
             .width(Length::Fill);
 
         let name_row = row![
-                Text::new(crate::translations::t(crate::translations::TranslationKey::PlayerName, user_language)).size(22), 
+                Text::new(crate::translations::t(crate::translations::TranslationKey::PlayerName, user_language)).size(self.font_size_base()),
                 name_input
             ]
             .spacing(10)
@@ -223,13 +223,13 @@ impl GameWindow {
         .width(Length::Fill);
 
         let game_type_row = row![
-            Text::new(crate::translations::t(crate::translations::TranslationKey::GameType, user_language)).size(22), 
+            Text::new(crate::translations::t(crate::translations::TranslationKey::GameType, user_language)).size(self.font_size_base()),
             game_type_picker,
         ]
             .spacing(10)
             .align_y(Center);
 
-        let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Go, user_language)).size(22))
+        let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Go, user_language)).size(self.font_size_base()))
             .on_press(GameMessage::Menu_NewGameStartClicked)
             .padding(10);
 
@@ -242,7 +242,7 @@ impl GameWindow {
         // Add description area if a crisis is selected
         if let Some(ref description) = self.new_game_selected_description {
             let description_text = Text::new(description)
-                .size(22)
+                .size(self.font_size_base())
                 .wrapping(iced::widget::text::Wrapping::Word)
                 .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
             
@@ -302,12 +302,12 @@ impl GameWindow {
         // Create the save folder row with optional Open button
         #[cfg(not(target_arch = "wasm32"))]
         let save_folder_row = {
-            let open_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::OpenFolder, user_language)).size(22))
+            let open_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::OpenFolder, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_SettingsOpenCrisesFolder)
                 .padding([10, 15]);
 
             row![
-                Text::new(save_folder_label).size(22), 
+                Text::new(save_folder_label).size(self.font_size_base()),
                 save_folder_input,
                 open_button
             ]
@@ -324,7 +324,7 @@ impl GameWindow {
         .align_y(Center);
 
         let crises_folder_explanation = Text::new(crate::translations::t(crate::translations::TranslationKey::CrisesFolderExplanation, user_language))
-            .size(16)
+            .size(self.font_size_small())
             .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
 
         // Create difficulty options with translations
@@ -351,7 +351,7 @@ impl GameWindow {
         .width(Length::Fill);
 
         let difficulty_row = row![
-            Text::new(difficulty_label).size(22), 
+            Text::new(difficulty_label).size(self.font_size_base()),
             difficulty_picker,
         ]
         .spacing(10)
@@ -362,7 +362,7 @@ impl GameWindow {
             .width(Length::Shrink);
 
         let autosave_row = row![
-            Text::new(autosave_label).size(22), 
+            Text::new(autosave_label).size(self.font_size_base()),
             autosave_toggle,
         ]
         .spacing(10)
@@ -388,11 +388,31 @@ impl GameWindow {
         .width(Length::Fill);
 
         let language_row = row![
-            Text::new(language_label).size(22), 
+            Text::new(language_label).size(self.font_size_base()),
             language_picker,
         ]
         .spacing(10)
         .align_y(Center);
+
+        // Font scale slider
+        let font_scale_label = crate::translations::t(crate::translations::TranslationKey::FontScale, user_language);
+        let font_scale_slider = slider(0.1..=2.0, self.settings_font_scale, GameMessage::Menu_SettingsFontScaleChanged)
+            .step(0.1)
+            .width(Length::Fill);
+
+        let font_scale_value_text = Text::new(format!("{:.1}x", self.settings_font_scale)).size(self.font_size_base());
+
+        let font_scale_row = row![
+            Text::new(font_scale_label).size(self.font_size_base()),
+            font_scale_slider,
+            font_scale_value_text
+        ]
+        .spacing(10)
+        .align_y(Center);
+
+        let font_scale_explanation = Text::new(crate::translations::t(crate::translations::TranslationKey::FontScaleExplanation, user_language))
+            .size(self.font_size_small())
+            .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
 
         // Create settings storage path components (non-wasm32 only)
         #[cfg(not(target_arch = "wasm32"))]
@@ -419,14 +439,14 @@ impl GameWindow {
                 });
                 
             let storage_row = row![
-                Text::new(storage_path_label).size(22),
+                Text::new(storage_path_label).size(self.font_size_base()),
                 storage_path_input,
             ]
             .spacing(10)
             .align_y(Center);
             
             let storage_explanation = Text::new(crate::translations::t(crate::translations::TranslationKey::SettingsStorageExplanation, user_language))
-                .size(16)
+                .size(self.font_size_small())
                 .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
                 
             (storage_row, storage_explanation)
@@ -439,7 +459,9 @@ impl GameWindow {
             .push(crises_folder_explanation)
             .push(difficulty_row)
             .push(autosave_row)
-            .push(language_row);
+            .push(language_row)
+            .push(font_scale_row)
+            .push(font_scale_explanation);
             
         // Add settings storage path on non-wasm32 platforms
         #[cfg(not(target_arch = "wasm32"))]
@@ -450,11 +472,15 @@ impl GameWindow {
         }
         
         let layout = layout
-            .height(Length::Fill)
             .align_x(Left);
 
+        // Wrap the layout in a scrollable container
+        let scrollable_content = iced::widget::Scrollable::new(layout)
+            .width(Length::Fill)
+            .height(Length::Fill);
+
         let self_theme = self.theme();
-        Container::<GameMessage, Theme, iced::Renderer>::new(layout)
+        Container::<GameMessage, Theme, iced::Renderer>::new(scrollable_content)
             .width(Length::Fixed(MAIN_MENU_RIGHT_WIDTH_PX))
             .height(Length::Fixed(MAIN_MENU_HEIGHT_PX))
             .style(move |_theme| super::menu_right_box_style(&self_theme))
@@ -464,7 +490,7 @@ impl GameWindow {
     pub fn build_licenses_ui(&self) -> Container<'_, GameMessage> {
         
         let license_content = text(Self::get_license_content())
-            .size(22)
+            .size(self.font_size_base())
             .wrapping(iced::widget::text::Wrapping::Word);
         
         let scrollable_content = iced::widget::Scrollable::new(

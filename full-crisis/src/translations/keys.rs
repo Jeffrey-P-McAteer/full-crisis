@@ -38,6 +38,8 @@ pub enum TranslationKey {
     Autosave,
     Language,
     SelectLanguage,
+    FontScale,
+    FontScaleExplanation,
     
     // Game Interface
     WhatDoYouChoose,

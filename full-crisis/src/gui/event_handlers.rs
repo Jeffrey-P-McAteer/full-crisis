@@ -175,6 +175,12 @@ impl GameWindow {
                 self.save_settings();
                 Task::none()
             }
+            GameMessage::Menu_SettingsFontScaleChanged(scale) => {
+                eprintln!("Settings: Font Scale changed to: {}", scale);
+                self.settings_font_scale = scale.max(0.1).min(10.0); // Clamp to valid range
+                self.save_settings();
+                Task::none()
+            }
             GameMessage::QuitGameRequested => {
                 crate::quit_game_gui()
             }

@@ -8,6 +8,7 @@ impl GameWindow {
             autosave: self.settings_autosave,
             language: self.settings_language.clone(),
             last_username: self.new_game_player_name.clone(),
+            font_scale: self.settings_font_scale,
         };
         if let Ok(serialized) = serde_json::to_string(&settings) {
             crate::storage::set_attr("game_settings", &serialized);
