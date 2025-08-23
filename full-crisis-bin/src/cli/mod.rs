@@ -12,6 +12,7 @@ use ratatui::{
     widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Wrap},
 };
 use std::io;
+use tui_menu::{Menu, MenuState, MenuItem, MenuEvent};
 use full_crisis::gui::types::{DifficultyLevel, GameSettings};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -20,26 +21,31 @@ enum AppState {
     Settings,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-enum SettingsSection {
-    Difficulty,
-    Language,
-    Autosave,
-    CrisesFolder,
+#[derive(Debug, Clone)]
+enum SettingsAction {
+    DifficultyEasy,
+    DifficultyMedium,
+    DifficultyHard,
+    LanguageEnglish,
+    LanguageSpanish,
+    LanguageFrench,
+    LanguageGerman,
+    LanguageItalian,
+    LanguagePortuguese,
+    LanguageRussian,
+    LanguageJapanese,
+    LanguageKorean,
+    LanguageChinese,
+    AutosaveEnable,
+    AutosaveDisable,
+    EditCrisesFolder,
 }
 
-#[derive(Debug)]
 struct AppData {
     state: AppState,
     main_menu_state: ListState,
     main_menu_items: Vec<MainMenuChoice>,
-    settings_section: SettingsSection,
-    difficulty_state: ListState,
-    difficulty_items: Vec<DifficultyLevel>,
-    language_state: ListState,
-    language_items: Vec<String>,
-    autosave_state: ListState,
-    autosave_items: Vec<bool>,
+    settings_menu_state: MenuState<SettingsAction>,
     settings: GameSettings,
     crises_folder_input: String,
     editing_crises_folder: bool,
@@ -83,47 +89,56 @@ pub async fn run() -> Result<(), full_crisis::err::BoxError> {
         MainMenuChoice::Quit,
     ];
 
-    let difficulty_items = DifficultyLevel::ALL.to_vec();
-    
-    let language_items: Vec<String> = full_crisis::language::get_available_languages()
-        .into_iter()
-        .map(|(code, _)| code)
-        .collect();
-
-    let autosave_items = vec![true, false];
-
     let settings = full_crisis::gui::GameWindow::load_settings();
     
+    // Create settings menu structure
+    let settings_menu_items = vec![
+        MenuItem::group(
+            "Difficulty",
+            vec![
+                MenuItem::item("Easy", SettingsAction::DifficultyEasy),
+                MenuItem::item("Medium", SettingsAction::DifficultyMedium),
+                MenuItem::item("Hard", SettingsAction::DifficultyHard),
+            ],
+        ),
+        MenuItem::group(
+            "Language",
+            vec![
+                MenuItem::item("English", SettingsAction::LanguageEnglish),
+                MenuItem::item("Español", SettingsAction::LanguageSpanish),
+                MenuItem::item("Français", SettingsAction::LanguageFrench),
+                MenuItem::item("Deutsch", SettingsAction::LanguageGerman),
+                MenuItem::item("Italiano", SettingsAction::LanguageItalian),
+                MenuItem::item("Português", SettingsAction::LanguagePortuguese),
+                MenuItem::item("Русский", SettingsAction::LanguageRussian),
+                MenuItem::item("日本語", SettingsAction::LanguageJapanese),
+                MenuItem::item("한국어", SettingsAction::LanguageKorean),
+                MenuItem::item("中文", SettingsAction::LanguageChinese),
+            ],
+        ),
+        MenuItem::group(
+            "Autosave",
+            vec![
+                MenuItem::item("Enable", SettingsAction::AutosaveEnable),
+                MenuItem::item("Disable", SettingsAction::AutosaveDisable),
+            ],
+        ),
+        MenuItem::item("Edit Crises Folder", SettingsAction::EditCrisesFolder),
+    ];
+    
+    let crises_folder = settings.game_crises_folder.clone();
     let mut app_data = AppData {
         state: AppState::MainMenu,
         main_menu_state: ListState::default(),
         main_menu_items,
-        settings_section: SettingsSection::Difficulty,
-        difficulty_state: ListState::default(),
-        difficulty_items,
-        language_state: ListState::default(),
-        language_items,
-        autosave_state: ListState::default(),
-        autosave_items,
-        crises_folder_input: settings.game_crises_folder.clone(),
+        settings_menu_state: MenuState::new(settings_menu_items),
         settings,
+        crises_folder_input: crises_folder,
         editing_crises_folder: false,
     };
 
-    // Set initial selections
+    // Set initial selection
     app_data.main_menu_state.select(Some(0));
-    
-    if let Some(pos) = app_data.difficulty_items.iter().position(|&d| d == app_data.settings.difficulty_level) {
-        app_data.difficulty_state.select(Some(pos));
-    }
-    
-    if let Some(pos) = app_data.language_items.iter().position(|lang| lang == &app_data.settings.language) {
-        app_data.language_state.select(Some(pos));
-    }
-    
-    if let Some(pos) = app_data.autosave_items.iter().position(|&autosave| autosave == app_data.settings.autosave) {
-        app_data.autosave_state.select(Some(pos));
-    }
 
     loop {
         {
@@ -179,7 +194,7 @@ fn draw_main_menu(f: &mut ratatui::Frame, app_data: &mut AppData) {
             Constraint::Min(5),     // Menu
             Constraint::Length(3),  // Instructions
         ])
-        .split(f.size());
+        .split(f.area());
 
     // Title
     let title = Paragraph::new("Full Crisis - Main Menu")
@@ -214,15 +229,20 @@ fn draw_main_menu(f: &mut ratatui::Frame, app_data: &mut AppData) {
 }
 
 fn draw_settings(f: &mut ratatui::Frame, app_data: &mut AppData) {
+    if app_data.editing_crises_folder {
+        draw_crises_folder_editor(f, app_data);
+        return;
+    }
+
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .margin(1)
         .constraints([
             Constraint::Length(3), // Title
-            Constraint::Min(10),   // Settings grid
+            Constraint::Min(10),   // Settings menu
             Constraint::Length(3), // Instructions
         ])
-        .split(f.size());
+        .split(f.area());
 
     // Title
     let title = Paragraph::new("Settings")
@@ -231,120 +251,50 @@ fn draw_settings(f: &mut ratatui::Frame, app_data: &mut AppData) {
         .block(Block::default().borders(Borders::ALL));
     f.render_widget(title, chunks[0]);
 
-    // Settings grid - divide into 2x2 grid
-    let settings_area = Layout::default()
-        .direction(Direction::Vertical)
-        .constraints([
-            Constraint::Length(8),  // Top row (Difficulty, Language)
-            Constraint::Length(8),  // Bottom row (Autosave, Crises Folder)
-        ])
-        .split(chunks[1]);
-
-    let top_row = Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
-        .split(settings_area[0]);
-
-    let bottom_row = Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
-        .split(settings_area[1]);
-
-    // Determine which section is currently selected
-    let difficulty_selected = app_data.settings_section == SettingsSection::Difficulty;
-    let language_selected = app_data.settings_section == SettingsSection::Language;
-    let autosave_selected = app_data.settings_section == SettingsSection::Autosave;
-    let folder_selected = app_data.settings_section == SettingsSection::CrisesFolder;
-
-    // Difficulty setting
-    let difficulty_items: Vec<ListItem> = app_data
-        .difficulty_items
-        .iter()
-        .map(|&difficulty| {
-            ListItem::new(format!("{}", difficulty))
-        })
-        .collect();
-
-    let difficulty_style = if difficulty_selected {
-        Style::default().fg(Color::Black).bg(Color::Yellow).add_modifier(Modifier::BOLD)
-    } else {
-        Style::default().fg(Color::White)
-    };
-
-    let difficulty_menu = List::new(difficulty_items)
-        .block(Block::default().borders(Borders::ALL).title("Difficulty"))
-        .style(Style::default().fg(Color::White))
-        .highlight_style(difficulty_style)
-        .highlight_symbol("► ");
-    f.render_stateful_widget(difficulty_menu, top_row[0], &mut app_data.difficulty_state);
-
-    // Language setting  
-    let language_items: Vec<ListItem> = app_data.language_items
-        .iter()
-        .map(|code| {
-            let display_name = full_crisis::language::get_language_display_name(code);
-            ListItem::new(format!("{} ({})", display_name, code))
-        })
-        .collect();
-
-    let language_style = if language_selected {
-        Style::default().fg(Color::Black).bg(Color::Green).add_modifier(Modifier::BOLD)
-    } else {
-        Style::default().fg(Color::White)
-    };
-
-    let language_menu = List::new(language_items)
-        .block(Block::default().borders(Borders::ALL).title("Language"))
-        .style(Style::default().fg(Color::White))
-        .highlight_style(language_style)
-        .highlight_symbol("► ");
-    f.render_stateful_widget(language_menu, top_row[1], &mut app_data.language_state);
-
-    // Autosave setting
-    let autosave_items: Vec<ListItem> = app_data.autosave_items
-        .iter()
-        .map(|&enabled| {
-            let text = if enabled { "Enabled" } else { "Disabled" };
-            ListItem::new(text)
-        })
-        .collect();
-
-    let autosave_style = if autosave_selected {
-        Style::default().fg(Color::Black).bg(Color::Magenta).add_modifier(Modifier::BOLD)
-    } else {
-        Style::default().fg(Color::White)
-    };
-
-    let autosave_menu = List::new(autosave_items)
-        .block(Block::default().borders(Borders::ALL).title("Autosave"))
-        .style(Style::default().fg(Color::White))
-        .highlight_style(autosave_style)
-        .highlight_symbol("► ");
-    f.render_stateful_widget(autosave_menu, bottom_row[0], &mut app_data.autosave_state);
-
-    // Crises folder text input
-    let folder_style = if folder_selected {
-        if app_data.editing_crises_folder {
-            Style::default().fg(Color::Black).bg(Color::Cyan)
-        } else {
-            Style::default().fg(Color::Black).bg(Color::Yellow)
-        }
-    } else {
-        Style::default().fg(Color::White)
-    };
-    
-    let crises_folder = Paragraph::new(app_data.crises_folder_input.as_str())
-        .style(folder_style)
-        .block(Block::default().borders(Borders::ALL).title("Crises Folder"))
-        .wrap(Wrap { trim: true });
-    f.render_widget(crises_folder, bottom_row[1]);
+    // Settings menu
+    let menu = Menu::new();
+    f.render_stateful_widget(menu, chunks[1], &mut app_data.settings_menu_state);
 
     // Instructions
-    let instructions = Paragraph::new("Tab/Arrow: Navigate, Enter: Select/Edit, Esc: Back to Main Menu")
+    let instructions = Paragraph::new("↑/↓: Navigate, Enter: Select, Esc: Back to Main Menu")
         .style(Style::default().fg(Color::Gray))
         .alignment(Alignment::Center)
         .block(Block::default().borders(Borders::ALL));
     f.render_widget(instructions, chunks[2]);
+}
+
+fn draw_crises_folder_editor(f: &mut ratatui::Frame, app_data: &mut AppData) {
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .margin(1)
+        .constraints([
+            Constraint::Length(3), // Title
+            Constraint::Length(5), // Input field
+            Constraint::Min(5),    // Spacer
+            Constraint::Length(3), // Instructions
+        ])
+        .split(f.area());
+
+    // Title
+    let title = Paragraph::new("Edit Crises Folder Path")
+        .style(Style::default().fg(Color::Green).add_modifier(Modifier::BOLD))
+        .alignment(Alignment::Center)
+        .block(Block::default().borders(Borders::ALL));
+    f.render_widget(title, chunks[0]);
+
+    // Input field
+    let input = Paragraph::new(app_data.crises_folder_input.as_str())
+        .style(Style::default().fg(Color::Black).bg(Color::Cyan))
+        .block(Block::default().borders(Borders::ALL).title("Path"))
+        .wrap(Wrap { trim: true });
+    f.render_widget(input, chunks[1]);
+
+    // Instructions
+    let instructions = Paragraph::new("Type to edit, Enter: Save, Esc: Cancel")
+        .style(Style::default().fg(Color::Gray))
+        .alignment(Alignment::Center)
+        .block(Block::default().borders(Borders::ALL));
+    f.render_widget(instructions, chunks[3]);
 }
 
 async fn handle_main_menu_input(
@@ -421,59 +371,35 @@ async fn handle_main_menu_input(
 }
 
 fn handle_settings_input(app_data: &mut AppData, key: KeyEvent) {
+    if app_data.editing_crises_folder {
+        handle_crises_folder_input(app_data, key);
+        return;
+    }
+
     match key.code {
         KeyCode::Esc => {
-            app_data.editing_crises_folder = false;
             app_data.state = AppState::MainMenu;
         }
-        KeyCode::Tab => {
-            app_data.editing_crises_folder = false;
-            app_data.settings_section = match app_data.settings_section {
-                SettingsSection::Difficulty => SettingsSection::Language,
-                SettingsSection::Language => SettingsSection::Autosave,
-                SettingsSection::Autosave => SettingsSection::CrisesFolder,
-                SettingsSection::CrisesFolder => SettingsSection::Difficulty,
-            };
-        }
-        KeyCode::Left => {
-            app_data.editing_crises_folder = false;
-            app_data.settings_section = match app_data.settings_section {
-                SettingsSection::Language | SettingsSection::CrisesFolder => SettingsSection::Difficulty,
-                SettingsSection::Difficulty => SettingsSection::Language,
-                SettingsSection::Autosave => SettingsSection::CrisesFolder,
-            };
-        }
-        KeyCode::Right => {
-            app_data.editing_crises_folder = false;
-            app_data.settings_section = match app_data.settings_section {
-                SettingsSection::Difficulty | SettingsSection::Autosave => SettingsSection::Language,
-                SettingsSection::Language => SettingsSection::Difficulty,
-                SettingsSection::CrisesFolder => SettingsSection::Autosave,
-            };
-        }
         KeyCode::Up => {
-            app_data.editing_crises_folder = false;
-            app_data.settings_section = match app_data.settings_section {
-                SettingsSection::Autosave | SettingsSection::CrisesFolder => SettingsSection::Difficulty,
-                SettingsSection::Difficulty => SettingsSection::Autosave,
-                SettingsSection::Language => SettingsSection::CrisesFolder,
-            };
+            app_data.settings_menu_state.up();
         }
         KeyCode::Down => {
-            app_data.editing_crises_folder = false;
-            app_data.settings_section = match app_data.settings_section {
-                SettingsSection::Difficulty | SettingsSection::Language => SettingsSection::Autosave,
-                SettingsSection::Autosave => SettingsSection::Difficulty,
-                SettingsSection::CrisesFolder => SettingsSection::Language,
-            };
+            app_data.settings_menu_state.down();
         }
-        _ => {
-            if app_data.editing_crises_folder {
-                handle_crises_folder_input(app_data, key);
-            } else {
-                handle_menu_selection(app_data, key);
+        KeyCode::Left => {
+            app_data.settings_menu_state.left();
+        }
+        KeyCode::Right => {
+            app_data.settings_menu_state.right();
+        }
+        KeyCode::Enter => {
+            // Process menu events
+            for event in app_data.settings_menu_state.drain_events() {
+                let MenuEvent::Selected(action) = event;
+                handle_settings_action(&mut app_data.settings, action, &mut app_data.editing_crises_folder);
             }
         }
+        _ => {}
     }
 }
 
@@ -481,148 +407,89 @@ fn handle_crises_folder_input(app_data: &mut AppData, key: KeyEvent) {
     match key.code {
         KeyCode::Char(c) => {
             app_data.crises_folder_input.push(c);
-            app_data.settings.game_crises_folder = app_data.crises_folder_input.clone();
-            save_settings(&app_data.settings);
         }
         KeyCode::Backspace => {
             app_data.crises_folder_input.pop();
-            app_data.settings.game_crises_folder = app_data.crises_folder_input.clone();
-            save_settings(&app_data.settings);
         }
         KeyCode::Enter => {
+            // Save the changes
+            app_data.settings.game_crises_folder = app_data.crises_folder_input.clone();
+            save_settings(&app_data.settings);
+            app_data.editing_crises_folder = false;
+        }
+        KeyCode::Esc => {
+            // Cancel changes - revert to original value
+            app_data.crises_folder_input = app_data.settings.game_crises_folder.clone();
             app_data.editing_crises_folder = false;
         }
         _ => {}
     }
 }
 
-fn handle_menu_selection(app_data: &mut AppData, key: KeyEvent) {
-    match key.code {
-        KeyCode::Enter => {
-            match app_data.settings_section {
-                SettingsSection::Difficulty => {
-                    if let Some(idx) = app_data.difficulty_state.selected() {
-                        app_data.settings.difficulty_level = app_data.difficulty_items[idx];
-                        save_settings(&app_data.settings);
-                    }
-                }
-                SettingsSection::Language => {
-                    if let Some(idx) = app_data.language_state.selected() {
-                        app_data.settings.language = app_data.language_items[idx].clone();
-                        save_settings(&app_data.settings);
-                    }
-                }
-                SettingsSection::Autosave => {
-                    if let Some(idx) = app_data.autosave_state.selected() {
-                        app_data.settings.autosave = app_data.autosave_items[idx];
-                        save_settings(&app_data.settings);
-                    }
-                }
-                SettingsSection::CrisesFolder => {
-                    app_data.editing_crises_folder = true;
-                }
-            }
+fn handle_settings_action(settings: &mut GameSettings, action: SettingsAction, editing_crises_folder: &mut bool) {
+    match action {
+        SettingsAction::DifficultyEasy => {
+            settings.difficulty_level = DifficultyLevel::Easy;
+            save_settings(settings);
         }
-        KeyCode::Up => {
-            handle_list_navigation_up(app_data);
+        SettingsAction::DifficultyMedium => {
+            settings.difficulty_level = DifficultyLevel::Medium;
+            save_settings(settings);
         }
-        KeyCode::Down => {
-            handle_list_navigation_down(app_data);
+        SettingsAction::DifficultyHard => {
+            settings.difficulty_level = DifficultyLevel::Hard;
+            save_settings(settings);
         }
-        _ => {}
-    }
-}
-
-fn handle_list_navigation_up(app_data: &mut AppData) {
-    match app_data.settings_section {
-        SettingsSection::Difficulty => {
-            let i = match app_data.difficulty_state.selected() {
-                Some(i) => {
-                    if i == 0 {
-                        app_data.difficulty_items.len() - 1
-                    } else {
-                        i - 1
-                    }
-                }
-                None => 0,
-            };
-            app_data.difficulty_state.select(Some(i));
+        SettingsAction::LanguageEnglish => {
+            settings.language = "eng".to_string();
+            save_settings(settings);
         }
-        SettingsSection::Language => {
-            let i = match app_data.language_state.selected() {
-                Some(i) => {
-                    if i == 0 {
-                        app_data.language_items.len() - 1
-                    } else {
-                        i - 1
-                    }
-                }
-                None => 0,
-            };
-            app_data.language_state.select(Some(i));
+        SettingsAction::LanguageSpanish => {
+            settings.language = "spa".to_string();
+            save_settings(settings);
         }
-        SettingsSection::Autosave => {
-            let i = match app_data.autosave_state.selected() {
-                Some(i) => {
-                    if i == 0 {
-                        app_data.autosave_items.len() - 1
-                    } else {
-                        i - 1
-                    }
-                }
-                None => 0,
-            };
-            app_data.autosave_state.select(Some(i));
+        SettingsAction::LanguageFrench => {
+            settings.language = "fra".to_string();
+            save_settings(settings);
         }
-        SettingsSection::CrisesFolder => {
-            // No navigation for text input
+        SettingsAction::LanguageGerman => {
+            settings.language = "deu".to_string();
+            save_settings(settings);
         }
-    }
-}
-
-fn handle_list_navigation_down(app_data: &mut AppData) {
-    match app_data.settings_section {
-        SettingsSection::Difficulty => {
-            let i = match app_data.difficulty_state.selected() {
-                Some(i) => {
-                    if i >= app_data.difficulty_items.len() - 1 {
-                        0
-                    } else {
-                        i + 1
-                    }
-                }
-                None => 0,
-            };
-            app_data.difficulty_state.select(Some(i));
+        SettingsAction::LanguageItalian => {
+            settings.language = "ita".to_string();
+            save_settings(settings);
         }
-        SettingsSection::Language => {
-            let i = match app_data.language_state.selected() {
-                Some(i) => {
-                    if i >= app_data.language_items.len() - 1 {
-                        0
-                    } else {
-                        i + 1
-                    }
-                }
-                None => 0,
-            };
-            app_data.language_state.select(Some(i));
+        SettingsAction::LanguagePortuguese => {
+            settings.language = "por".to_string();
+            save_settings(settings);
         }
-        SettingsSection::Autosave => {
-            let i = match app_data.autosave_state.selected() {
-                Some(i) => {
-                    if i >= app_data.autosave_items.len() - 1 {
-                        0
-                    } else {
-                        i + 1
-                    }
-                }
-                None => 0,
-            };
-            app_data.autosave_state.select(Some(i));
+        SettingsAction::LanguageRussian => {
+            settings.language = "rus".to_string();
+            save_settings(settings);
         }
-        SettingsSection::CrisesFolder => {
-            // No navigation for text input
+        SettingsAction::LanguageJapanese => {
+            settings.language = "jpn".to_string();
+            save_settings(settings);
+        }
+        SettingsAction::LanguageKorean => {
+            settings.language = "kor".to_string();
+            save_settings(settings);
+        }
+        SettingsAction::LanguageChinese => {
+            settings.language = "zho".to_string();
+            save_settings(settings);
+        }
+        SettingsAction::AutosaveEnable => {
+            settings.autosave = true;
+            save_settings(settings);
+        }
+        SettingsAction::AutosaveDisable => {
+            settings.autosave = false;
+            save_settings(settings);
+        }
+        SettingsAction::EditCrisesFolder => {
+            *editing_crises_folder = true;
         }
     }
 }
