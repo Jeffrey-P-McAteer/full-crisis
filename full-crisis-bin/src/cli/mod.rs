@@ -21,6 +21,9 @@ enum AppState {
     Settings,
     SettingsPopup,
     TextInput,
+    NewGame,
+    NewGameCrisisPopup,
+    InGame,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -46,8 +49,21 @@ struct AppData {
     language_menu_state: MenuState<String>,
     autosave_menu_state: MenuState<bool>,
     
+    // New game data
+    new_game_player_name: String,
+    new_game_selected_crisis: Option<String>, // display name
+    new_game_crisis_menu_state: MenuState<String>,
+    new_game_focus: NewGameFocus,
+    
     settings: GameSettings,
     crises_folder_input: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum NewGameFocus {
+    PlayerName,
+    CrisisSelection,
+    GoButton,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -107,6 +123,13 @@ pub async fn run() -> Result<(), full_crisis::err::BoxError> {
         MenuItem::item("Disabled", false),
     ];
     
+    // Create crisis menu items for new game
+    let crisis_names = full_crisis::crisis::get_crisis_names_localized(&settings.language);
+    let crisis_items: Vec<MenuItem<String>> = crisis_names
+        .iter()
+        .map(|name| MenuItem::item(name.clone(), name.clone()))
+        .collect();
+    
     let crises_folder = settings.game_crises_folder.clone();
     let mut app_data = AppData {
         state: AppState::MainMenu,
@@ -119,6 +142,12 @@ pub async fn run() -> Result<(), full_crisis::err::BoxError> {
         difficulty_menu_state: MenuState::new(vec![MenuItem::group("Difficulty", difficulty_items)]),
         language_menu_state: MenuState::new(vec![MenuItem::group("Language", language_items)]),
         autosave_menu_state: MenuState::new(vec![MenuItem::group("Auto-Save", autosave_items)]),
+        
+        // New game initialization
+        new_game_player_name: String::new(),
+        new_game_selected_crisis: None,
+        new_game_crisis_menu_state: MenuState::new(vec![MenuItem::group("Crisis Types", crisis_items)]),
+        new_game_focus: NewGameFocus::PlayerName,
         
         settings,
         crises_folder_input: crises_folder,
@@ -143,6 +172,8 @@ pub async fn run() -> Result<(), full_crisis::err::BoxError> {
             match app_data.state {
                 AppState::MainMenu => draw_main_menu(f, &mut app_data),
                 AppState::Settings | AppState::SettingsPopup | AppState::TextInput => draw_settings(f, &mut app_data),
+                AppState::NewGame | AppState::NewGameCrisisPopup => draw_new_game(f, &mut app_data),
+                AppState::InGame => draw_in_game(f, &mut app_data),
             }
         }).map_err(full_crisis::err::eloc!())?;
 
@@ -157,6 +188,14 @@ pub async fn run() -> Result<(), full_crisis::err::BoxError> {
                         },
                         AppState::Settings | AppState::SettingsPopup | AppState::TextInput => {
                             handle_settings_input(&mut app_data, key);
+                        },
+                        AppState::NewGame | AppState::NewGameCrisisPopup => {
+                            handle_new_game_input(&mut app_data, key);
+                        },
+                        AppState::InGame => {
+                            if handle_in_game_input(&mut app_data, key, game).await? {
+                                break;
+                            }
                         },
                     }
                 }
@@ -225,6 +264,142 @@ fn draw_settings(f: &mut ratatui::Frame, app_data: &mut AppData) {
         AppState::TextInput => draw_crises_folder_editor(f, app_data),
         _ => {} // Should not happen
     }
+}
+
+fn draw_new_game(f: &mut ratatui::Frame, app_data: &mut AppData) {
+    match app_data.state {
+        AppState::NewGame => draw_new_game_setup(f, app_data),
+        AppState::NewGameCrisisPopup => draw_new_game_with_popup(f, app_data),
+        _ => {} // Should not happen
+    }
+}
+
+fn draw_new_game_setup(f: &mut ratatui::Frame, app_data: &AppData) {
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .margin(1)
+        .constraints([
+            Constraint::Length(3), // Title
+            Constraint::Length(5), // Player name input
+            Constraint::Length(5), // Crisis selection
+            Constraint::Length(3), // Go button
+            Constraint::Min(1),    // Spacer
+            Constraint::Length(3), // Instructions
+        ])
+        .split(f.area());
+
+    // Title
+    let title = Paragraph::new("New Game Setup")
+        .style(Style::default().fg(Color::Green).add_modifier(Modifier::BOLD))
+        .alignment(Alignment::Center)
+        .block(Block::default().borders(Borders::ALL));
+    f.render_widget(title, chunks[0]);
+
+    // Player name input
+    let name_style = if app_data.new_game_focus == NewGameFocus::PlayerName {
+        Style::default().fg(Color::Black).bg(Color::Cyan).add_modifier(Modifier::BOLD)
+    } else {
+        Style::default().fg(Color::White)
+    };
+    
+    let name_display = if app_data.new_game_player_name.is_empty() {
+        "Enter your name..."
+    } else {
+        &app_data.new_game_player_name
+    };
+    
+    let name_input = Paragraph::new(name_display)
+        .style(name_style)
+        .block(Block::default().borders(Borders::ALL).title("Player Name"))
+        .wrap(Wrap { trim: true });
+    f.render_widget(name_input, chunks[1]);
+
+    // Crisis selection
+    let crisis_style = if app_data.new_game_focus == NewGameFocus::CrisisSelection {
+        Style::default().fg(Color::Black).bg(Color::Yellow).add_modifier(Modifier::BOLD)
+    } else {
+        Style::default().fg(Color::White)
+    };
+    
+    let crisis_display = app_data.new_game_selected_crisis
+        .as_ref()
+        .map(|c| c.as_str())
+        .unwrap_or("Select crisis type...");
+    
+    let crisis_selection = Paragraph::new(crisis_display)
+        .style(crisis_style)
+        .block(Block::default().borders(Borders::ALL).title("Crisis Type"))
+        .wrap(Wrap { trim: true });
+    f.render_widget(crisis_selection, chunks[2]);
+
+    // Go button
+    let go_style = if app_data.new_game_focus == NewGameFocus::GoButton {
+        Style::default().fg(Color::Black).bg(Color::Green).add_modifier(Modifier::BOLD)
+    } else {
+        Style::default().fg(Color::White)
+    };
+    
+    let go_button = Paragraph::new("   >>> START GAME <<<   ")
+        .style(go_style)
+        .alignment(Alignment::Center)
+        .block(Block::default().borders(Borders::ALL));
+    f.render_widget(go_button, chunks[3]);
+
+    // Instructions
+    let instructions = Paragraph::new("Tab: Navigate, Enter: Select/Edit, Esc: Back to Main Menu")
+        .style(Style::default().fg(Color::Gray))
+        .alignment(Alignment::Center)
+        .block(Block::default().borders(Borders::ALL));
+    f.render_widget(instructions, chunks[5]);
+}
+
+fn draw_new_game_with_popup(f: &mut ratatui::Frame, app_data: &mut AppData) {
+    // First draw the background new game setup
+    draw_new_game_setup(f, app_data);
+    
+    // Calculate popup area (centered, smaller than screen)
+    let popup_area = centered_rect(70, 60, f.area());
+    
+    // Clear the popup area
+    f.render_widget(Clear, popup_area);
+    
+    // Draw the crisis selection popup
+    let popup_block = Block::default()
+        .borders(Borders::ALL)
+        .title("Select Crisis Type")
+        .style(Style::default().bg(Color::Black).fg(Color::White));
+    
+    let inner_area = popup_block.inner(popup_area);
+    f.render_widget(popup_block, popup_area);
+    
+    let menu = Menu::new();
+    f.render_stateful_widget(menu, inner_area, &mut app_data.new_game_crisis_menu_state);
+    
+    // Popup instructions
+    let instructions_area = ratatui::layout::Rect {
+        x: popup_area.x,
+        y: popup_area.y + popup_area.height + 1,
+        width: popup_area.width,
+        height: 1,
+    };
+    
+    if instructions_area.y < f.area().height {
+        let instructions = Paragraph::new("↑/↓: Navigate, Enter: Select, Esc: Cancel")
+            .style(Style::default().fg(Color::Yellow))
+            .alignment(Alignment::Center);
+        f.render_widget(instructions, instructions_area);
+    }
+}
+
+fn draw_in_game(f: &mut ratatui::Frame, _app_data: &mut AppData) {
+    // Simple placeholder for in-game UI
+    let placeholder = Paragraph::new("Game is running...\n\nPress Esc to return to main menu")
+        .style(Style::default().fg(Color::Green))
+        .alignment(Alignment::Center)
+        .block(Block::default().borders(Borders::ALL).title("In Game"))
+        .wrap(Wrap { trim: true });
+    
+    f.render_widget(placeholder, f.area());
 }
 
 fn draw_settings_grid(f: &mut ratatui::Frame, app_data: &AppData) {
@@ -471,11 +646,7 @@ async fn handle_main_menu_input(
                         }
                     }
                     MainMenuChoice::New => {
-                        if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
-                            *evt_loop_wguard = full_crisis::game::ActiveEventLoop::WelcomeScreen(
-                                full_crisis::game::WelcomeScreenView::NewGame
-                            );
-                        }
+                        app_data.state = AppState::NewGame;
                     }
                     MainMenuChoice::Settings => {
                         app_data.state = AppState::Settings;
@@ -724,6 +895,178 @@ fn reset_menu_to_current_value(app_data: &mut AppData, setting: SelectedSetting)
             }
         }
         _ => {}
+    }
+}
+
+fn handle_new_game_input(app_data: &mut AppData, key: KeyEvent) {
+    match app_data.state {
+        AppState::NewGame => handle_new_game_setup_input(app_data, key),
+        AppState::NewGameCrisisPopup => handle_new_game_crisis_popup_input(app_data, key),
+        _ => {} // Should not happen
+    }
+}
+
+fn handle_new_game_setup_input(app_data: &mut AppData, key: KeyEvent) {
+    match key.code {
+        KeyCode::Esc => {
+            app_data.state = AppState::MainMenu;
+        }
+        KeyCode::Tab => {
+            // Cycle through the three focus states
+            app_data.new_game_focus = match app_data.new_game_focus {
+                NewGameFocus::PlayerName => NewGameFocus::CrisisSelection,
+                NewGameFocus::CrisisSelection => NewGameFocus::GoButton,
+                NewGameFocus::GoButton => NewGameFocus::PlayerName,
+            };
+        }
+        KeyCode::Enter => {
+            match app_data.new_game_focus {
+                NewGameFocus::PlayerName => {
+                    // For now, we'll keep it simple and not go into text editing mode
+                    // Tab to next field instead
+                    app_data.new_game_focus = NewGameFocus::CrisisSelection;
+                }
+                NewGameFocus::CrisisSelection => {
+                    // Open crisis selection popup
+                    reset_crisis_menu_to_default(app_data);
+                    app_data.state = AppState::NewGameCrisisPopup;
+                }
+                NewGameFocus::GoButton => {
+                    // Start the game if we have valid input
+                    start_new_crisis_game(app_data);
+                }
+            }
+        }
+        KeyCode::Char(c) => {
+            if app_data.new_game_focus == NewGameFocus::PlayerName {
+                app_data.new_game_player_name.push(c);
+            }
+        }
+        KeyCode::Backspace => {
+            if app_data.new_game_focus == NewGameFocus::PlayerName {
+                app_data.new_game_player_name.pop();
+            }
+        }
+        _ => {}
+    }
+}
+
+fn handle_new_game_crisis_popup_input(app_data: &mut AppData, key: KeyEvent) {
+    match key.code {
+        KeyCode::Esc => {
+            app_data.state = AppState::NewGame;
+        }
+        KeyCode::Up => {
+            app_data.new_game_crisis_menu_state.up();
+        }
+        KeyCode::Down => {
+            app_data.new_game_crisis_menu_state.down();
+        }
+        KeyCode::Enter => {
+            // Trigger selection and save selected crisis
+            app_data.new_game_crisis_menu_state.select();
+            for event in app_data.new_game_crisis_menu_state.drain_events() {
+                let MenuEvent::Selected(crisis_name) = event;
+                app_data.new_game_selected_crisis = Some(crisis_name);
+                app_data.state = AppState::NewGame;
+            }
+        }
+        _ => {}
+    }
+}
+
+async fn handle_in_game_input(
+    app_data: &mut AppData,
+    key: KeyEvent,
+    game: &full_crisis::game::GameState,
+) -> Result<bool, full_crisis::err::BoxError> {
+    match key.code {
+        KeyCode::Esc => {
+            // Return to main menu
+            app_data.state = AppState::MainMenu;
+            if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
+                *evt_loop_wguard = full_crisis::game::ActiveEventLoop::WelcomeScreen(
+                    full_crisis::game::WelcomeScreenView::Empty
+                );
+            }
+        }
+        _ => {}
+    }
+    Ok(false)
+}
+
+fn reset_crisis_menu_to_default(app_data: &mut AppData) {
+    // Recreate the crisis menu with current language
+    let crisis_names = full_crisis::crisis::get_crisis_names_localized(&app_data.settings.language);
+    let crisis_items: Vec<MenuItem<String>> = crisis_names
+        .iter()
+        .map(|name| MenuItem::item(name.clone(), name.clone()))
+        .collect();
+    
+    app_data.new_game_crisis_menu_state = MenuState::new(vec![MenuItem::group("Crisis Types", crisis_items)]);
+    
+    // If we already have a selected crisis, navigate to it
+    if let Some(ref selected_crisis) = app_data.new_game_selected_crisis {
+        if let Some(pos) = crisis_names.iter().position(|name| name == selected_crisis) {
+            app_data.new_game_crisis_menu_state.down(); // Enter the group
+            for _ in 0..pos {
+                app_data.new_game_crisis_menu_state.down();
+            }
+        }
+    }
+}
+
+fn start_new_crisis_game(app_data: &mut AppData) {
+    // Validate input
+    if app_data.new_game_selected_crisis.is_none() {
+        return; // Cannot start without crisis selection
+    }
+    
+    let crisis_name = app_data.new_game_selected_crisis.as_ref().unwrap();
+    let verbosity = full_crisis::VERBOSITY.get().unwrap_or(&0);
+    
+    if *verbosity > 0 {
+        eprintln!("Starting new crisis game: template_name={:?}", crisis_name);
+    }
+    
+    match full_crisis::crisis::load_crisis(crisis_name) {
+        Ok(crisis) => {
+            if *verbosity > 0 {
+                eprintln!("Crisis loaded successfully");
+            }
+            
+            let character_name = if app_data.new_game_player_name.is_empty() {
+                full_crisis::crisis::get_random_character_name(&crisis, None, &app_data.settings.language)
+            } else {
+                app_data.new_game_player_name.clone()
+            };
+            
+            let mut story_state = full_crisis::crisis::GameState::new(
+                crisis.metadata.id.clone(),
+                app_data.settings.language.clone(),
+                crisis_name.clone(),
+            );
+            story_state.current_scene = crisis.story.starting_scene.clone();
+            story_state.character_name = character_name;
+            
+            // For CLI mode, we transition to the in-game state
+            // The actual game state management will be handled through the game's event loop
+            app_data.state = AppState::InGame;
+            
+            // Set the game's active event loop to story scene
+            if let Some(game) = full_crisis::GAME.get() {
+                if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
+                    *evt_loop_wguard = full_crisis::game::ActiveEventLoop::ActiveGame(
+                        full_crisis::game::GameView::StoryScene
+                    );
+                }
+            }
+        }
+        Err(e) => {
+            if *verbosity > 0 {
+                eprintln!("Failed to load crisis: {}", e);
+            }
+        }
     }
 }
 
