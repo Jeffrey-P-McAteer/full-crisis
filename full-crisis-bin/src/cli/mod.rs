@@ -3,7 +3,6 @@ use crossterm::{
     execute,
     terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
 };
-use rand::Rng;
 use ratatui::{
     Terminal,
     backend::CrosstermBackend,
@@ -12,11 +11,8 @@ use ratatui::{
     text::{Line, Span},
     widgets::{Block, Borders, Paragraph},
 };
-use std::{error::Error, io, sync::Arc};
-use tokio::{
-    sync::mpsc,
-    time::{self, Duration},
-};
+use std::{io, sync::Arc};
+use tokio::time::Duration;
 
 pub async fn run() -> Result<(), full_crisis::err::BoxError> {
     let game = full_crisis::GAME.get().unwrap();
@@ -28,25 +24,7 @@ pub async fn run() -> Result<(), full_crisis::err::BoxError> {
     let mut terminal = Terminal::new(backend).map_err(full_crisis::err::eloc!())?;
 
     // Shared state
-    let number = Arc::new(tokio::sync::Mutex::new(0));
     let input = Arc::new(tokio::sync::Mutex::new(String::new()));
-
-    // Channel to wake up UI on updates
-    let (tx, mut rx) = mpsc::channel::<()>(1);
-
-    // Clone for background task
-    let number_clone = Arc::clone(&number);
-    let tx_clone = tx.clone();
-
-    tokio::spawn(async move {
-        let mut interval = time::interval(Duration::from_secs(1));
-        loop {
-            interval.tick().await;
-            let mut num = number_clone.lock().await;
-            *num = rand::thread_rng().gen_range(1..=100);
-            let _ = tx_clone.send(()).await;
-        }
-    });
 
     loop {
         {
@@ -66,17 +44,36 @@ pub async fn run() -> Result<(), full_crisis::err::BoxError> {
                     .constraints([Constraint::Min(1), Constraint::Length(3)])
                     .split(f.size());
 
-                // Main display (updated number)
-                if let Some(num) = maybe_block_on(number.lock(), 2) {
-                    let number_display = {
-                        Paragraph::new(Line::from(vec![
-                            Span::styled("Random Number: ", Style::default().fg(Color::Blue)),
-                            Span::raw(format!("{}", *num)),
-                        ]))
-                        .block(Block::default().borders(Borders::ALL).title("Output"))
-                    };
-                    f.render_widget(number_display, chunks[0]);
-                }
+                // Main display (menu options)
+                let menu_text = vec![
+                    Line::from(vec![Span::styled("Full Crisis - Main Menu", Style::default().fg(Color::Green))]),
+                    Line::from(""),
+                    Line::from("Available Commands:"),
+                    Line::from(vec![
+                        Span::styled("  continue", Style::default().fg(Color::Cyan)),
+                        Span::raw(" (c) - Continue existing game")
+                    ]),
+                    Line::from(vec![
+                        Span::styled("  new", Style::default().fg(Color::Cyan)),
+                        Span::raw(" (n) - Start new game")
+                    ]),
+                    Line::from(vec![
+                        Span::styled("  settings", Style::default().fg(Color::Cyan)),
+                        Span::raw(" (s) - Game settings")
+                    ]),
+                    Line::from(vec![
+                        Span::styled("  licenses", Style::default().fg(Color::Cyan)),
+                        Span::raw(" (l) - View licenses")
+                    ]),
+                    Line::from(vec![
+                        Span::styled("  quit", Style::default().fg(Color::Cyan)),
+                        Span::raw(" (q) - Exit game")
+                    ]),
+                ];
+                
+                let menu_display = Paragraph::new(menu_text)
+                    .block(Block::default().borders(Borders::ALL).title("Menu"));
+                f.render_widget(menu_display, chunks[0]);
 
                 // Input field
                 if let Some(input_str) = maybe_block_on(input.lock(), 2) {
@@ -102,12 +99,39 @@ pub async fn run() -> Result<(), full_crisis::err::BoxError> {
                         }
                         KeyCode::Enter => {
                             // Process command
-                            //println!("Entered command: {}", *input_str);
-                            let cmd = input_str.to_string();
-                            // TODO better input processing
-                            if cmd == "exit" || cmd == "quit" || cmd == "e" || cmd == "q" {
-                                if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
-                                    *evt_loop_wguard = full_crisis::game::ActiveEventLoop::Exit;
+                            let cmd = input_str.trim().to_lowercase();
+                            
+                            match cmd.as_str() {
+                                "continue" | "c" => {
+                                    if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
+                                        *evt_loop_wguard = full_crisis::game::ActiveEventLoop::WelcomeScreen(full_crisis::game::WelcomeScreenView::ContinueGame);
+                                    }
+                                }
+                                "new" | "new game" | "n" => {
+                                    if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
+                                        *evt_loop_wguard = full_crisis::game::ActiveEventLoop::WelcomeScreen(full_crisis::game::WelcomeScreenView::NewGame);
+                                    }
+                                }
+                                "settings" | "s" => {
+                                    if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
+                                        *evt_loop_wguard = full_crisis::game::ActiveEventLoop::WelcomeScreen(full_crisis::game::WelcomeScreenView::Settings);
+                                    }
+                                }
+                                "licenses" | "l" => {
+                                    if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
+                                        *evt_loop_wguard = full_crisis::game::ActiveEventLoop::WelcomeScreen(full_crisis::game::WelcomeScreenView::Licenses);
+                                    }
+                                }
+                                "quit" | "exit" | "q" | "e" => {
+                                    if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
+                                        *evt_loop_wguard = full_crisis::game::ActiveEventLoop::Exit;
+                                    }
+                                }
+                                "" => {
+                                    // Empty command, do nothing
+                                }
+                                _ => {
+                                    // Unknown command, could show help or ignore
                                 }
                             }
 
@@ -121,10 +145,6 @@ pub async fn run() -> Result<(), full_crisis::err::BoxError> {
             }
         }
 
-        // Wake UI if background task sent update
-        if let Ok(_) = rx.try_recv() {
-            // nothing needed, UI will re-render on next loop
-        }
     }
 
     // Restore terminal
