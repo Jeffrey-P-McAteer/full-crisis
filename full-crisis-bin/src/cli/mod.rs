@@ -116,9 +116,9 @@ pub async fn run() -> Result<(), full_crisis::err::BoxError> {
         selected_setting: SelectedSetting::Difficulty,
         settings_grid_selection: (0, 0),
         
-        difficulty_menu_state: MenuState::new(difficulty_items),
-        language_menu_state: MenuState::new(language_items),
-        autosave_menu_state: MenuState::new(autosave_items),
+        difficulty_menu_state: MenuState::new(vec![MenuItem::group("Difficulty", difficulty_items)]),
+        language_menu_state: MenuState::new(vec![MenuItem::group("Language", language_items)]),
+        autosave_menu_state: MenuState::new(vec![MenuItem::group("Auto-Save", autosave_items)]),
         
         settings,
         crises_folder_input: crises_folder,
@@ -126,6 +126,9 @@ pub async fn run() -> Result<(), full_crisis::err::BoxError> {
 
     // Set initial selection
     app_data.main_menu_state.select(Some(0));
+    
+    // Set initial menu selections to match current settings
+    set_menu_selection_to_current_value(&mut app_data);
 
     loop {
         {
@@ -314,7 +317,6 @@ fn draw_settings_with_popup(f: &mut ratatui::Frame, app_data: &mut AppData) {
     // Draw the popup menu based on selected setting
     match app_data.selected_setting {
         SelectedSetting::Difficulty => {
-            let menu = Menu::new();
             let popup_block = Block::default()
                 .borders(Borders::ALL)
                 .title("Select Difficulty")
@@ -322,10 +324,11 @@ fn draw_settings_with_popup(f: &mut ratatui::Frame, app_data: &mut AppData) {
             
             let inner_area = popup_block.inner(popup_area);
             f.render_widget(popup_block, popup_area);
+            
+            let menu = Menu::new();
             f.render_stateful_widget(menu, inner_area, &mut app_data.difficulty_menu_state);
         }
         SelectedSetting::Language => {
-            let menu = Menu::new();
             let popup_block = Block::default()
                 .borders(Borders::ALL)
                 .title("Select Language")
@@ -333,10 +336,11 @@ fn draw_settings_with_popup(f: &mut ratatui::Frame, app_data: &mut AppData) {
             
             let inner_area = popup_block.inner(popup_area);
             f.render_widget(popup_block, popup_area);
+            
+            let menu = Menu::new();
             f.render_stateful_widget(menu, inner_area, &mut app_data.language_menu_state);
         }
         SelectedSetting::Autosave => {
-            let menu = Menu::new();
             let popup_block = Block::default()
                 .borders(Borders::ALL)
                 .title("Select Autosave")
@@ -344,6 +348,8 @@ fn draw_settings_with_popup(f: &mut ratatui::Frame, app_data: &mut AppData) {
             
             let inner_area = popup_block.inner(popup_area);
             f.render_widget(popup_block, popup_area);
+            
+            let menu = Menu::new();
             f.render_stateful_widget(menu, inner_area, &mut app_data.autosave_menu_state);
         }
         SelectedSetting::CrisesFolder => {
@@ -534,14 +540,17 @@ fn handle_settings_grid_input(app_data: &mut AppData, key: KeyEvent) {
             match app_data.settings_grid_selection {
                 (0, 0) => {
                     app_data.selected_setting = SelectedSetting::Difficulty;
+                    reset_menu_to_current_value(app_data, SelectedSetting::Difficulty);
                     app_data.state = AppState::SettingsPopup;
                 }
                 (0, 1) => {
                     app_data.selected_setting = SelectedSetting::Language;
+                    reset_menu_to_current_value(app_data, SelectedSetting::Language);
                     app_data.state = AppState::SettingsPopup;
                 }
                 (1, 0) => {
                     app_data.selected_setting = SelectedSetting::Autosave;
+                    reset_menu_to_current_value(app_data, SelectedSetting::Autosave);
                     app_data.state = AppState::SettingsPopup;
                 }
                 (1, 1) => {
@@ -577,9 +586,10 @@ fn handle_settings_popup_input(app_data: &mut AppData, key: KeyEvent) {
             }
         }
         KeyCode::Enter => {
-            // Process menu selection based on selected setting
+            // Trigger selection and process menu selection based on selected setting
             match app_data.selected_setting {
                 SelectedSetting::Difficulty => {
+                    app_data.difficulty_menu_state.select(); // Trigger selection
                     for event in app_data.difficulty_menu_state.drain_events() {
                         let MenuEvent::Selected(difficulty) = event;
                         app_data.settings.difficulty_level = difficulty;
@@ -588,6 +598,7 @@ fn handle_settings_popup_input(app_data: &mut AppData, key: KeyEvent) {
                     }
                 }
                 SelectedSetting::Language => {
+                    app_data.language_menu_state.select(); // Trigger selection
                     for event in app_data.language_menu_state.drain_events() {
                         let MenuEvent::Selected(language) = event;
                         app_data.settings.language = language;
@@ -596,6 +607,7 @@ fn handle_settings_popup_input(app_data: &mut AppData, key: KeyEvent) {
                     }
                 }
                 SelectedSetting::Autosave => {
+                    app_data.autosave_menu_state.select(); // Trigger selection
                     for event in app_data.autosave_menu_state.drain_events() {
                         let MenuEvent::Selected(autosave) = event;
                         app_data.settings.autosave = autosave;
@@ -633,6 +645,87 @@ fn handle_crises_folder_input(app_data: &mut AppData, key: KeyEvent) {
     }
 }
 
+
+fn set_menu_selection_to_current_value(app_data: &mut AppData) {
+    // Set difficulty menu to current value
+    let difficulty_items = &DifficultyLevel::ALL;
+    if let Some(pos) = difficulty_items.iter().position(|&d| d == app_data.settings.difficulty_level) {
+        // Navigate to the group first, then to the specific item
+        app_data.difficulty_menu_state.down(); // Enter the group
+        for _ in 0..pos {
+            app_data.difficulty_menu_state.down();
+        }
+    }
+    
+    // Set language menu to current value
+    let available_languages = full_crisis::language::get_available_languages();
+    if let Some(pos) = available_languages.iter().position(|(code, _)| code == &app_data.settings.language) {
+        app_data.language_menu_state.down(); // Enter the group
+        for _ in 0..pos {
+            app_data.language_menu_state.down();
+        }
+    }
+    
+    // Set autosave menu to current value  
+    let autosave_value = app_data.settings.autosave;
+    let autosave_index = if autosave_value { 0 } else { 1 }; // Enabled = 0, Disabled = 1
+    app_data.autosave_menu_state.down(); // Enter the group
+    for _ in 0..autosave_index {
+        app_data.autosave_menu_state.down();
+    }
+}
+
+fn reset_menu_to_current_value(app_data: &mut AppData, setting: SelectedSetting) {
+    match setting {
+        SelectedSetting::Difficulty => {
+            // Reset difficulty menu state
+            app_data.difficulty_menu_state = MenuState::new(vec![MenuItem::group("Difficulty", vec![
+                MenuItem::item("Easy", DifficultyLevel::Easy),
+                MenuItem::item("Medium", DifficultyLevel::Medium),
+                MenuItem::item("Hard", DifficultyLevel::Hard),
+            ])]);
+            
+            let difficulty_items = &DifficultyLevel::ALL;
+            if let Some(pos) = difficulty_items.iter().position(|&d| d == app_data.settings.difficulty_level) {
+                app_data.difficulty_menu_state.down(); // Enter the group
+                for _ in 0..pos {
+                    app_data.difficulty_menu_state.down();
+                }
+            }
+        }
+        SelectedSetting::Language => {
+            // Reset language menu state
+            let language_items: Vec<MenuItem<String>> = full_crisis::language::get_available_languages()
+                .into_iter()
+                .map(|(code, display_name)| MenuItem::item(display_name.clone(), code))
+                .collect();
+            app_data.language_menu_state = MenuState::new(vec![MenuItem::group("Language", language_items)]);
+            
+            let available_languages = full_crisis::language::get_available_languages();
+            if let Some(pos) = available_languages.iter().position(|(code, _)| code == &app_data.settings.language) {
+                app_data.language_menu_state.down(); // Enter the group
+                for _ in 0..pos {
+                    app_data.language_menu_state.down();
+                }
+            }
+        }
+        SelectedSetting::Autosave => {
+            // Reset autosave menu state
+            app_data.autosave_menu_state = MenuState::new(vec![MenuItem::group("Auto-Save", vec![
+                MenuItem::item("Enabled", true),
+                MenuItem::item("Disabled", false),
+            ])]);
+            
+            let autosave_value = app_data.settings.autosave;
+            let autosave_index = if autosave_value { 0 } else { 1 };
+            app_data.autosave_menu_state.down(); // Enter the group
+            for _ in 0..autosave_index {
+                app_data.autosave_menu_state.down();
+            }
+        }
+        _ => {}
+    }
+}
 
 fn save_settings(settings: &GameSettings) {
     if let Ok(serialized) = serde_json::to_string(&settings) {
