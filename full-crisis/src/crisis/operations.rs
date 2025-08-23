@@ -74,7 +74,7 @@ pub fn get_template_name_from_display_name(display_name: &str) -> String {
 }
 
 pub fn get_saved_games() -> SavedGames {
-    if let Some(content) = crate::storage::get_attr("saved_games") {
+    if let Some(content) = crate::internal_storage::get_attr("saved_games") {
         serde_json::from_str(&content).unwrap_or_default()
     } else {
         SavedGames::default()
@@ -83,7 +83,7 @@ pub fn get_saved_games() -> SavedGames {
 
 pub fn save_games(saved_games: &SavedGames) {
     if let Ok(serialized) = serde_json::to_string(saved_games) {
-        crate::storage::set_attr("saved_games", &serialized);
+        crate::internal_storage::set_attr("saved_games", &serialized);
     }
 }
 
@@ -110,7 +110,7 @@ pub fn save_current_game(
     };
     
     // Generate save name if not provided
-    let timestamp = crate::storage::time_now()
+    let timestamp = crate::internal_storage::time_now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default()
         .as_secs();

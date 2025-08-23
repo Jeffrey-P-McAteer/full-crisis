@@ -11,12 +11,12 @@ impl GameWindow {
             font_scale: self.settings_font_scale,
         };
         if let Ok(serialized) = serde_json::to_string(&settings) {
-            crate::storage::set_attr("game_settings", &serialized);
+            crate::internal_storage::set_attr("game_settings", &serialized);
         }
     }
 
     pub fn load_settings() -> GameSettings {
-        if let Some(content) = crate::storage::get_attr("game_settings") {
+        if let Some(content) = crate::internal_storage::get_attr("game_settings") {
             serde_json::from_str(&content).unwrap_or_default()
         } else {
             GameSettings::default()

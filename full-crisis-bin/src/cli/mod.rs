@@ -1,18 +1,70 @@
 use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
+    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind},
     execute,
     terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
 };
 use ratatui::{
     Terminal,
     backend::CrosstermBackend,
-    layout::{Constraint, Direction, Layout},
-    style::{Color, Style},
+    layout::{Alignment, Constraint, Direction, Layout},
+    style::{Color, Modifier, Style},
     text::{Line, Span},
-    widgets::{Block, Borders, Paragraph},
+    widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Wrap},
 };
-use std::{io, sync::Arc};
-use tokio::time::Duration;
+use std::io;
+use full_crisis::gui::types::{DifficultyLevel, GameSettings};
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum AppState {
+    MainMenu,
+    Settings,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum SettingsSection {
+    Difficulty,
+    Language,
+    Autosave,
+    CrisesFolder,
+}
+
+#[derive(Debug)]
+struct AppData {
+    state: AppState,
+    main_menu_state: ListState,
+    main_menu_items: Vec<MainMenuChoice>,
+    settings_section: SettingsSection,
+    difficulty_state: ListState,
+    difficulty_items: Vec<DifficultyLevel>,
+    language_state: ListState,
+    language_items: Vec<String>,
+    autosave_state: ListState,
+    autosave_items: Vec<bool>,
+    settings: GameSettings,
+    crises_folder_input: String,
+    editing_crises_folder: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum MainMenuChoice {
+    Continue,
+    New,
+    Settings,
+    Licenses,
+    Quit,
+}
+
+impl std::fmt::Display for MainMenuChoice {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MainMenuChoice::Continue => write!(f, "Continue Game"),
+            MainMenuChoice::New => write!(f, "New Game"),
+            MainMenuChoice::Settings => write!(f, "Settings"),
+            MainMenuChoice::Licenses => write!(f, "Licenses"),
+            MainMenuChoice::Quit => write!(f, "Quit"),
+        }
+    }
+}
 
 pub async fn run() -> Result<(), full_crisis::err::BoxError> {
     let game = full_crisis::GAME.get().unwrap();
@@ -23,8 +75,55 @@ pub async fn run() -> Result<(), full_crisis::err::BoxError> {
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend).map_err(full_crisis::err::eloc!())?;
 
-    // Shared state
-    let input = Arc::new(tokio::sync::Mutex::new(String::new()));
+    let main_menu_items = vec![
+        MainMenuChoice::Continue,
+        MainMenuChoice::New,
+        MainMenuChoice::Settings,
+        MainMenuChoice::Licenses,
+        MainMenuChoice::Quit,
+    ];
+
+    let difficulty_items = DifficultyLevel::ALL.to_vec();
+    
+    let language_items: Vec<String> = full_crisis::language::get_available_languages()
+        .into_iter()
+        .map(|(code, _)| code)
+        .collect();
+
+    let autosave_items = vec![true, false];
+
+    let settings = full_crisis::gui::GameWindow::load_settings();
+    
+    let mut app_data = AppData {
+        state: AppState::MainMenu,
+        main_menu_state: ListState::default(),
+        main_menu_items,
+        settings_section: SettingsSection::Difficulty,
+        difficulty_state: ListState::default(),
+        difficulty_items,
+        language_state: ListState::default(),
+        language_items,
+        autosave_state: ListState::default(),
+        autosave_items,
+        crises_folder_input: settings.game_crises_folder.clone(),
+        settings,
+        editing_crises_folder: false,
+    };
+
+    // Set initial selections
+    app_data.main_menu_state.select(Some(0));
+    
+    if let Some(pos) = app_data.difficulty_items.iter().position(|&d| d == app_data.settings.difficulty_level) {
+        app_data.difficulty_state.select(Some(pos));
+    }
+    
+    if let Some(pos) = app_data.language_items.iter().position(|lang| lang == &app_data.settings.language) {
+        app_data.language_state.select(Some(pos));
+    }
+    
+    if let Some(pos) = app_data.autosave_items.iter().position(|&autosave| autosave == app_data.settings.autosave) {
+        app_data.autosave_state.select(Some(pos));
+    }
 
     loop {
         {
@@ -35,284 +134,501 @@ pub async fn run() -> Result<(), full_crisis::err::BoxError> {
             }
         }
 
-        // Draw UI
-        terminal
-            .draw(|f| {
-                let chunks = Layout::default()
-                    .direction(Direction::Vertical)
-                    .margin(1)
-                    .constraints([Constraint::Min(1), Constraint::Length(3)])
-                    .split(f.size());
+        terminal.draw(|f| {
+            match app_data.state {
+                AppState::MainMenu => draw_main_menu(f, &mut app_data),
+                AppState::Settings => draw_settings(f, &mut app_data),
+            }
+        }).map_err(full_crisis::err::eloc!())?;
 
-                // Main display (menu options)
-                let menu_text = vec![
-                    Line::from(vec![Span::styled("Full Crisis - Main Menu", Style::default().fg(Color::Green))]),
-                    Line::from(""),
-                    Line::from("Available Commands:"),
-                    Line::from(vec![
-                        Span::styled("  continue", Style::default().fg(Color::Cyan)),
-                        Span::raw(" (c) - Continue existing game")
-                    ]),
-                    Line::from(vec![
-                        Span::styled("  new", Style::default().fg(Color::Cyan)),
-                        Span::raw(" (n) - Start new game")
-                    ]),
-                    Line::from(vec![
-                        Span::styled("  settings", Style::default().fg(Color::Cyan)),
-                        Span::raw(" (s) - Game settings")
-                    ]),
-                    Line::from(vec![
-                        Span::styled("  licenses", Style::default().fg(Color::Cyan)),
-                        Span::raw(" (l) - View licenses")
-                    ]),
-                    Line::from(vec![
-                        Span::styled("  quit", Style::default().fg(Color::Cyan)),
-                        Span::raw(" (q) - Exit game")
-                    ]),
-                ];
-                
-                let menu_display = Paragraph::new(menu_text)
-                    .block(Block::default().borders(Borders::ALL).title("Menu"));
-                f.render_widget(menu_display, chunks[0]);
-
-                // Input field
-                if let Some(input_str) = maybe_block_on(input.lock(), 2) {
-                    let input_str = input_str.to_string();
-                    let input_widget = {
-                        Paragraph::new(&*input_str)
-                            .block(Block::default().borders(Borders::ALL).title("Command"))
-                    };
-                    f.render_widget(input_widget, chunks[1]);
-                }
-            })
-            .map_err(full_crisis::err::eloc!())?;
-
-        // Poll for key events or UI update
-        if event::poll(Duration::from_millis(100)).map_err(full_crisis::err::eloc!())? {
-            match event::read().map_err(full_crisis::err::eloc!())? {
-                Event::Key(key) => {
-                    let mut input_str = input.lock().await;
-                    match key.code {
-                        KeyCode::Char(c) => input_str.push(c),
-                        KeyCode::Backspace => {
-                            input_str.pop();
-                        }
-                        KeyCode::Enter => {
-                            // Process command
-                            let cmd = input_str.trim().to_lowercase();
-                            
-                            match cmd.as_str() {
-                                "continue" | "c" => {
-                                    if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
-                                        *evt_loop_wguard = full_crisis::game::ActiveEventLoop::WelcomeScreen(full_crisis::game::WelcomeScreenView::ContinueGame);
-                                    }
-                                }
-                                "new" | "new game" | "n" => {
-                                    if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
-                                        *evt_loop_wguard = full_crisis::game::ActiveEventLoop::WelcomeScreen(full_crisis::game::WelcomeScreenView::NewGame);
-                                    }
-                                }
-                                "settings" | "s" => {
-                                    if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
-                                        *evt_loop_wguard = full_crisis::game::ActiveEventLoop::WelcomeScreen(full_crisis::game::WelcomeScreenView::Settings);
-                                    }
-                                }
-                                "licenses" | "l" => {
-                                    if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
-                                        *evt_loop_wguard = full_crisis::game::ActiveEventLoop::WelcomeScreen(full_crisis::game::WelcomeScreenView::Licenses);
-                                    }
-                                }
-                                "quit" | "exit" | "q" | "e" => {
-                                    if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
-                                        *evt_loop_wguard = full_crisis::game::ActiveEventLoop::Exit;
-                                    }
-                                }
-                                "" => {
-                                    // Empty command, do nothing
-                                }
-                                _ => {
-                                    // Unknown command, could show help or ignore
-                                }
+        if event::poll(std::time::Duration::from_millis(50)).map_err(full_crisis::err::eloc!())? {
+            if let Event::Key(key) = event::read().map_err(full_crisis::err::eloc!())? {
+                if key.kind == KeyEventKind::Press {
+                    match app_data.state {
+                        AppState::MainMenu => {
+                            if handle_main_menu_input(&mut app_data, key, game).await? {
+                                break;
                             }
-
-                            input_str.clear();
-                        }
-                        KeyCode::Esc => break,
-                        _ => {}
+                        },
+                        AppState::Settings => {
+                            handle_settings_input(&mut app_data, key);
+                        },
                     }
                 }
-                _ => {}
             }
         }
-
     }
 
-    // Restore terminal
     disable_raw_mode().map_err(full_crisis::err::eloc!())?;
     execute!(
         terminal.backend_mut(),
         LeaveAlternateScreen,
         DisableMouseCapture
-    )
-    .map_err(full_crisis::err::eloc!())?;
+    ).map_err(full_crisis::err::eloc!())?;
     terminal.show_cursor().map_err(full_crisis::err::eloc!())?;
 
     Ok(())
 }
 
-use std::{
-    future::{Future, IntoFuture},
-    sync::{Condvar, Mutex},
-    task::{Context, Poll, Wake, Waker},
-};
+fn draw_main_menu(f: &mut ratatui::Frame, app_data: &mut AppData) {
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .margin(1)
+        .constraints([
+            Constraint::Length(3), // Title
+            Constraint::Min(5),     // Menu
+            Constraint::Length(3),  // Instructions
+        ])
+        .split(f.size());
 
-pub fn maybe_block_on<F: IntoFuture>(fut: F, max_polls: usize) -> Option<F::Output> {
-    // TODO See https://docs.rs/pollster/latest/src/pollster/lib.rs.html#111-131
-    let mut fut = core::pin::pin!(fut.into_future());
+    // Title
+    let title = Paragraph::new("Full Crisis - Main Menu")
+        .style(Style::default().fg(Color::Green).add_modifier(Modifier::BOLD))
+        .alignment(Alignment::Center)
+        .block(Block::default().borders(Borders::ALL));
+    f.render_widget(title, chunks[0]);
 
-    // Signal used to wake up the thread for polling as the future moves to completion. We need to use an `Arc`
+    // Menu
+    let menu_items: Vec<ListItem> = app_data
+        .main_menu_items
+        .iter()
+        .map(|choice| {
+            ListItem::new(format!("{}", choice))
+        })
+        .collect();
 
-    // because, although the lifetime of `fut` is limited to this function, the underlying IO abstraction might keep
+    let menu = List::new(menu_items)
+        .block(Block::default().borders(Borders::ALL).title("Menu"))
+        .style(Style::default().fg(Color::White))
+        .highlight_style(Style::default().fg(Color::Black).bg(Color::Cyan).add_modifier(Modifier::BOLD))
+        .highlight_symbol("► ");
+    
+    f.render_stateful_widget(menu, chunks[1], &mut app_data.main_menu_state);
 
-    // the signal alive for far longer. `Arc` is a thread-safe way to allow this to happen.
+    // Instructions
+    let instructions = Paragraph::new("↑/↓: Navigate, Enter: Select, Esc: Quit")
+        .style(Style::default().fg(Color::Gray))
+        .alignment(Alignment::Center)
+        .block(Block::default().borders(Borders::ALL));
+    f.render_widget(instructions, chunks[2]);
+}
 
-    // TODO: Investigate ways to reuse this `Arc<Signal>`... perhaps via a `static`?
+fn draw_settings(f: &mut ratatui::Frame, app_data: &mut AppData) {
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .margin(1)
+        .constraints([
+            Constraint::Length(3), // Title
+            Constraint::Min(10),   // Settings grid
+            Constraint::Length(3), // Instructions
+        ])
+        .split(f.size());
 
-    let signal = Arc::new(Signal::new());
+    // Title
+    let title = Paragraph::new("Settings")
+        .style(Style::default().fg(Color::Green).add_modifier(Modifier::BOLD))
+        .alignment(Alignment::Center)
+        .block(Block::default().borders(Borders::ALL));
+    f.render_widget(title, chunks[0]);
 
-    // Create a context that will be passed to the future.
+    // Settings grid - divide into 2x2 grid
+    let settings_area = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Length(8),  // Top row (Difficulty, Language)
+            Constraint::Length(8),  // Bottom row (Autosave, Crises Folder)
+        ])
+        .split(chunks[1]);
 
-    let waker = Waker::from(Arc::clone(&signal));
+    let top_row = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
+        .split(settings_area[0]);
 
-    let mut context = Context::from_waker(&waker);
+    let bottom_row = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
+        .split(settings_area[1]);
 
-    // Poll the future to completion
-    let mut remaining_polls = max_polls;
-    loop {
-        if remaining_polls < 1 {
-            break;
+    // Determine which section is currently selected
+    let difficulty_selected = app_data.settings_section == SettingsSection::Difficulty;
+    let language_selected = app_data.settings_section == SettingsSection::Language;
+    let autosave_selected = app_data.settings_section == SettingsSection::Autosave;
+    let folder_selected = app_data.settings_section == SettingsSection::CrisesFolder;
+
+    // Difficulty setting
+    let difficulty_items: Vec<ListItem> = app_data
+        .difficulty_items
+        .iter()
+        .map(|&difficulty| {
+            ListItem::new(format!("{}", difficulty))
+        })
+        .collect();
+
+    let difficulty_style = if difficulty_selected {
+        Style::default().fg(Color::Black).bg(Color::Yellow).add_modifier(Modifier::BOLD)
+    } else {
+        Style::default().fg(Color::White)
+    };
+
+    let difficulty_menu = List::new(difficulty_items)
+        .block(Block::default().borders(Borders::ALL).title("Difficulty"))
+        .style(Style::default().fg(Color::White))
+        .highlight_style(difficulty_style)
+        .highlight_symbol("► ");
+    f.render_stateful_widget(difficulty_menu, top_row[0], &mut app_data.difficulty_state);
+
+    // Language setting  
+    let language_items: Vec<ListItem> = app_data.language_items
+        .iter()
+        .map(|code| {
+            let display_name = full_crisis::language::get_language_display_name(code);
+            ListItem::new(format!("{} ({})", display_name, code))
+        })
+        .collect();
+
+    let language_style = if language_selected {
+        Style::default().fg(Color::Black).bg(Color::Green).add_modifier(Modifier::BOLD)
+    } else {
+        Style::default().fg(Color::White)
+    };
+
+    let language_menu = List::new(language_items)
+        .block(Block::default().borders(Borders::ALL).title("Language"))
+        .style(Style::default().fg(Color::White))
+        .highlight_style(language_style)
+        .highlight_symbol("► ");
+    f.render_stateful_widget(language_menu, top_row[1], &mut app_data.language_state);
+
+    // Autosave setting
+    let autosave_items: Vec<ListItem> = app_data.autosave_items
+        .iter()
+        .map(|&enabled| {
+            let text = if enabled { "Enabled" } else { "Disabled" };
+            ListItem::new(text)
+        })
+        .collect();
+
+    let autosave_style = if autosave_selected {
+        Style::default().fg(Color::Black).bg(Color::Magenta).add_modifier(Modifier::BOLD)
+    } else {
+        Style::default().fg(Color::White)
+    };
+
+    let autosave_menu = List::new(autosave_items)
+        .block(Block::default().borders(Borders::ALL).title("Autosave"))
+        .style(Style::default().fg(Color::White))
+        .highlight_style(autosave_style)
+        .highlight_symbol("► ");
+    f.render_stateful_widget(autosave_menu, bottom_row[0], &mut app_data.autosave_state);
+
+    // Crises folder text input
+    let folder_style = if folder_selected {
+        if app_data.editing_crises_folder {
+            Style::default().fg(Color::Black).bg(Color::Cyan)
+        } else {
+            Style::default().fg(Color::Black).bg(Color::Yellow)
         }
-        remaining_polls -= 1;
+    } else {
+        Style::default().fg(Color::White)
+    };
+    
+    let crises_folder = Paragraph::new(app_data.crises_folder_input.as_str())
+        .style(folder_style)
+        .block(Block::default().borders(Borders::ALL).title("Crises Folder"))
+        .wrap(Wrap { trim: true });
+    f.render_widget(crises_folder, bottom_row[1]);
 
-        match fut.as_mut().poll(&mut context) {
-            Poll::Pending => signal.wait(),
+    // Instructions
+    let instructions = Paragraph::new("Tab/Arrow: Navigate, Enter: Select/Edit, Esc: Back to Main Menu")
+        .style(Style::default().fg(Color::Gray))
+        .alignment(Alignment::Center)
+        .block(Block::default().borders(Borders::ALL));
+    f.render_widget(instructions, chunks[2]);
+}
 
-            Poll::Ready(item) => return Some(item),
+async fn handle_main_menu_input(
+    app_data: &mut AppData,
+    key: KeyEvent,
+    game: &full_crisis::game::GameState,
+) -> Result<bool, full_crisis::err::BoxError> {
+    match key.code {
+        KeyCode::Up => {
+            let i = match app_data.main_menu_state.selected() {
+                Some(i) => {
+                    if i == 0 {
+                        app_data.main_menu_items.len() - 1
+                    } else {
+                        i - 1
+                    }
+                }
+                None => 0,
+            };
+            app_data.main_menu_state.select(Some(i));
         }
-    }
-    None
-}
-
-/// An extension trait that allows blocking on a future in suffix position.
-
-pub trait FutureExt: Future {
-    /// Block the thread until the future is ready.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use pollster::FutureExt as _;
-    ///
-    /// let my_fut = async {};
-    ///
-    /// let result = my_fut.block_on();
-    /// ```
-    fn block_on(self) -> Self::Output
-    where
-        Self: Sized,
-    {
-        maybe_block_on(self, usize::MAX).expect("block_on ran forever")
-    }
-}
-
-impl<F: Future> FutureExt for F {}
-
-enum SignalState {
-    Empty,
-    Waiting,
-    Notified,
-}
-
-struct Signal {
-    state: Mutex<SignalState>,
-    cond: Condvar,
-}
-
-impl Signal {
-    fn new() -> Self {
-        Self {
-            state: Mutex::new(SignalState::Empty),
-
-            cond: Condvar::new(),
+        KeyCode::Down => {
+            let i = match app_data.main_menu_state.selected() {
+                Some(i) => {
+                    if i >= app_data.main_menu_items.len() - 1 {
+                        0
+                    } else {
+                        i + 1
+                    }
+                }
+                None => 0,
+            };
+            app_data.main_menu_state.select(Some(i));
         }
-    }
-
-    fn wait(&self) {
-        let mut state = self.state.lock().unwrap();
-
-        match *state {
-            // Notify() was called before we got here, consume it here without waiting and return immediately.
-            SignalState::Notified => *state = SignalState::Empty,
-
-            // This should not be possible because our signal is created within a function and never handed out to any
-
-            // other threads. If this is the case, we have a serious problem so we panic immediately to avoid anything
-
-            // more problematic happening.
-            SignalState::Waiting => {
-                unreachable!("Multiple threads waiting on the same signal: Open a bug report!");
-            }
-
-            SignalState::Empty => {
-                // Nothing has happened yet, and we're the only thread waiting (as should be the case!). Set the state
-
-                // accordingly and begin polling the condvar in a loop until it's no longer telling us to wait. The
-
-                // loop prevents incorrect spurious wakeups.
-
-                *state = SignalState::Waiting;
-
-                while let SignalState::Waiting = *state {
-                    state = self.cond.wait(state).unwrap();
+        KeyCode::Enter => {
+            if let Some(selected) = app_data.main_menu_state.selected() {
+                match app_data.main_menu_items[selected] {
+                    MainMenuChoice::Continue => {
+                        if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
+                            *evt_loop_wguard = full_crisis::game::ActiveEventLoop::WelcomeScreen(
+                                full_crisis::game::WelcomeScreenView::ContinueGame
+                            );
+                        }
+                    }
+                    MainMenuChoice::New => {
+                        if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
+                            *evt_loop_wguard = full_crisis::game::ActiveEventLoop::WelcomeScreen(
+                                full_crisis::game::WelcomeScreenView::NewGame
+                            );
+                        }
+                    }
+                    MainMenuChoice::Settings => {
+                        app_data.state = AppState::Settings;
+                    }
+                    MainMenuChoice::Licenses => {
+                        if let Ok(mut evt_loop_wguard) = game.active_event_loop.write() {
+                            *evt_loop_wguard = full_crisis::game::ActiveEventLoop::WelcomeScreen(
+                                full_crisis::game::WelcomeScreenView::Licenses
+                            );
+                        }
+                    }
+                    MainMenuChoice::Quit => {
+                        return Ok(true);
+                    }
                 }
             }
         }
+        KeyCode::Esc => {
+            return Ok(true);
+        }
+        _ => {}
     }
+    Ok(false)
+}
 
-    fn notify(&self) {
-        let mut state = self.state.lock().unwrap();
-
-        match *state {
-            // The signal was already notified, no need to do anything because the thread will be waking up anyway
-            SignalState::Notified => {}
-
-            // The signal wasn't notified but a thread isn't waiting on it, so we can avoid doing unnecessary work by
-
-            // skipping the condvar and leaving behind a message telling the thread that a notification has already
-
-            // occurred should it come along in the future.
-            SignalState::Empty => *state = SignalState::Notified,
-
-            // The signal wasn't notified and there's a waiting thread. Reset the signal so it can be wait()'ed on again
-
-            // and wake up the thread. Because there should only be a single thread waiting, `notify_all` would also be
-
-            // valid.
-            SignalState::Waiting => {
-                *state = SignalState::Empty;
-
-                self.cond.notify_one();
+fn handle_settings_input(app_data: &mut AppData, key: KeyEvent) {
+    match key.code {
+        KeyCode::Esc => {
+            app_data.editing_crises_folder = false;
+            app_data.state = AppState::MainMenu;
+        }
+        KeyCode::Tab => {
+            app_data.editing_crises_folder = false;
+            app_data.settings_section = match app_data.settings_section {
+                SettingsSection::Difficulty => SettingsSection::Language,
+                SettingsSection::Language => SettingsSection::Autosave,
+                SettingsSection::Autosave => SettingsSection::CrisesFolder,
+                SettingsSection::CrisesFolder => SettingsSection::Difficulty,
+            };
+        }
+        KeyCode::Left => {
+            app_data.editing_crises_folder = false;
+            app_data.settings_section = match app_data.settings_section {
+                SettingsSection::Language | SettingsSection::CrisesFolder => SettingsSection::Difficulty,
+                SettingsSection::Difficulty => SettingsSection::Language,
+                SettingsSection::Autosave => SettingsSection::CrisesFolder,
+            };
+        }
+        KeyCode::Right => {
+            app_data.editing_crises_folder = false;
+            app_data.settings_section = match app_data.settings_section {
+                SettingsSection::Difficulty | SettingsSection::Autosave => SettingsSection::Language,
+                SettingsSection::Language => SettingsSection::Difficulty,
+                SettingsSection::CrisesFolder => SettingsSection::Autosave,
+            };
+        }
+        KeyCode::Up => {
+            app_data.editing_crises_folder = false;
+            app_data.settings_section = match app_data.settings_section {
+                SettingsSection::Autosave | SettingsSection::CrisesFolder => SettingsSection::Difficulty,
+                SettingsSection::Difficulty => SettingsSection::Autosave,
+                SettingsSection::Language => SettingsSection::CrisesFolder,
+            };
+        }
+        KeyCode::Down => {
+            app_data.editing_crises_folder = false;
+            app_data.settings_section = match app_data.settings_section {
+                SettingsSection::Difficulty | SettingsSection::Language => SettingsSection::Autosave,
+                SettingsSection::Autosave => SettingsSection::Difficulty,
+                SettingsSection::CrisesFolder => SettingsSection::Language,
+            };
+        }
+        _ => {
+            if app_data.editing_crises_folder {
+                handle_crises_folder_input(app_data, key);
+            } else {
+                handle_menu_selection(app_data, key);
             }
         }
     }
 }
 
-impl Wake for Signal {
-    fn wake(self: Arc<Self>) {
-        self.notify();
+fn handle_crises_folder_input(app_data: &mut AppData, key: KeyEvent) {
+    match key.code {
+        KeyCode::Char(c) => {
+            app_data.crises_folder_input.push(c);
+            app_data.settings.game_crises_folder = app_data.crises_folder_input.clone();
+            save_settings(&app_data.settings);
+        }
+        KeyCode::Backspace => {
+            app_data.crises_folder_input.pop();
+            app_data.settings.game_crises_folder = app_data.crises_folder_input.clone();
+            save_settings(&app_data.settings);
+        }
+        KeyCode::Enter => {
+            app_data.editing_crises_folder = false;
+        }
+        _ => {}
     }
+}
 
-    fn wake_by_ref(self: &Arc<Self>) {
-        self.notify();
+fn handle_menu_selection(app_data: &mut AppData, key: KeyEvent) {
+    match key.code {
+        KeyCode::Enter => {
+            match app_data.settings_section {
+                SettingsSection::Difficulty => {
+                    if let Some(idx) = app_data.difficulty_state.selected() {
+                        app_data.settings.difficulty_level = app_data.difficulty_items[idx];
+                        save_settings(&app_data.settings);
+                    }
+                }
+                SettingsSection::Language => {
+                    if let Some(idx) = app_data.language_state.selected() {
+                        app_data.settings.language = app_data.language_items[idx].clone();
+                        save_settings(&app_data.settings);
+                    }
+                }
+                SettingsSection::Autosave => {
+                    if let Some(idx) = app_data.autosave_state.selected() {
+                        app_data.settings.autosave = app_data.autosave_items[idx];
+                        save_settings(&app_data.settings);
+                    }
+                }
+                SettingsSection::CrisesFolder => {
+                    app_data.editing_crises_folder = true;
+                }
+            }
+        }
+        KeyCode::Up => {
+            handle_list_navigation_up(app_data);
+        }
+        KeyCode::Down => {
+            handle_list_navigation_down(app_data);
+        }
+        _ => {}
+    }
+}
+
+fn handle_list_navigation_up(app_data: &mut AppData) {
+    match app_data.settings_section {
+        SettingsSection::Difficulty => {
+            let i = match app_data.difficulty_state.selected() {
+                Some(i) => {
+                    if i == 0 {
+                        app_data.difficulty_items.len() - 1
+                    } else {
+                        i - 1
+                    }
+                }
+                None => 0,
+            };
+            app_data.difficulty_state.select(Some(i));
+        }
+        SettingsSection::Language => {
+            let i = match app_data.language_state.selected() {
+                Some(i) => {
+                    if i == 0 {
+                        app_data.language_items.len() - 1
+                    } else {
+                        i - 1
+                    }
+                }
+                None => 0,
+            };
+            app_data.language_state.select(Some(i));
+        }
+        SettingsSection::Autosave => {
+            let i = match app_data.autosave_state.selected() {
+                Some(i) => {
+                    if i == 0 {
+                        app_data.autosave_items.len() - 1
+                    } else {
+                        i - 1
+                    }
+                }
+                None => 0,
+            };
+            app_data.autosave_state.select(Some(i));
+        }
+        SettingsSection::CrisesFolder => {
+            // No navigation for text input
+        }
+    }
+}
+
+fn handle_list_navigation_down(app_data: &mut AppData) {
+    match app_data.settings_section {
+        SettingsSection::Difficulty => {
+            let i = match app_data.difficulty_state.selected() {
+                Some(i) => {
+                    if i >= app_data.difficulty_items.len() - 1 {
+                        0
+                    } else {
+                        i + 1
+                    }
+                }
+                None => 0,
+            };
+            app_data.difficulty_state.select(Some(i));
+        }
+        SettingsSection::Language => {
+            let i = match app_data.language_state.selected() {
+                Some(i) => {
+                    if i >= app_data.language_items.len() - 1 {
+                        0
+                    } else {
+                        i + 1
+                    }
+                }
+                None => 0,
+            };
+            app_data.language_state.select(Some(i));
+        }
+        SettingsSection::Autosave => {
+            let i = match app_data.autosave_state.selected() {
+                Some(i) => {
+                    if i >= app_data.autosave_items.len() - 1 {
+                        0
+                    } else {
+                        i + 1
+                    }
+                }
+                None => 0,
+            };
+            app_data.autosave_state.select(Some(i));
+        }
+        SettingsSection::CrisesFolder => {
+            // No navigation for text input
+        }
+    }
+}
+
+fn save_settings(settings: &GameSettings) {
+    if let Ok(serialized) = serde_json::to_string(&settings) {
+        full_crisis::storage::set_attr("game_settings", &serialized);
     }
 }

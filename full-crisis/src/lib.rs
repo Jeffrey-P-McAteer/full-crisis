@@ -39,9 +39,9 @@ mod wasm32_storage;
 mod native_storage;
 
 #[cfg(target_arch = "wasm32")]
-use wasm32_storage as storage;
+use wasm32_storage as internal_storage;
 #[cfg(not(target_arch = "wasm32"))]
-use native_storage as storage;
+use native_storage as internal_storage;
 
 
 
@@ -62,6 +62,17 @@ pub fn init_global_vars() {
 
   // Cannot assign to OS_COLOR_THEME in any reasonable manner
 
+}
+
+/// Public storage functions for external use
+pub mod storage {
+    pub fn get_attr(name: &str) -> Option<String> {
+        super::internal_storage::get_attr(name)
+    }
+    
+    pub fn set_attr(name: &str, value: &str) {
+        super::internal_storage::set_attr(name, value)
+    }
 }
 
 /// Quit the game application
