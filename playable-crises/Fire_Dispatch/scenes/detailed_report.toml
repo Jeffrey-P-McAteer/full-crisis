@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/fire_scene_report.png"
 speaking_character_image = "Fire_Dispatch/firefighter_radio.png"
+background_audio = "Fire_Dispatch/fire-sound-effects-224089.mp3"
 
 [text]
 eng = "You request a detailed report from incident command. 'Dispatch to Command, requesting comprehensive status report - personnel accountability, fire spread, structural integrity, and evacuation completion.' 'Command to Dispatch: All personnel accounted for, fire contained to units 3A and 3B, structural engineer requested for assessment, 95% evacuation complete with two residents refusing to leave unit 6C.'"

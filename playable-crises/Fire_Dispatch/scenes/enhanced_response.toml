@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/enhanced_response_convoy.png"
 speaking_character_image = "Fire_Dispatch/fire_chief_character.png"
+background_audio = "Fire_Dispatch/fire-truck-siren-sfx-336508.mp3"
 
 [text]
 eng = "You escalate to an enhanced response: 4 fire trucks plus rescue squad and ambulance. 'Multi-unit response to Riverside Apartments, structure fire with entrapment potential.' The additional resources strain your available fleet but provide comprehensive coverage for rescue operations, medical support, and extended firefighting capabilities."

@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/command_center_monitoring.png"
 speaking_character_image = "Fire_Dispatch/fire_chief_character.png"
+background_audio = "Fire_Dispatch/fire-sound-effects-224089.mp3"
 
 [text]
 eng = "You request an evacuation status update. 'Dispatch to Engine 12, what's the status on building evacuation?' 'Engine 12 to Dispatch, building is approximately 70% evacuated, residents are being directed to the south parking lot, no injuries reported at this time. Third floor residents still exiting via stairwells.'"

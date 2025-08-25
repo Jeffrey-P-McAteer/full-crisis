@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/command_center_monitoring.png"
 speaking_character_image = "Fire_Dispatch/battalion_chief_character.png"
+background_audio = "Fire_Dispatch/fire-truck-siren-sfx-336508.mp3"
 
 [text]
 eng = "You begin preparing contingency plans for potential escalation. 'Dispatch to Battalion Chief, I'm placing Engine 8 and Truck 2 on standby for this location. Weather conditions are creating high wind potential.' 'Copy that, Dispatch. I'm also requesting aerial ladder company to stage nearby in case we need roof operations.'"

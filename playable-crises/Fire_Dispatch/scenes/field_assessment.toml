@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/single_truck_assessment.png"
 speaking_character_image = "Fire_Dispatch/firefighter_radio.png"
+background_audio = "Fire_Dispatch/fire-sound-effects-224089.mp3"
 
 [text]
 eng = "'Engine 7 to Dispatch - we're on scene at Riverside Apartments. Heavy smoke from third floor, but fire appears contained to one unit. Request one additional engine for backup.' Your quick initial dispatch is paying off, but the situation needs more resources."

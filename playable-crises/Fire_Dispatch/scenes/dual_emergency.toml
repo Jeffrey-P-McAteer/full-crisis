@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/enhanced_response_convoy.png"
 speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+background_audio = "Fire_Dispatch/fire-truck-siren-sfx-336508.mp3"
 
 [text]
 eng = "A second emergency call comes in during the apartment fire response. 'Dispatch, we have a medical emergency - cardiac arrest at 1247 Oak Street.' With major resources committed to the fire, you must balance competing emergency demands while maintaining effective coverage citywide."

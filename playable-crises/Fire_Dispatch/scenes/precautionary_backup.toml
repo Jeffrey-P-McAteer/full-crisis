@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/fire_scene_report.png"
 speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+background_audio = "Fire_Dispatch/fire-truck-siren-sfx-336508.mp3"
 
 [text]
 eng = "You dispatch precautionary backup based on the initial report. 'Engine 7 and Rescue 1, respond to Riverside Apartments as backup - initial report indicates potential for escalation.' Your conservative approach ensures adequate resources are available if the situation changes rapidly, though it reduces available coverage for other potential emergencies."

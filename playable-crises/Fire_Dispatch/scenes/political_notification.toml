@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/full_alarm_response.png"
 speaking_character_image = "Fire_Dispatch/fire_chief_character.png"
+background_audio = "Fire_Dispatch/fire-truck-siren-sfx-336508.mp3"
 
 [text]
 eng = "You begin political notifications for the major incident. 'This is Dispatch notifying the Fire Chief and Mayor's office - we have a full alarm structural fire with potential for significant displacement and media attention.' 'Understood, I'll coordinate with emergency management for shelter operations and media briefing schedule.'"

@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/enhanced_response_convoy.png"
 speaking_character_image = "Fire_Dispatch/battalion_chief_character.png"
+background_audio = "Fire_Dispatch/fire-truck-siren-sfx-336508.mp3"
 
 [text]
 eng = "You activate mutual aid agreements. 'Dispatch to Regional Fire Control, requesting activation of mutual aid for City Station - structure fire with enhanced response requirements.' 'Regional Control confirms: Westside FD sending Engine 501, Eastview FD sending Truck 302, both units ETA 8 minutes.' This coordinated regional response significantly increases operational capacity."

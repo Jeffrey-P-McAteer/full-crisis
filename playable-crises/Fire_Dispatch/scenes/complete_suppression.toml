@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/battalion_command_scene.png"
 speaking_character_image = "Fire_Dispatch/fire_chief_character.png"
+background_audio = "Fire_Dispatch/fire-sound-effects-224089.mp3"
 
 [text]
 eng = "You coordinate the final suppression operations. 'Command to Dispatch, fire is fully suppressed, ventilation operations complete, beginning overhaul procedures. All residents accounted for, no injuries reported.' Your coordinated response has successfully managed a complex incident with positive outcomes for all involved parties."

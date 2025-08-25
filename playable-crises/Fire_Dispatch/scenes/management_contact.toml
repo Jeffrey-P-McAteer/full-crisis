@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/apartment_complex_night.png"
 speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+background_audio = "Fire_Dispatch/fire-sound-effects-224089.mp3"
 
 [text]
 eng = "You contact building management for evacuation coordination. 'This is Fire Dispatch - we have active structure fire response at your Riverside location. Do you have building personnel on-site to assist with evacuation?' 'Yes, we have two maintenance staff and a manager on-site. They're already helping residents and can provide building layouts.'"

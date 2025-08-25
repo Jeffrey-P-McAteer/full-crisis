@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/apartment_complex_night.png"
 speaking_character_image = "Fire_Dispatch/battalion_chief_character.png"
+background_audio = "Fire_Dispatch/fire-sound-effects-224089.mp3"
 
 [text]
 eng = "You coordinate damage assessment operations. 'Dispatch to Building Department, we'll need structural assessment team at Riverside Apartments - fire damage to third floor with potential water damage to floors below.' 'Building Department confirms - structural engineer and safety inspector en route, ETA 20 minutes.' Proper damage assessment is crucial for determining occupancy safety."

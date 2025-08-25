@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/battalion_command_scene.png"
 speaking_character_image = "Fire_Dispatch/battalion_chief_character.png"
+background_audio = "Fire_Dispatch/fire-truck-siren-sfx-336508.mp3"
 
 [text]
 eng = "With full alarm response deployed, you coordinate the massive operation. 'Battalion Chief to all units, fire is contained to floors 3-4, all residents accounted for, no casualties.' Your maximum response prevented a potential disaster, though it left the city temporarily vulnerable to other emergencies."

@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/command_center_monitoring.png"
 speaking_character_image = "Fire_Dispatch/fire_chief_character.png"
+background_audio = "Fire_Dispatch/fire-truck-siren-sfx-336508.mp3"
 
 [text]
 eng = "You monitor the enhanced response team's progress. 'Command to Dispatch, we have visual on heavy smoke from third floor, evacuation in progress, no entrapments reported at this time.' The coordinated response is working effectively - your resource allocation appears well-suited to the incident."

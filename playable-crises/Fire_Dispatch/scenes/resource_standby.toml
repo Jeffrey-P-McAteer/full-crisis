@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/two_firetrucks_responding.png"
 speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+background_audio = "Fire_Dispatch/fire-truck-siren-sfx-336508.mp3"
 
 [text]
 eng = "You place additional resources on standby. 'Engine 8, Engine 15, and Rescue 3, move to staging positions - respond to Riverside Apartments for potential backup.' Your proactive resource positioning ensures faster response if the situation escalates beyond initial crew capacity."

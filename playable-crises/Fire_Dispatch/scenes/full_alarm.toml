@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/full_alarm_response.png"
 speaking_character_image = "Fire_Dispatch/battalion_chief_character.png"
+background_audio = "Fire_Dispatch/fire-truck-siren-sfx-336508.mp3"
 
 [text]
 eng = "You sound a full alarm: 6 fire trucks, 2 rescue units, 3 ambulances, and the Battalion Chief. 'All units, structure fire with multiple entrapments, Riverside Apartments Oak Street.' This is maximum response - excellent for life safety but leaves the entire city vulnerable to other emergencies for the next 45 minutes."

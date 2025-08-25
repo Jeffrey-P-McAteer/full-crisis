@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/full_alarm_response.png"
 speaking_character_image = "Fire_Dispatch/battalion_chief_character.png"
+background_audio = "Fire_Dispatch/fire-truck-siren-sfx-336508.mp3"
 
 [text]
 eng = "You request county backup resources. 'Dispatch to County Fire, requesting mutual aid response - full alarm structure fire, 6-story apartment complex with potential for extension to adjacent buildings.' 'County Fire to City Dispatch, we're sending Engine 210 and Truck 205, ETA 12 minutes.' This significant resource commitment reflects the serious nature of the incident."

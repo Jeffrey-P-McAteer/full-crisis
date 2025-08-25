@@ -3,6 +3,7 @@ speaking_character_image = [
     "Fire_Dispatch/panicked_caller_character.png",
     "Fire_Dispatch/panicked_caller_character_2.png",
 ]
+background_audio = "Fire_Dispatch/fire-sound-effects-224089.mp3"
 
 [text]
 eng = "Caller: 'I think there are about 20-30 people in the building! Most are asleep - it's nearly 3 AM. The elderly couple next to me, they might not hear the alarms!' The caller's voice cracks with panic. You quickly assess: high-occupancy building, nighttime fire, potential mobility issues with residents."

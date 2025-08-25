@@ -1,4 +1,6 @@
+background_image = "Fire_Dispatch/apartment_fire_background.png"
 speaking_character_image = "Fire_Dispatch/alarmed-firefighter.png"
+background_audio = "Fire_Dispatch/fire-sound-effects-224089.mp3"
 
 [text]
 eng = "Your strategic resource allocation proves excellent. The fire is contained with minimal property damage, all residents evacuated safely, and you maintain adequate citywide coverage for other emergencies."

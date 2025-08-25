@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/fire_scene_report.png"
 speaking_character_image = "Fire_Dispatch/firefighter_radio.png"
+background_audio = "Fire_Dispatch/fire-sound-effects-224089.mp3"
 
 [text]
 eng = "'Dispatch, Engine 12 on scene. We have a working fire, third floor, smoke showing from multiple windows. Building is evacuating, no immediate rescues needed.' Your standard response was appropriate - the situation is manageable with current resources."

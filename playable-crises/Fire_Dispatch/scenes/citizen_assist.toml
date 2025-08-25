@@ -1,5 +1,6 @@
 background_image = "Fire_Dispatch/apartment_complex_night.png"
 speaking_character_image = "Fire_Dispatch/dispatcher_character.png"
+background_audio = "Fire_Dispatch/fire-sound-effects-224089.mp3"
 
 [text]
 eng = "You coordinate citizen assistance for displaced residents. 'Dispatch to American Red Cross Emergency Services, we have approximately 40 displaced residents from apartment fire, requesting shelter activation.' 'Red Cross confirming - we'll establish temporary shelter at Community Center, estimated setup time 45 minutes.' Caring for affected citizens extends beyond immediate fire suppression."
