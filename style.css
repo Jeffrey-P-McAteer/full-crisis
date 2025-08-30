@@ -1,0 +1,122 @@
+/* Credit to MaisieMartin's wonderful selection of hues from https://www.colourlovers.com/palette/269490/This_is_an_Emergency */
+html, body {
+  background: #7f8e9e;
+}
+header {
+  font: bold 2.4em Arial, sans-serif;
+  color: #61B09B;
+  -webkit-text-stroke-width: 1.5pt;
+  -webkit-text-stroke-color: #3E124A;
+}
+main {
+  font-family: Arial, sans-serif;
+  font-size: 1.8em;
+  color: #3E124A;
+  width: 780pt;
+  position: absolute;
+  top: 60pt;
+  left: 0;
+  right: 0;
+  margin: auto;
+  border-radius: 12pt;
+  box-shadow: #3E124A 2pt 2pt 24pt;
+  padding: 6pt 16pt;
+
+  padding-top: 440pt;
+  background-image:    url(full-crisis-splash.transparent.png), linear-gradient(180deg, rgba(255,106,0,1) 0%, rgba(255,106,0,1) 22%, rgba(245,244,220,1) 66%, rgba(245,244,220,1) 100%);
+  background-size:     contain;
+  background-repeat:   no-repeat;
+  background-position: center top;
+}
+
+a.dl {
+  color: inherit;
+  text-decoration: inherit;
+  font-size: 1.12em;
+  padding: 28pt 12pt;
+  padding-left: 148pt;
+  margin: 8pt 16pt;
+  border: 3pt solid #4D4B17;
+  background-color: #4D4B17;
+  border-radius: 8pt;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-position: left;
+  background-size: contain;
+  background-origin: padding-box;
+  transition: transform .2s;
+}
+a.dl:hover {
+  transform: scale(1.06);
+  border-color: #3E124A;
+}
+a.win {
+  background-image: url("windows_icon.png");
+  background-color: #4687b0;
+  border-color: #4687b0;
+}
+a.mac {
+  background-image: url("macos_icon.png");
+  background-color: #ff9b9b;
+  border-color: #ff9b9b;
+}
+a.linux {
+  background-image: url("linux_icon.png");
+  background-color: #8D8B57;
+  border-color: #8D8B57;
+}
+a.noapp {
+  background-image: url("web_globe_icon.png");
+  background-color: #ffa700;
+  border-color: #ffa700;
+}
+
+span.tiny-text {
+  font-size: 0.62em;
+}
+
+img.kpi-chart {
+  width: 300pt;
+  padding: 0;
+  display: inline-block;
+}
+img.kpi-chart:hover {
+  transform: scale(1.06);
+}
+
+pre#build-message {
+  transform-origin: left top;
+}
+
+.warning {
+  /* colors from https://www.colourlovers.com/palette/2727/Hurricane_Warning! */
+  font-weight: bold;
+  color: #FF3030;
+  -webkit-text-stroke-width: 1pt;
+  -webkit-text-stroke-color: #680000;
+  padding: 1pt 8pt;
+  border-radius: 2pt;
+  border: 1pt solid black;
+  background: #FFFF7F
+}
+
+.background-bordered-text {
+  -webkit-text-stroke-width: 4pt;
+  -webkit-text-stroke-color: rgba(255,106,0,1); /* match top of gradient <main> gradient */
+  paint-order: stroke fill;
+}
+
+@media only screen and (max-width: 630pt) {
+  main {
+    width: 94vw !important;
+    top: 0pt !important;
+    border-radius: 0pt !important;
+    padding: 2pt 4pt !important;
+    padding-top: 240pt !important;
+  }
+  .mobile-light-bordered-text {
+    -webkit-text-stroke-width: 1pt;
+    -webkit-text-stroke-color: #E0E0E0;
+    paint-order: stroke fill;
+  }
+}
