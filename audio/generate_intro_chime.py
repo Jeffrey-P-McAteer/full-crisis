@@ -20,10 +20,6 @@ import soundfile as sf
 from scipy import signal
 from pathlib import Path
 
-# Cache directory for audio assets
-CACHE_DIR = Path.home() / ".cache" / "fc-audio"
-CACHE_DIR.mkdir(parents=True, exist_ok=True)
-
 def create_envelope(duration, sample_rate, attack=0.01, decay=0.1, sustain=0.7, release=0.5):
     """Create an ADSR envelope for the sound."""
     total_samples = int(duration * sample_rate)
@@ -380,41 +376,20 @@ def create_full_mix(sample_rate=44100, duration=4):
     final_mix = np.tanh(compressed * 0.8) * 0.9
     
     # Add subtle reverb
-    reverb_time = 0.5
-    reverb_samples = int(sample_rate * reverb_time)
-    impulse = np.random.randn(reverb_samples) * np.exp(-3 * np.linspace(0, 1, reverb_samples))
-    impulse = impulse * 0.05
+    # reverb_time = 0.5
+    # reverb_samples = int(sample_rate * reverb_time)
+    # impulse = np.random.randn(reverb_samples) * np.exp(-3 * np.linspace(0, 1, reverb_samples))
+    # impulse = impulse * 0.05
     
-    final_mix = signal.convolve(final_mix, impulse, mode='same')
+    # final_mix = signal.convolve(final_mix, impulse, mode='same')
     
     # Final normalization
     final_mix = final_mix / np.max(np.abs(final_mix)) * 0.95
     
     return final_mix
 
-def save_individual_samples():
-    """Save individual instrument samples to cache directory."""
-    sample_rate = 44100
-    
-    samples = {
-        'kick.wav': generate_kick_drum(sample_rate),
-        'snare.wav': generate_snare_drum(sample_rate),
-        'hihat.wav': generate_hihat(sample_rate),
-        'guitar_note.wav': generate_guitar_riff(sample_rate, duration=1),
-        'piano_chord.wav': generate_piano(sample_rate, duration=1),
-        'synth_arp.wav': generate_electronic_tones(sample_rate, duration=1),
-    }
-    
-    for filename, audio in samples.items():
-        filepath = CACHE_DIR / filename
-        sf.write(filepath, audio, sample_rate)
-        print(f"Saved sample: {filepath}")
-
 def main():
-    """Generate and save the audio mix."""
-    print("Audio Generator - Creating professional audio elements")
-    print("=" * 50)
-    
+
     sample_rate = 44100
     
     # Get output path from command line or use default
@@ -430,28 +405,8 @@ def main():
     # Save the mix
     sf.write(output_path, mix, sample_rate)
     print(f"\nSaved audio mix: {output_path}")
-    
-    # # Save individual samples to cache
-    # print("\nSaving individual samples to cache...")
-    # save_individual_samples()
-    
-    # # Print file info
-    # duration_seconds = len(mix) / sample_rate
-    # wav_size = os.path.getsize(output_path)
-    
-    # print("\n" + "=" * 50)
-    # print("File Information:")
-    # print(f"  Duration: {duration_seconds:.2f} seconds")
-    # print(f"  Sample rate: {sample_rate} Hz")
-    # print(f"  Channels: Mono")
-    # print(f"  Bit depth: 16-bit")
-    # print(f"  File size: {wav_size / 1024:.2f} KB")
-    # print(f"\nCache directory: {CACHE_DIR}")
-    # print("\nInstruments included:")
-    # print("  • Drum beat (kick, snare, hi-hat)")
-    # print("  • Guitar riff (Karplus-Strong synthesis)")
-    # print("  • Piano chords (additive synthesis)")
-    # print("  • Electronic tones (subtractive synthesis)")
+
+
 
 if __name__ == "__main__":
     main()
