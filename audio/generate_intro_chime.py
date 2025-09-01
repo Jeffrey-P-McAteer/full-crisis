@@ -330,7 +330,7 @@ def create_30_second_composition(sample_rate=44100):
     drums = generate_drums_from_notation(drum_pattern, sample_rate, bpm)
     
     print("Generating guitar riff...")
-    guitar = generate_guitar_from_notation(guitar_riff, sample_rate, bpm)
+    #guitar = generate_guitar_from_notation(guitar_riff, sample_rate, bpm)
     
     # Electronic bass line (simple pattern)
     def generate_bass_line(sample_rate, duration, bpm):
@@ -362,7 +362,7 @@ def create_30_second_composition(sample_rate=44100):
         return bass
     
     print("Generating bass line...")
-    bass = generate_bass_line(sample_rate, 30, bpm)
+    #bass = generate_bass_line(sample_rate, 30, bpm)
     
     # Ensure all tracks are same length (30 seconds)
     target_length = int(30 * sample_rate)
@@ -375,14 +375,14 @@ def create_30_second_composition(sample_rate=44100):
     
     piano = pad_or_truncate(piano, target_length)
     drums = pad_or_truncate(drums, target_length)
-    guitar = pad_or_truncate(guitar, target_length)
-    bass = pad_or_truncate(bass, target_length)
+    #guitar = pad_or_truncate(guitar, target_length)
+    #bass = pad_or_truncate(bass, target_length)
     
     # Mix all tracks
     print("Mixing all tracks...")
     mix = (drums * 0.7 +      # Drums prominent
-           bass * 0.6 +       # Bass foundation
-           guitar * 0.5 +     # Guitar mid-level
+           #bass * 0.6 +       # Bass foundation
+           #guitar * 0.5 +     # Guitar mid-level
            piano * 0.8)       # Piano melody prominent
     
     # Apply compression
@@ -398,6 +398,9 @@ def create_30_second_composition(sample_rate=44100):
     final_mix = np.tanh(compressed * 0.9) * 0.95
     final_mix = final_mix / np.max(np.abs(final_mix)) * 0.9
     
+    # Umm... Lower absolute volume to 30%?
+    final_mix = 0.30 * final_mix
+
     return final_mix
 
 def main():
