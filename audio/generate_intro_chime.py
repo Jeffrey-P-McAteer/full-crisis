@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.8"
 # dependencies = [
@@ -20,10 +20,6 @@ import soundfile as sf
 from scipy import signal
 from pathlib import Path
 import re
-
-# Cache directory for audio assets
-CACHE_DIR = Path.home() / ".cache" / "fc-audio"
-CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 # Note frequency mapping (Equal temperament, A4 = 440Hz)
 NOTE_FREQUENCIES = {
@@ -404,24 +400,6 @@ def create_30_second_composition(sample_rate=44100):
     
     return final_mix
 
-def save_individual_samples():
-    """Save individual instrument samples to cache directory."""
-    sample_rate = 44100
-    
-    samples = {
-        'kick.wav': generate_kick_drum(sample_rate),
-        'snare.wav': generate_snare_drum(sample_rate),
-        'hihat_closed.wav': generate_hihat(sample_rate, closed=True),
-        'hihat_open.wav': generate_hihat(sample_rate, closed=False),
-        'piano_c4.wav': piano_note(261.63, 1.0, sample_rate),  # C4
-        'guitar_e2.wav': karplus_strong(82.41, 1.0, sample_rate),  # E2
-    }
-    
-    for filename, audio in samples.items():
-        filepath = CACHE_DIR / filename
-        sf.write(filepath, audio, sample_rate)
-        print(f"Cached sample: {filename}")
-
 def main():
     """Generate and save the audio composition."""
     print("Advanced Audio Generator - String Notation Support")
@@ -441,32 +419,8 @@ def main():
     
     # Save the composition
     sf.write(output_path, composition, sample_rate)
-    print(f"\n✓ Saved composition: {output_path}")
-    
-    # Save individual samples to cache
-    print("\nCaching individual samples...")
-    save_individual_samples()
-    
-    # Print file info
-    duration_seconds = len(composition) / sample_rate
-    wav_size = os.path.getsize(output_path)
-    
-    print("\n" + "=" * 55)
-    print("Composition Information:")
-    print(f"  Duration: {duration_seconds:.2f} seconds")
-    print(f"  Sample rate: {sample_rate} Hz")
-    print(f"  Channels: Mono")
-    print(f"  File size: {wav_size / 1024:.2f} KB")
-    print(f"\nCache directory: {CACHE_DIR}")
-    print("\nNotation Systems:")
-    print("  • Piano: NOTE/DURATION (C4/q D4/h E4/w)")
-    print("  • Drums: KSHO. pattern (K=kick S=snare H=hihat O=open_hihat .=rest)")
-    print("  • Guitar: NOTE-BEATS (E2-1 A2-2 D3-0.5)")
-    print("\nComposition includes:")
-    print("  • Piano melody with arpeggiated patterns")
-    print("  • Rock drum beat with variations")
-    print("  • Power chord guitar progression")
-    print("  • Electronic bass line")
+    print(f"Saved composition: {output_path}")
+
 
 if __name__ == "__main__":
     main()

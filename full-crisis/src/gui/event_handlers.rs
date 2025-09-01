@@ -19,6 +19,20 @@ pub fn set_audio_callbacks(
     let _ = STOP_BACKGROUND_AUDIO.set(stop_fn);
 }
 
+#[cfg(target_arch = "wasm32")]
+pub fn web_play_background_audio(audio_data: &[u8]) {
+    if let Some(play_fn) = PLAY_BACKGROUND_AUDIO.get() {
+        play_fn(audio_data);
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+pub fn web_stop_background_audio() {
+    if let Some(stop_fn) = STOP_BACKGROUND_AUDIO.get() {
+        stop_fn();
+    }
+}
+
 #[cfg(not(target_arch = "wasm32"))]
 use rodio::{Decoder, OutputStream, OutputStreamBuilder, Sink, Source};
 
@@ -110,6 +124,8 @@ impl GameWindow {
                 Task::none()
             }
             GameMessage::Menu_NewGameStartClicked => {
+                // Stop menu music when starting game
+                self.stop_menu_audio();
                 self.handle_new_game_start()
             }
             GameMessage::Menu_ContinueGameRequested => {
@@ -123,6 +139,8 @@ impl GameWindow {
                 Task::none()
             }
             GameMessage::Menu_ContinueGameStartClicked => {
+                // Stop menu music when starting game
+                self.stop_menu_audio();
                 self.handle_continue_game_start()
             }
             GameMessage::Menu_ContinueGameDeleteRequested(game_name) => {
@@ -515,6 +533,9 @@ impl GameWindow {
         self.animation_frame_index = 0;
         self.current_background_audio.clear(); // Stop any playing audio
         self.update_audio_playback(); // Update audio playback to stop audio
+        
+        // Start menu audio when returning to menu
+        self.start_menu_audio();
     }
     
     fn load_scene_background_audio(&mut self, crisis: &crate::crisis::CrisisDefinition, scene_name: &str) {

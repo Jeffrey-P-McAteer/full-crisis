@@ -31,6 +31,8 @@ pub mod crisis;
 pub mod language;
 /// Central translation system for GUI elements
 pub mod translations;
+/// Audio management and embedded audio assets
+pub mod main_audio;
 
 
 #[cfg(target_arch = "wasm32")]
@@ -48,6 +50,7 @@ use native_storage as internal_storage;
 pub static GAME: OnceCell<game::GameState> = OnceCell::new();
 pub static OS_COLOR_THEME: OnceCell<game::OSColorTheme> = OnceCell::new();
 pub static VERBOSITY: OnceCell<u8> = OnceCell::new();
+pub static AUDIO_MANAGER: OnceCell<std::sync::Mutex<main_audio::AudioManager>> = OnceCell::new();
 
 // Re-export WASM audio callback setter
 #[cfg(target_arch = "wasm32")]
@@ -58,6 +61,13 @@ pub fn init_global_vars() {
   // TODO likely do not want to do this now, push down to web query of state or FS read op in bin
   if let Err(e) = GAME.set(game::GameState::new()) {
     println!("{:?}", e);
+  }
+
+  // Initialize audio manager
+  if let Ok(audio_manager) = main_audio::AudioManager::new() {
+    if let Err(e) = AUDIO_MANAGER.set(std::sync::Mutex::new(audio_manager)) {
+      eprintln!("Failed to initialize audio manager: {:?}", e);
+    }
   }
 
   // Cannot assign to OS_COLOR_THEME in any reasonable manner

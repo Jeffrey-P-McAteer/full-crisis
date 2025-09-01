@@ -52,6 +52,8 @@ impl GameWindow {
         let result = if let Ok(evt_loop_rguard) = self.game_state.active_event_loop.read() {
             match evt_loop_rguard.clone() {
                 crate::game::ActiveEventLoop::WelcomeScreen(_welcome_screen_state) => {
+                    // Start menu audio if not already playing
+                    self.ensure_menu_audio_playing();
                     self.view_menu_screen()
                 }
                 crate::game::ActiveEventLoop::ActiveGame(_game_view) => {
@@ -128,5 +130,31 @@ impl GameWindow {
     
     pub fn font_size_large(&self) -> f32 {
         self.scaled_font_size(28.0)
+    }
+    
+    pub fn ensure_menu_audio_playing(&self) {
+        if let Some(audio_manager) = crate::AUDIO_MANAGER.get() {
+            if let Ok(mut manager) = audio_manager.lock() {
+                if !manager.is_background_playing() {
+                    let _ = manager.play_intro_chime_looped();
+                }
+            }
+        }
+    }
+    
+    pub fn start_menu_audio(&self) {
+        if let Some(audio_manager) = crate::AUDIO_MANAGER.get() {
+            if let Ok(mut manager) = audio_manager.lock() {
+                let _ = manager.play_intro_chime_looped();
+            }
+        }
+    }
+    
+    pub fn stop_menu_audio(&self) {
+        if let Some(audio_manager) = crate::AUDIO_MANAGER.get() {
+            if let Ok(mut manager) = audio_manager.lock() {
+                manager.stop_background_music();
+            }
+        }
     }
 }
