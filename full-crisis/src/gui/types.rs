@@ -88,7 +88,9 @@ pub enum GameMessage {
     NavigateLeft,
     NavigateRight,
     NavigateTab,
+    NavigateShiftTab,
     NavigateEnter,
+    NavigateEscape,
     
     // Menu actions
     Menu_NewGameRequested,

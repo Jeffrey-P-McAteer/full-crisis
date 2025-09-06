@@ -244,8 +244,14 @@ impl GameWindow {
             GameMessage::NavigateTab => {
                 self.handle_navigate_tab()
             }
+            GameMessage::NavigateShiftTab => {
+                self.handle_navigate_shift_tab()
+            }
             GameMessage::NavigateEnter => {
                 self.handle_navigate_enter()
+            }
+            GameMessage::NavigateEscape => {
+                self.handle_navigate_escape()
             }
             _ => Task::none(),
         };
@@ -741,12 +747,25 @@ impl GameWindow {
     }
     
     fn handle_navigate_tab(&mut self) -> Task<GameMessage> {
-        // Tab navigation for pick_list cycling
-        if self.menu_right_panel_focused && self.pick_list_expanded {
-            // This will be handled by the pick_list widget itself
+        // Tab navigation moves between UI controls in the right panel
+        if self.menu_right_panel_focused {
+            // Move focus to the next control in the right panel
             return iced::widget::focus_next();
+        } else {
+            // If in the menu, Tab can also move to right panel (same as right arrow)
+            return self.handle_navigate_right();
         }
-        Task::none()
+    }
+    
+    fn handle_navigate_shift_tab(&mut self) -> Task<GameMessage> {
+        // Shift+Tab navigation moves backwards through UI controls
+        if self.menu_right_panel_focused {
+            // Move focus to the previous control in the right panel
+            return iced::widget::focus_previous();
+        } else {
+            // In menu, Shift+Tab could go up
+            return self.handle_navigate_up();
+        }
     }
     
     fn handle_navigate_enter(&mut self) -> Task<GameMessage> {
@@ -773,6 +792,34 @@ impl GameWindow {
                 // The pick_list widget itself handles Enter when focused
                 // For now, we'll let the default behavior handle this
                 return Task::none();
+            }
+        }
+        Task::none()
+    }
+    
+    fn handle_navigate_escape(&mut self) -> Task<GameMessage> {
+        // ESC key returns focus to menu buttons from right panel
+        if let Ok(evt_loop_val) = self.game_state.active_event_loop.try_read() {
+            if let crate::game::ActiveEventLoop::WelcomeScreen(ws_area) = &*evt_loop_val {
+                if self.menu_right_panel_focused {
+                    self.menu_right_panel_focused = false;
+                    // Set focus to the appropriate menu button based on current view
+                    match ws_area {
+                        crate::game::WelcomeScreenView::ContinueGame => {
+                            self.menu_focused_button = 0;
+                        }
+                        crate::game::WelcomeScreenView::NewGame => {
+                            self.menu_focused_button = 1;
+                        }
+                        crate::game::WelcomeScreenView::Settings => {
+                            self.menu_focused_button = 2;
+                        }
+                        crate::game::WelcomeScreenView::Licenses => {
+                            self.menu_focused_button = 3;
+                        }
+                        _ => {}
+                    }
+                }
             }
         }
         Task::none()

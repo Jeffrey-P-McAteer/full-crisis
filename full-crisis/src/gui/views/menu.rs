@@ -25,16 +25,25 @@ impl GameWindow {
             .on_press(GameMessage::Menu_ContinueGameRequested)
             .width(Length::Fill)
             .style(move |theme: &Theme, status| {
-                if self.menu_focused_button == 0 && !self.menu_right_panel_focused {
-                    let palette = theme.extended_palette();
-                    iced::widget::button::Style {
-                        background: Some(palette.primary.base.color.into()),
-                        text_color: palette.primary.base.text,
-                        border: iced::border::rounded(4),
-                        ..iced::widget::button::Style::default()
+                let is_focused = self.menu_focused_button == 0 && !self.menu_right_panel_focused;
+                let is_dark_theme = matches!(self.os_theme, crate::game::OSColorTheme::Dark);
+                
+                let border_color = if is_focused {
+                    if is_dark_theme {
+                        iced::Color::from_rgb(0.9, 0.9, 0.9)  // Light border for dark theme
+                    } else {
+                        iced::Color::from_rgb(0.1, 0.1, 0.1)  // Dark border for light theme
                     }
                 } else {
-                    iced::widget::button::primary(theme, status)
+                    iced::Color::TRANSPARENT  // Transparent when not focused
+                };
+                
+                let base_style = iced::widget::button::primary(theme, status);
+                iced::widget::button::Style {
+                    border: iced::border::rounded(4)
+                        .color(border_color)
+                        .width(2),
+                    ..base_style
                 }
             });
             
@@ -42,16 +51,25 @@ impl GameWindow {
             .on_press(GameMessage::Menu_NewGameRequested)
             .width(Length::Fill)
             .style(move |theme: &Theme, status| {
-                if self.menu_focused_button == 1 && !self.menu_right_panel_focused {
-                    let palette = theme.extended_palette();
-                    iced::widget::button::Style {
-                        background: Some(palette.primary.base.color.into()),
-                        text_color: palette.primary.base.text,
-                        border: iced::border::rounded(4),
-                        ..iced::widget::button::Style::default()
+                let is_focused = self.menu_focused_button == 1 && !self.menu_right_panel_focused;
+                let is_dark_theme = matches!(self.os_theme, crate::game::OSColorTheme::Dark);
+                
+                let border_color = if is_focused {
+                    if is_dark_theme {
+                        iced::Color::from_rgb(0.9, 0.9, 0.9)  // Light border for dark theme
+                    } else {
+                        iced::Color::from_rgb(0.1, 0.1, 0.1)  // Dark border for light theme
                     }
                 } else {
-                    iced::widget::button::primary(theme, status)
+                    iced::Color::TRANSPARENT  // Transparent when not focused
+                };
+                
+                let base_style = iced::widget::button::primary(theme, status);
+                iced::widget::button::Style {
+                    border: iced::border::rounded(4)
+                        .color(border_color)
+                        .width(2),
+                    ..base_style
                 }
             });
             
@@ -59,16 +77,25 @@ impl GameWindow {
             .on_press(GameMessage::Menu_SettingsRequested)
             .width(Length::Fill)
             .style(move |theme: &Theme, status| {
-                if self.menu_focused_button == 2 && !self.menu_right_panel_focused {
-                    let palette = theme.extended_palette();
-                    iced::widget::button::Style {
-                        background: Some(palette.primary.base.color.into()),
-                        text_color: palette.primary.base.text,
-                        border: iced::border::rounded(4),
-                        ..iced::widget::button::Style::default()
+                let is_focused = self.menu_focused_button == 2 && !self.menu_right_panel_focused;
+                let is_dark_theme = matches!(self.os_theme, crate::game::OSColorTheme::Dark);
+                
+                let border_color = if is_focused {
+                    if is_dark_theme {
+                        iced::Color::from_rgb(0.9, 0.9, 0.9)  // Light border for dark theme
+                    } else {
+                        iced::Color::from_rgb(0.1, 0.1, 0.1)  // Dark border for light theme
                     }
                 } else {
-                    iced::widget::button::primary(theme, status)
+                    iced::Color::TRANSPARENT  // Transparent when not focused
+                };
+                
+                let base_style = iced::widget::button::primary(theme, status);
+                iced::widget::button::Style {
+                    border: iced::border::rounded(4)
+                        .color(border_color)
+                        .width(2),
+                    ..base_style
                 }
             });
             
@@ -76,16 +103,25 @@ impl GameWindow {
             .on_press(GameMessage::Menu_LicensesRequested)
             .width(Length::Fill)
             .style(move |theme: &Theme, status| {
-                if self.menu_focused_button == 3 && !self.menu_right_panel_focused {
-                    let palette = theme.extended_palette();
-                    iced::widget::button::Style {
-                        background: Some(palette.primary.base.color.into()),
-                        text_color: palette.primary.base.text,
-                        border: iced::border::rounded(4),
-                        ..iced::widget::button::Style::default()
+                let is_focused = self.menu_focused_button == 3 && !self.menu_right_panel_focused;
+                let is_dark_theme = matches!(self.os_theme, crate::game::OSColorTheme::Dark);
+                
+                let border_color = if is_focused {
+                    if is_dark_theme {
+                        iced::Color::from_rgb(0.9, 0.9, 0.9)  // Light border for dark theme
+                    } else {
+                        iced::Color::from_rgb(0.1, 0.1, 0.1)  // Dark border for light theme
                     }
                 } else {
-                    iced::widget::button::primary(theme, status)
+                    iced::Color::TRANSPARENT  // Transparent when not focused
+                };
+                
+                let base_style = iced::widget::button::primary(theme, status);
+                iced::widget::button::Style {
+                    border: iced::border::rounded(4)
+                        .color(border_color)
+                        .width(2),
+                    ..base_style
                 }
             });
             
@@ -93,16 +129,25 @@ impl GameWindow {
             .on_press(GameMessage::QuitGameRequested)
             .width(Length::Fill)
             .style(move |theme: &Theme, status| {
-                if self.menu_focused_button == 4 && !self.menu_right_panel_focused {
-                    let palette = theme.extended_palette();
-                    iced::widget::button::Style {
-                        background: Some(palette.primary.base.color.into()),
-                        text_color: palette.primary.base.text,
-                        border: iced::border::rounded(4),
-                        ..iced::widget::button::Style::default()
+                let is_focused = self.menu_focused_button == 4 && !self.menu_right_panel_focused;
+                let is_dark_theme = matches!(self.os_theme, crate::game::OSColorTheme::Dark);
+                
+                let border_color = if is_focused {
+                    if is_dark_theme {
+                        iced::Color::from_rgb(0.9, 0.9, 0.9)  // Light border for dark theme
+                    } else {
+                        iced::Color::from_rgb(0.1, 0.1, 0.1)  // Dark border for light theme
                     }
                 } else {
-                    iced::widget::button::primary(theme, status)
+                    iced::Color::TRANSPARENT  // Transparent when not focused
+                };
+                
+                let base_style = iced::widget::button::primary(theme, status);
+                iced::widget::button::Style {
+                    border: iced::border::rounded(4)
+                        .color(border_color)
+                        .width(2),
+                    ..base_style
                 }
             });
         
