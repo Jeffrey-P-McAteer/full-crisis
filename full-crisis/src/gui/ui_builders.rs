@@ -192,7 +192,8 @@ impl GameWindow {
         )
             .on_input(GameMessage::Menu_NewGamePlayerNameAltered)
             .padding(10)
-            .width(Length::Fill);
+            .width(Length::Fill)
+            .id(iced::widget::text_input::Id::new("new_game_player_name"));
 
         let name_row = row![
                 Text::new(crate::translations::t(crate::translations::TranslationKey::PlayerName, user_language)).size(self.font_size_base()),

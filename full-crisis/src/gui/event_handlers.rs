@@ -229,6 +229,24 @@ impl GameWindow {
                 eprintln!("Recieved a GameMessage::Nop");
                 Task::none()
             },
+            GameMessage::NavigateUp => {
+                self.handle_navigate_up()
+            }
+            GameMessage::NavigateDown => {
+                self.handle_navigate_down()
+            }
+            GameMessage::NavigateLeft => {
+                self.handle_navigate_left()
+            }
+            GameMessage::NavigateRight => {
+                self.handle_navigate_right()
+            }
+            GameMessage::NavigateTab => {
+                self.handle_navigate_tab()
+            }
+            GameMessage::NavigateEnter => {
+                self.handle_navigate_enter()
+            }
             _ => Task::none(),
         };
         
@@ -628,5 +646,135 @@ impl GameWindow {
             Ok(_) => eprintln!("Opened crises folder: {}", folder_path),
             Err(e) => eprintln!("Failed to open crises folder '{}': {}", folder_path, e),
         }
+    }
+    
+    fn handle_navigate_up(&mut self) -> Task<GameMessage> {
+        // Only handle navigation if we're in the menu screen
+        if let Ok(evt_loop_val) = self.game_state.active_event_loop.try_read() {
+            if let crate::game::ActiveEventLoop::WelcomeScreen(_) = *evt_loop_val {
+                if self.menu_right_panel_focused {
+                    // Navigation within right panel is context-specific
+                    // For now, we'll handle this in the specific UI builders
+                } else {
+                    // Navigate up through menu buttons
+                    if self.menu_focused_button > 0 {
+                        self.menu_focused_button -= 1;
+                    }
+                }
+            }
+        }
+        Task::none()
+    }
+    
+    fn handle_navigate_down(&mut self) -> Task<GameMessage> {
+        // Only handle navigation if we're in the menu screen
+        if let Ok(evt_loop_val) = self.game_state.active_event_loop.try_read() {
+            if let crate::game::ActiveEventLoop::WelcomeScreen(_) = *evt_loop_val {
+                if self.menu_right_panel_focused {
+                    // Navigation within right panel is context-specific
+                } else {
+                    // Navigate down through menu buttons (5 total: Continue, New, Settings, Licenses, Quit)
+                    if self.menu_focused_button < 4 {
+                        self.menu_focused_button += 1;
+                    }
+                }
+            }
+        }
+        Task::none()
+    }
+    
+    fn handle_navigate_left(&mut self) -> Task<GameMessage> {
+        // Move focus to the left (from right panel to menu buttons)
+        if let Ok(evt_loop_val) = self.game_state.active_event_loop.try_read() {
+            if let crate::game::ActiveEventLoop::WelcomeScreen(_) = *evt_loop_val {
+                if self.menu_right_panel_focused {
+                    self.menu_right_panel_focused = false;
+                    // Return focus to the menu based on the current view
+                    match &*evt_loop_val {
+                        crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::ContinueGame) => {
+                            self.menu_focused_button = 0;
+                        }
+                        crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::NewGame) => {
+                            self.menu_focused_button = 1;
+                        }
+                        crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::Settings) => {
+                            self.menu_focused_button = 2;
+                        }
+                        crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::Licenses) => {
+                            self.menu_focused_button = 3;
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+        Task::none()
+    }
+    
+    fn handle_navigate_right(&mut self) -> Task<GameMessage> {
+        // Move focus to the right (from menu buttons to right panel)
+        if let Ok(evt_loop_val) = self.game_state.active_event_loop.try_read() {
+            if let crate::game::ActiveEventLoop::WelcomeScreen(ws_area) = &*evt_loop_val {
+                if !self.menu_right_panel_focused {
+                    // Only move to right panel if there's content there
+                    match ws_area {
+                        crate::game::WelcomeScreenView::NewGame => {
+                            self.menu_right_panel_focused = true;
+                            // Focus the player name text input in new game
+                            return iced::widget::text_input::focus(
+                                iced::widget::text_input::Id::new("new_game_player_name")
+                            );
+                        }
+                        crate::game::WelcomeScreenView::ContinueGame |
+                        crate::game::WelcomeScreenView::Settings |
+                        crate::game::WelcomeScreenView::Licenses => {
+                            self.menu_right_panel_focused = true;
+                            // Focus the first interactive element in the right panel
+                            return iced::widget::focus_next();
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+        Task::none()
+    }
+    
+    fn handle_navigate_tab(&mut self) -> Task<GameMessage> {
+        // Tab navigation for pick_list cycling
+        if self.menu_right_panel_focused && self.pick_list_expanded {
+            // This will be handled by the pick_list widget itself
+            return iced::widget::focus_next();
+        }
+        Task::none()
+    }
+    
+    fn handle_navigate_enter(&mut self) -> Task<GameMessage> {
+        // Enter key handling
+        let is_menu_screen = if let Ok(evt_loop_val) = self.game_state.active_event_loop.try_read() {
+            matches!(*evt_loop_val, crate::game::ActiveEventLoop::WelcomeScreen(_))
+        } else {
+            false
+        };
+        
+        if is_menu_screen {
+            if !self.menu_right_panel_focused {
+                // Trigger the button action based on focused button
+                return match self.menu_focused_button {
+                    0 => self.update(GameMessage::Menu_ContinueGameRequested),
+                    1 => self.update(GameMessage::Menu_NewGameRequested),
+                    2 => self.update(GameMessage::Menu_SettingsRequested),
+                    3 => self.update(GameMessage::Menu_LicensesRequested),
+                    4 => self.update(GameMessage::QuitGameRequested),
+                    _ => Task::none(),
+                };
+            } else {
+                // In the right panel, Enter should submit forms or toggle pick_lists
+                // The pick_list widget itself handles Enter when focused
+                // For now, we'll let the default behavior handle this
+                return Task::none();
+            }
+        }
+        Task::none()
     }
 }

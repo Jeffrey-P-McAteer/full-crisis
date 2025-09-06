@@ -73,11 +73,22 @@ pub struct GameWindow {
     pub choice_text_inputs: std::collections::HashMap<usize, String>, // Track text input values by choice index
     pub animation_frame_index: usize, // Current frame index for character animation
     pub current_background_audio: Vec<u8>, // Current background audio data to play
+    pub menu_focused_button: usize, // Track which menu button is focused (0-4 for the 5 main buttons)
+    pub menu_right_panel_focused: bool, // Track if focus is on the right panel
+    pub pick_list_expanded: bool, // Track if a pick list is currently expanded
 }
 
 #[derive(Debug, Clone)]
 pub enum GameMessage {
     Nop,
+    
+    // Keyboard navigation
+    NavigateUp,
+    NavigateDown,
+    NavigateLeft,
+    NavigateRight,
+    NavigateTab,
+    NavigateEnter,
     
     // Menu actions
     Menu_NewGameRequested,

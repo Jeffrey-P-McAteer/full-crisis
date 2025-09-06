@@ -21,22 +21,97 @@ impl GameWindow {
         let app_version = env!("CARGO_PKG_VERSION");
         let user_language = &self.settings_language;
         
+        let continue_button = button(text(crate::translations::t(crate::translations::TranslationKey::ContinueGame, user_language)).size(self.font_size_base()))
+            .on_press(GameMessage::Menu_ContinueGameRequested)
+            .width(Length::Fill)
+            .style(move |theme: &Theme, status| {
+                if self.menu_focused_button == 0 && !self.menu_right_panel_focused {
+                    let palette = theme.extended_palette();
+                    iced::widget::button::Style {
+                        background: Some(palette.primary.base.color.into()),
+                        text_color: palette.primary.base.text,
+                        border: iced::border::rounded(4),
+                        ..iced::widget::button::Style::default()
+                    }
+                } else {
+                    iced::widget::button::primary(theme, status)
+                }
+            });
+            
+        let new_game_button = button(text(crate::translations::t(crate::translations::TranslationKey::NewGame, user_language)).size(self.font_size_base()))
+            .on_press(GameMessage::Menu_NewGameRequested)
+            .width(Length::Fill)
+            .style(move |theme: &Theme, status| {
+                if self.menu_focused_button == 1 && !self.menu_right_panel_focused {
+                    let palette = theme.extended_palette();
+                    iced::widget::button::Style {
+                        background: Some(palette.primary.base.color.into()),
+                        text_color: palette.primary.base.text,
+                        border: iced::border::rounded(4),
+                        ..iced::widget::button::Style::default()
+                    }
+                } else {
+                    iced::widget::button::primary(theme, status)
+                }
+            });
+            
+        let settings_button = button(text(crate::translations::t(crate::translations::TranslationKey::Settings, user_language)).size(self.font_size_base()))
+            .on_press(GameMessage::Menu_SettingsRequested)
+            .width(Length::Fill)
+            .style(move |theme: &Theme, status| {
+                if self.menu_focused_button == 2 && !self.menu_right_panel_focused {
+                    let palette = theme.extended_palette();
+                    iced::widget::button::Style {
+                        background: Some(palette.primary.base.color.into()),
+                        text_color: palette.primary.base.text,
+                        border: iced::border::rounded(4),
+                        ..iced::widget::button::Style::default()
+                    }
+                } else {
+                    iced::widget::button::primary(theme, status)
+                }
+            });
+            
+        let licenses_button = button(text(crate::translations::t(crate::translations::TranslationKey::Licenses, user_language)).size(self.font_size_base()))
+            .on_press(GameMessage::Menu_LicensesRequested)
+            .width(Length::Fill)
+            .style(move |theme: &Theme, status| {
+                if self.menu_focused_button == 3 && !self.menu_right_panel_focused {
+                    let palette = theme.extended_palette();
+                    iced::widget::button::Style {
+                        background: Some(palette.primary.base.color.into()),
+                        text_color: palette.primary.base.text,
+                        border: iced::border::rounded(4),
+                        ..iced::widget::button::Style::default()
+                    }
+                } else {
+                    iced::widget::button::primary(theme, status)
+                }
+            });
+            
+        let quit_button = button(text(crate::translations::t(crate::translations::TranslationKey::QuitGame, user_language)).size(self.font_size_base()))
+            .on_press(GameMessage::QuitGameRequested)
+            .width(Length::Fill)
+            .style(move |theme: &Theme, status| {
+                if self.menu_focused_button == 4 && !self.menu_right_panel_focused {
+                    let palette = theme.extended_palette();
+                    iced::widget::button::Style {
+                        background: Some(palette.primary.base.color.into()),
+                        text_color: palette.primary.base.text,
+                        border: iced::border::rounded(4),
+                        ..iced::widget::button::Style::default()
+                    }
+                } else {
+                    iced::widget::button::primary(theme, status)
+                }
+            });
+        
         let buttons = column![
-            button(text(crate::translations::t(crate::translations::TranslationKey::ContinueGame, user_language)).size(self.font_size_base()))
-                .on_press(GameMessage::Menu_ContinueGameRequested)
-                .width(Length::Fill),
-            button(text(crate::translations::t(crate::translations::TranslationKey::NewGame, user_language)).size(self.font_size_base()))
-                .on_press(GameMessage::Menu_NewGameRequested)
-                .width(Length::Fill),
-            button(text(crate::translations::t(crate::translations::TranslationKey::Settings, user_language)).size(self.font_size_base()))
-                .on_press(GameMessage::Menu_SettingsRequested)
-                .width(Length::Fill),
-            button(text(crate::translations::t(crate::translations::TranslationKey::Licenses, user_language)).size(self.font_size_base()))
-                .on_press(GameMessage::Menu_LicensesRequested)
-                .width(Length::Fill),
-            button(text(crate::translations::t(crate::translations::TranslationKey::QuitGame, user_language)).size(self.font_size_base()))
-                .on_press(GameMessage::QuitGameRequested)
-                .width(Length::Fill),
+            continue_button,
+            new_game_button,
+            settings_button,
+            licenses_button,
+            quit_button,
             text(format!("Version {}", app_version)).size(self.font_size_small())
                 .width(Length::Fill),
         ]

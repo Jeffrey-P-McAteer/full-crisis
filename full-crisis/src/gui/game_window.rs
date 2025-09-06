@@ -38,6 +38,9 @@ impl GameWindow {
                 choice_text_inputs: std::collections::HashMap::new(),
                 animation_frame_index: 0,
                 current_background_audio: Vec::new(),
+                menu_focused_button: 0,
+                menu_right_panel_focused: false,
+                pick_list_expanded: false,
             },
             Task::batch([
                 widget::focus_next(),
@@ -89,13 +92,35 @@ impl GameWindow {
     }
 
     pub fn subscription(&self) -> iced::Subscription<GameMessage> {
+        use iced::keyboard;
+        use iced::Subscription;
+        
+        let mut subscriptions = vec![];
+        
+        // Animation timer for active game
         if self.current_crisis.is_some() && self.story_state.is_some() {
-            // Only run animation timer when in active game
-            iced::time::every(std::time::Duration::from_millis(500))
-                .map(|_| GameMessage::Game_AnimationTick)
-        } else {
-            iced::Subscription::none()
+            subscriptions.push(
+                iced::time::every(std::time::Duration::from_millis(500))
+                    .map(|_| GameMessage::Game_AnimationTick)
+            );
         }
+        
+        // Keyboard events subscription
+        subscriptions.push(
+            keyboard::on_key_press(|key, _modifiers| {
+                match key {
+                    keyboard::Key::Named(keyboard::key::Named::ArrowUp) => Some(GameMessage::NavigateUp),
+                    keyboard::Key::Named(keyboard::key::Named::ArrowDown) => Some(GameMessage::NavigateDown),
+                    keyboard::Key::Named(keyboard::key::Named::ArrowLeft) => Some(GameMessage::NavigateLeft),
+                    keyboard::Key::Named(keyboard::key::Named::ArrowRight) => Some(GameMessage::NavigateRight),
+                    keyboard::Key::Named(keyboard::key::Named::Tab) => Some(GameMessage::NavigateTab),
+                    keyboard::Key::Named(keyboard::key::Named::Enter) => Some(GameMessage::NavigateEnter),
+                    _ => None,
+                }
+            })
+        );
+        
+        Subscription::batch(subscriptions)
     }
     
     #[cfg(not(target_arch = "wasm32"))]
