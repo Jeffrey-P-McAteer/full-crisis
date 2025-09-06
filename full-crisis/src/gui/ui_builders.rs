@@ -298,7 +298,8 @@ impl GameWindow {
         )
             .on_input(GameMessage::Menu_SettingsGameCrisesFolderChanged)
             .padding(10)
-            .width(Length::Fill);
+            .width(Length::Fill)
+            .id(iced::widget::text_input::Id::new("settings_crises_folder"));
 
         // Create the save folder row with optional Open button
         #[cfg(not(target_arch = "wasm32"))]

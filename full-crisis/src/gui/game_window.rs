@@ -247,13 +247,15 @@ impl GameWindow {
                 if self.menu_right_panel_focused {
                     info.push_str(&format!("Panel: {:?}\n", ws_view));
                     info.push_str("Location: Right Panel\n");
+                    info.push_str("Enter: Submit/Action\n");
+                    info.push_str("Tab: Next Control\n");
                     if self.pick_list_expanded {
                         info.push_str("Pick List: Expanded\n");
                     }
                 } else {
                     let button_name = match self.menu_focused_button {
                         0 => "Continue Game",
-                        1 => "New Game",
+                        1 => "New Game", 
                         2 => "Settings",
                         3 => "Licenses",
                         4 => "Quit Game",
@@ -261,6 +263,8 @@ impl GameWindow {
                     };
                     info.push_str(&format!("Button: {} (index: {})\n", button_name, self.menu_focused_button));
                     info.push_str("Location: Left Menu\n");
+                    info.push_str("Enter: Move to Panel\n");
+                    info.push_str("Tab: Move to Panel\n");
                 }
             } else {
                 info.push_str("Focus: Game Screen\n");
