@@ -4,8 +4,8 @@ use iced::widget::{
 };
 use iced::{Center, Element, Length, Left, Theme};
 
-pub const MAIN_MENU_RIGHT_WIDTH_PX: f32 = 840.0;
-pub const MAIN_MENU_HEIGHT_PX: f32 = 580.0;
+pub const MAIN_MENU_RIGHT_WIDTH_PX: f32 = 880.0;
+pub const MAIN_MENU_HEIGHT_PX: f32 = 640.0;
 
 impl GameWindow {
     pub fn build_menu_screen_right_ui(&self) -> Container<'_, GameMessage> {
