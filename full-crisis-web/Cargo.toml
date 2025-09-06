@@ -20,7 +20,10 @@ features = ["webgl", "wgpu", "tiny-skia", "web-colors", "auto-detect-theme", "sm
 
 [package.metadata.wasm-pack.profile.release]
 # See https://github.com/WebAssembly/binaryen/blob/version_117/test/lit/help/wasm-opt.test
+# And/or https://arhan.sh/blog/wasm-pack-optimization-flags-you-never-knew-about/
 wasm-opt = [
-    "-Os",
+    "-Oz",
+    "--ignore-implicit-traps", "--traps-never-happen", "--low-memory-unused", "--fast-math",
+    "--code-folding", "--dae", "--asyncify",
 ]
 
