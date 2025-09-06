@@ -24,6 +24,6 @@ features = ["webgl", "wgpu", "tiny-skia", "web-colors", "auto-detect-theme", "sm
 wasm-opt = [
     "-Oz",
     "--ignore-implicit-traps", "--traps-never-happen", "--low-memory-unused", "--fast-math",
-    "--code-folding", "--dae", "--asyncify",
+    # "--code-folding", "--dae", "--asyncify",
 ]
 
