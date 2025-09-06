@@ -624,7 +624,7 @@ def host_wasm32():
 
   workdir = os.path.join(os.path.dirname(__file__), 'full-crisis-web')
   subprocess.run([
-    'wasm-pack', 'build', '--target', 'web'
+    'wasm-pack', 'build', '--target', 'web', '--release',
   ], cwd=workdir, check=False)
   print_duration(begin_s, '[ host-wasm32 ] took {}')
 
