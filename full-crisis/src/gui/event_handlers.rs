@@ -761,8 +761,13 @@ impl GameWindow {
     fn handle_navigate_tab(&mut self) -> Task<GameMessage> {
         // Tab navigation moves between UI controls in the right panel
         if self.menu_right_panel_focused {
-            // Move focus to the next control in the right panel
-            return iced::widget::focus_next();
+            // Navigate to the next control within the current panel
+            if let Some(ref panel_focus) = self.panel_focus.clone() {
+                return self.navigate_panel_forward(panel_focus);
+            } else {
+                // Fallback to iced's default focus
+                return iced::widget::focus_next();
+            }
         } else {
             // If in the menu, Tab can also move to right panel (same as right arrow)
             return self.handle_navigate_right();
@@ -772,8 +777,13 @@ impl GameWindow {
     fn handle_navigate_shift_tab(&mut self) -> Task<GameMessage> {
         // Shift+Tab navigation moves backwards through UI controls
         if self.menu_right_panel_focused {
-            // Move focus to the previous control in the right panel
-            return iced::widget::focus_previous();
+            // Navigate to the previous control within the current panel
+            if let Some(ref panel_focus) = self.panel_focus.clone() {
+                return self.navigate_panel_backward(panel_focus);
+            } else {
+                // Fallback to iced's default focus
+                return iced::widget::focus_previous();
+            }
         } else {
             // In menu, Shift+Tab could go up
             return self.handle_navigate_up();
@@ -799,26 +809,30 @@ impl GameWindow {
                 // For other buttons, move focus to the right panel
                 self.menu_right_panel_focused = true;
                 
-                // Focus the first control in the right panel based on the button
+                // Initialize panel focus and focus the first control
                 return match self.menu_focused_button {
                     0 => {
-                        // Continue Game - focus first available control (pick_list)
+                        // Continue Game - focus saved game picker
+                        self.panel_focus = Some(super::types::PanelFocus::ContinueGame(super::types::ContinueGameFocus::SavedGamePicker));
                         iced::widget::focus_next()
                     }
                     1 => {
                         // New Game - focus the player name text input
+                        self.panel_focus = Some(super::types::PanelFocus::NewGame(super::types::NewGameFocus::PlayerName));
                         iced::widget::text_input::focus(
                             iced::widget::text_input::Id::new("new_game_player_name")
                         )
                     }
                     2 => {
                         // Settings - focus the crises folder text input
+                        self.panel_focus = Some(super::types::PanelFocus::Settings(super::types::SettingsFocus::CrisesFolder));
                         iced::widget::text_input::focus(
                             iced::widget::text_input::Id::new("settings_crises_folder")
                         )
                     }
                     3 => {
-                        // Licenses - focus first available control
+                        // Licenses - focus content area
+                        self.panel_focus = Some(super::types::PanelFocus::Licenses(super::types::LicensesFocus::Content));
                         iced::widget::focus_next()
                     }
                     _ => {
@@ -842,6 +856,7 @@ impl GameWindow {
             if let crate::game::ActiveEventLoop::WelcomeScreen(ws_area) = &*evt_loop_val {
                 if self.menu_right_panel_focused {
                     self.menu_right_panel_focused = false;
+                    self.panel_focus = None; // Clear panel focus
                     // Set focus to the appropriate menu button based on current view
                     match ws_area {
                         crate::game::WelcomeScreenView::ContinueGame => {
@@ -877,6 +892,160 @@ impl GameWindow {
                     _ => return,
                 }
             );
+        }
+    }
+    
+    fn navigate_panel_forward(&mut self, current_focus: &super::types::PanelFocus) -> Task<GameMessage> {
+        use super::types::*;
+        
+        match current_focus {
+            PanelFocus::NewGame(focus) => {
+                let new_focus = match focus {
+                    NewGameFocus::PlayerName => NewGameFocus::GameType,
+                    NewGameFocus::GameType => NewGameFocus::GoButton,
+                    NewGameFocus::GoButton => NewGameFocus::PlayerName, // Wrap around
+                };
+                self.panel_focus = Some(PanelFocus::NewGame(new_focus));
+                self.focus_control_for_panel(&self.panel_focus.as_ref().unwrap())
+            }
+            PanelFocus::ContinueGame(focus) => {
+                let new_focus = match focus {
+                    ContinueGameFocus::SavedGamePicker => {
+                        if self.continue_game_delete_confirmation.is_some() {
+                            ContinueGameFocus::ConfirmDelete
+                        } else if self.continue_game_game_choice.is_some() {
+                            ContinueGameFocus::DeleteButton
+                        } else {
+                            ContinueGameFocus::SavedGamePicker // Stay on picker if no game selected
+                        }
+                    }
+                    ContinueGameFocus::DeleteButton => ContinueGameFocus::GoButton,
+                    ContinueGameFocus::GoButton => ContinueGameFocus::SavedGamePicker,
+                    ContinueGameFocus::ConfirmDelete => ContinueGameFocus::CancelDelete,
+                    ContinueGameFocus::CancelDelete => ContinueGameFocus::ConfirmDelete,
+                };
+                self.panel_focus = Some(PanelFocus::ContinueGame(new_focus));
+                self.focus_control_for_panel(&self.panel_focus.as_ref().unwrap())
+            }
+            PanelFocus::Settings(focus) => {
+                let new_focus = match focus {
+                    SettingsFocus::CrisesFolder => {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        { SettingsFocus::OpenFolderButton }
+                        #[cfg(target_arch = "wasm32")]
+                        { SettingsFocus::DifficultyPicker }
+                    }
+                    SettingsFocus::OpenFolderButton => SettingsFocus::DifficultyPicker,
+                    SettingsFocus::DifficultyPicker => SettingsFocus::AutosaveToggle,
+                    SettingsFocus::AutosaveToggle => SettingsFocus::LanguagePicker,
+                    SettingsFocus::LanguagePicker => SettingsFocus::FontScaleSlider,
+                    SettingsFocus::FontScaleSlider => SettingsFocus::CrisesFolder, // Wrap around
+                };
+                self.panel_focus = Some(PanelFocus::Settings(new_focus));
+                self.focus_control_for_panel(&self.panel_focus.as_ref().unwrap())
+            }
+            PanelFocus::Licenses(_) => {
+                // Licenses only has one focusable area
+                iced::widget::focus_next()
+            }
+        }
+    }
+    
+    fn navigate_panel_backward(&mut self, current_focus: &super::types::PanelFocus) -> Task<GameMessage> {
+        use super::types::*;
+        
+        match current_focus {
+            PanelFocus::NewGame(focus) => {
+                let new_focus = match focus {
+                    NewGameFocus::PlayerName => NewGameFocus::GoButton, // Wrap around backwards
+                    NewGameFocus::GameType => NewGameFocus::PlayerName,
+                    NewGameFocus::GoButton => NewGameFocus::GameType,
+                };
+                self.panel_focus = Some(PanelFocus::NewGame(new_focus));
+                self.focus_control_for_panel(&self.panel_focus.as_ref().unwrap())
+            }
+            PanelFocus::ContinueGame(focus) => {
+                let new_focus = match focus {
+                    ContinueGameFocus::SavedGamePicker => ContinueGameFocus::GoButton,
+                    ContinueGameFocus::DeleteButton => ContinueGameFocus::SavedGamePicker,
+                    ContinueGameFocus::GoButton => {
+                        if self.continue_game_game_choice.is_some() {
+                            ContinueGameFocus::DeleteButton
+                        } else {
+                            ContinueGameFocus::SavedGamePicker
+                        }
+                    }
+                    ContinueGameFocus::ConfirmDelete => ContinueGameFocus::CancelDelete,
+                    ContinueGameFocus::CancelDelete => ContinueGameFocus::ConfirmDelete,
+                };
+                self.panel_focus = Some(PanelFocus::ContinueGame(new_focus));
+                self.focus_control_for_panel(&self.panel_focus.as_ref().unwrap())
+            }
+            PanelFocus::Settings(focus) => {
+                let new_focus = match focus {
+                    SettingsFocus::CrisesFolder => SettingsFocus::FontScaleSlider, // Wrap around backwards
+                    SettingsFocus::OpenFolderButton => SettingsFocus::CrisesFolder,
+                    SettingsFocus::DifficultyPicker => {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        { SettingsFocus::OpenFolderButton }
+                        #[cfg(target_arch = "wasm32")]
+                        { SettingsFocus::CrisesFolder }
+                    }
+                    SettingsFocus::AutosaveToggle => SettingsFocus::DifficultyPicker,
+                    SettingsFocus::LanguagePicker => SettingsFocus::AutosaveToggle,
+                    SettingsFocus::FontScaleSlider => SettingsFocus::LanguagePicker,
+                };
+                self.panel_focus = Some(PanelFocus::Settings(new_focus));
+                self.focus_control_for_panel(&self.panel_focus.as_ref().unwrap())
+            }
+            PanelFocus::Licenses(_) => {
+                // Licenses only has one focusable area
+                iced::widget::focus_previous()
+            }
+        }
+    }
+    
+    fn focus_control_for_panel(&self, panel_focus: &super::types::PanelFocus) -> Task<GameMessage> {
+        use super::types::*;
+        
+        match panel_focus {
+            PanelFocus::NewGame(focus) => {
+                match focus {
+                    NewGameFocus::PlayerName => {
+                        iced::widget::text_input::focus(
+                            iced::widget::text_input::Id::new("new_game_player_name")
+                        )
+                    }
+                    NewGameFocus::GameType => {
+                        // Focus the game type pick_list - use general focus
+                        iced::widget::focus_next()
+                    }
+                    NewGameFocus::GoButton => {
+                        // Focus the go button - use general focus
+                        iced::widget::focus_next()
+                    }
+                }
+            }
+            PanelFocus::ContinueGame(_focus) => {
+                // For continue game, let iced handle the specific control focus
+                iced::widget::focus_next()
+            }
+            PanelFocus::Settings(focus) => {
+                match focus {
+                    SettingsFocus::CrisesFolder => {
+                        iced::widget::text_input::focus(
+                            iced::widget::text_input::Id::new("settings_crises_folder")
+                        )
+                    }
+                    _ => {
+                        // For other settings controls, let iced handle focus
+                        iced::widget::focus_next()
+                    }
+                }
+            }
+            PanelFocus::Licenses(_) => {
+                iced::widget::focus_next()
+            }
         }
     }
 }

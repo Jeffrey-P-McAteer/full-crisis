@@ -47,6 +47,10 @@ impl GameWindow {
     pub fn build_continue_game_ui(&self) -> Container<'_, GameMessage> {
         let user_language = &self.settings_language;
         
+        let is_game_picker_focused = self.menu_right_panel_focused && 
+            matches!(self.panel_focus, Some(crate::gui::types::PanelFocus::ContinueGame(crate::gui::types::ContinueGameFocus::SavedGamePicker)));
+        let is_dark_theme = matches!(self.os_theme, crate::game::OSColorTheme::Dark);
+        
         let saved_games = crate::crisis::get_saved_crisis_names();
         let game_type_picker = pick_list(
             saved_games,
@@ -55,7 +59,26 @@ impl GameWindow {
         )
         .placeholder(crate::translations::t(crate::translations::TranslationKey::SelectGame, user_language))
         .padding(10)
-        .width(Length::Fill);
+        .width(Length::Fill)
+        .style(move |theme: &iced::Theme, status: iced::widget::pick_list::Status| {
+            let border_color = if is_game_picker_focused {
+                if is_dark_theme {
+                    iced::Color::from_rgb(0.9, 0.9, 0.9)  // Light border for dark theme
+                } else {
+                    iced::Color::from_rgb(0.1, 0.1, 0.1)  // Dark border for light theme
+                }
+            } else {
+                iced::Color::TRANSPARENT  // Transparent when not focused
+            };
+            
+            let base_style = iced::widget::pick_list::default(theme, status);
+            iced::widget::pick_list::Style {
+                border: iced::border::rounded(4)
+                    .color(border_color)
+                    .width(2),
+                ..base_style
+            }
+        });
 
         let game_type_row = row![
             Text::new(crate::translations::t(crate::translations::TranslationKey::SavedGame, user_language)).size(self.font_size_base()),
@@ -186,6 +209,10 @@ impl GameWindow {
     pub fn build_new_game_ui(&self) -> Container<'_, GameMessage> {
         let user_language = &self.settings_language;
         
+        let is_name_focused = self.menu_right_panel_focused && 
+            matches!(self.panel_focus, Some(crate::gui::types::PanelFocus::NewGame(crate::gui::types::NewGameFocus::PlayerName)));
+        let is_dark_theme = matches!(self.os_theme, crate::game::OSColorTheme::Dark);
+        
         let name_input = text_input(
             &crate::translations::t(crate::translations::TranslationKey::EnterName, user_language), 
             &self.new_game_player_name
@@ -193,7 +220,26 @@ impl GameWindow {
             .on_input(GameMessage::Menu_NewGamePlayerNameAltered)
             .padding(10)
             .width(Length::Fill)
-            .id(iced::widget::text_input::Id::new("new_game_player_name"));
+            .id(iced::widget::text_input::Id::new("new_game_player_name"))
+            .style(move |theme: &iced::Theme, status: iced::widget::text_input::Status| {
+                let border_color = if is_name_focused {
+                    if is_dark_theme {
+                        iced::Color::from_rgb(0.9, 0.9, 0.9)  // Light border for dark theme
+                    } else {
+                        iced::Color::from_rgb(0.1, 0.1, 0.1)  // Dark border for light theme
+                    }
+                } else {
+                    iced::Color::TRANSPARENT  // Transparent when not focused
+                };
+                
+                let base_style = iced::widget::text_input::default(theme, status);
+                iced::widget::text_input::Style {
+                    border: iced::border::rounded(4)
+                        .color(border_color)
+                        .width(2),
+                    ..base_style
+                }
+            });
 
         let name_row = row![
                 Text::new(crate::translations::t(crate::translations::TranslationKey::PlayerName, user_language)).size(self.font_size_base()),
@@ -214,6 +260,9 @@ impl GameWindow {
                 }
                 None
             });
+        let is_game_type_focused = self.menu_right_panel_focused && 
+            matches!(self.panel_focus, Some(crate::gui::types::PanelFocus::NewGame(crate::gui::types::NewGameFocus::GameType)));
+        
         let game_type_picker = pick_list(
             crisis_names,
             selected_display_name,
@@ -221,7 +270,26 @@ impl GameWindow {
         )
         .placeholder(crate::translations::t(crate::translations::TranslationKey::SelectGameType, user_language))
         .padding(10)
-        .width(Length::Fill);
+        .width(Length::Fill)
+        .style(move |theme: &iced::Theme, status: iced::widget::pick_list::Status| {
+            let border_color = if is_game_type_focused {
+                if is_dark_theme {
+                    iced::Color::from_rgb(0.9, 0.9, 0.9)  // Light border for dark theme
+                } else {
+                    iced::Color::from_rgb(0.1, 0.1, 0.1)  // Dark border for light theme
+                }
+            } else {
+                iced::Color::TRANSPARENT  // Transparent when not focused
+            };
+            
+            let base_style = iced::widget::pick_list::default(theme, status);
+            iced::widget::pick_list::Style {
+                border: iced::border::rounded(4)
+                    .color(border_color)
+                    .width(2),
+                ..base_style
+            }
+        });
 
         let game_type_row = row![
             Text::new(crate::translations::t(crate::translations::TranslationKey::GameType, user_language)).size(self.font_size_base()),
@@ -292,6 +360,10 @@ impl GameWindow {
         let language_label = crate::translations::t(crate::translations::TranslationKey::Language, user_language);
         let language_placeholder = crate::translations::t(crate::translations::TranslationKey::SelectLanguage, user_language);
         
+        let is_crises_folder_focused = self.menu_right_panel_focused && 
+            matches!(self.panel_focus, Some(crate::gui::types::PanelFocus::Settings(crate::gui::types::SettingsFocus::CrisesFolder)));
+        let is_dark_theme = matches!(self.os_theme, crate::game::OSColorTheme::Dark);
+        
         let save_folder_input = text_input(
             &save_folder_placeholder, 
             &self.settings_game_crises_folder
@@ -299,7 +371,26 @@ impl GameWindow {
             .on_input(GameMessage::Menu_SettingsGameCrisesFolderChanged)
             .padding(10)
             .width(Length::Fill)
-            .id(iced::widget::text_input::Id::new("settings_crises_folder"));
+            .id(iced::widget::text_input::Id::new("settings_crises_folder"))
+            .style(move |theme: &iced::Theme, status: iced::widget::text_input::Status| {
+                let border_color = if is_crises_folder_focused {
+                    if is_dark_theme {
+                        iced::Color::from_rgb(0.9, 0.9, 0.9)  // Light border for dark theme
+                    } else {
+                        iced::Color::from_rgb(0.1, 0.1, 0.1)  // Dark border for light theme
+                    }
+                } else {
+                    iced::Color::TRANSPARENT  // Transparent when not focused
+                };
+                
+                let base_style = iced::widget::text_input::default(theme, status);
+                iced::widget::text_input::Style {
+                    border: iced::border::rounded(4)
+                        .color(border_color)
+                        .width(2),
+                    ..base_style
+                }
+            });
 
         // Create the save folder row with optional Open button
         #[cfg(not(target_arch = "wasm32"))]
@@ -335,6 +426,9 @@ impl GameWindow {
             .collect();
         let current_difficulty_display = self.settings_difficulty_level.to_translated_string(user_language);
         
+        let is_difficulty_focused = self.menu_right_panel_focused && 
+            matches!(self.panel_focus, Some(crate::gui::types::PanelFocus::Settings(crate::gui::types::SettingsFocus::DifficultyPicker)));
+        
         let difficulty_picker = pick_list(
             difficulty_options,
             Some(current_difficulty_display),
@@ -350,7 +444,26 @@ impl GameWindow {
         )
         .placeholder(&difficulty_placeholder)
         .padding(10)
-        .width(Length::Fill);
+        .width(Length::Fill)
+        .style(move |theme: &iced::Theme, status: iced::widget::pick_list::Status| {
+            let border_color = if is_difficulty_focused {
+                if is_dark_theme {
+                    iced::Color::from_rgb(0.9, 0.9, 0.9)  // Light border for dark theme
+                } else {
+                    iced::Color::from_rgb(0.1, 0.1, 0.1)  // Dark border for light theme
+                }
+            } else {
+                iced::Color::TRANSPARENT  // Transparent when not focused
+            };
+            
+            let base_style = iced::widget::pick_list::default(theme, status);
+            iced::widget::pick_list::Style {
+                border: iced::border::rounded(4)
+                    .color(border_color)
+                    .width(2),
+                ..base_style
+            }
+        });
 
         let difficulty_row = row![
             Text::new(difficulty_label).size(self.font_size_base()),
@@ -377,6 +490,9 @@ impl GameWindow {
             .map(|(code, name)| format!("{} ({})", name, code))
             .unwrap_or_else(|| format!("Unknown ({})", self.settings_language));
 
+        let is_language_focused = self.menu_right_panel_focused && 
+            matches!(self.panel_focus, Some(crate::gui::types::PanelFocus::Settings(crate::gui::types::SettingsFocus::LanguagePicker)));
+        
         let language_picker = pick_list(
             language_options,
             Some(current_language_display),
@@ -387,7 +503,26 @@ impl GameWindow {
         )
         .placeholder(&language_placeholder)
         .padding(10)
-        .width(Length::Fill);
+        .width(Length::Fill)
+        .style(move |theme: &iced::Theme, status: iced::widget::pick_list::Status| {
+            let border_color = if is_language_focused {
+                if is_dark_theme {
+                    iced::Color::from_rgb(0.9, 0.9, 0.9)  // Light border for dark theme
+                } else {
+                    iced::Color::from_rgb(0.1, 0.1, 0.1)  // Dark border for light theme
+                }
+            } else {
+                iced::Color::TRANSPARENT  // Transparent when not focused
+            };
+            
+            let base_style = iced::widget::pick_list::default(theme, status);
+            iced::widget::pick_list::Style {
+                border: iced::border::rounded(4)
+                    .color(border_color)
+                    .width(2),
+                ..base_style
+            }
+        });
 
         let language_row = row![
             Text::new(language_label).size(self.font_size_base()),

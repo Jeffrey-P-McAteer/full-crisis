@@ -40,6 +40,7 @@ impl GameWindow {
                 current_background_audio: Vec::new(),
                 menu_focused_button: 0,
                 menu_right_panel_focused: false,
+                panel_focus: None,
                 pick_list_expanded: false,
             },
             Task::batch([
@@ -247,8 +248,53 @@ impl GameWindow {
                 if self.menu_right_panel_focused {
                     info.push_str(&format!("Panel: {:?}\n", ws_view));
                     info.push_str("Location: Right Panel\n");
+                    
+                    // Show detailed panel focus
+                    if let Some(ref panel_focus) = self.panel_focus {
+                        match panel_focus {
+                            crate::gui::types::PanelFocus::NewGame(focus) => {
+                                let control_name = match focus {
+                                    crate::gui::types::NewGameFocus::PlayerName => "Player Name",
+                                    crate::gui::types::NewGameFocus::GameType => "Game Type",
+                                    crate::gui::types::NewGameFocus::GoButton => "Go Button",
+                                };
+                                info.push_str(&format!("Control: {}\n", control_name));
+                            }
+                            crate::gui::types::PanelFocus::ContinueGame(focus) => {
+                                let control_name = match focus {
+                                    crate::gui::types::ContinueGameFocus::SavedGamePicker => "Game Picker",
+                                    crate::gui::types::ContinueGameFocus::DeleteButton => "Delete Button",
+                                    crate::gui::types::ContinueGameFocus::GoButton => "Go Button",
+                                    crate::gui::types::ContinueGameFocus::ConfirmDelete => "Confirm Delete",
+                                    crate::gui::types::ContinueGameFocus::CancelDelete => "Cancel Delete",
+                                };
+                                info.push_str(&format!("Control: {}\n", control_name));
+                            }
+                            crate::gui::types::PanelFocus::Settings(focus) => {
+                                let control_name = match focus {
+                                    crate::gui::types::SettingsFocus::CrisesFolder => "Crises Folder",
+                                    crate::gui::types::SettingsFocus::OpenFolderButton => "Open Folder",
+                                    crate::gui::types::SettingsFocus::DifficultyPicker => "Difficulty",
+                                    crate::gui::types::SettingsFocus::AutosaveToggle => "Autosave",
+                                    crate::gui::types::SettingsFocus::LanguagePicker => "Language",
+                                    crate::gui::types::SettingsFocus::FontScaleSlider => "Font Scale",
+                                };
+                                info.push_str(&format!("Control: {}\n", control_name));
+                            }
+                            crate::gui::types::PanelFocus::Licenses(focus) => {
+                                let control_name = match focus {
+                                    crate::gui::types::LicensesFocus::Content => "Content",
+                                };
+                                info.push_str(&format!("Control: {}\n", control_name));
+                            }
+                        }
+                    } else {
+                        info.push_str("Control: Unknown\n");
+                    }
+                    
                     info.push_str("Enter: Submit/Action\n");
                     info.push_str("Tab: Next Control\n");
+                    info.push_str("Shift+Tab: Prev Control\n");
                     if self.pick_list_expanded {
                         info.push_str("Pick List: Expanded\n");
                     }

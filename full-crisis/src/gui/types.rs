@@ -55,6 +55,45 @@ impl Default for GameSettings {
     }
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum NewGameFocus {
+    PlayerName,
+    GameType,
+    GoButton,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ContinueGameFocus {
+    SavedGamePicker,
+    DeleteButton,
+    GoButton,
+    ConfirmDelete,
+    CancelDelete,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum SettingsFocus {
+    CrisesFolder,
+    OpenFolderButton,
+    DifficultyPicker,
+    AutosaveToggle,
+    LanguagePicker,
+    FontScaleSlider,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum LicensesFocus {
+    Content, // Scrollable content area
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum PanelFocus {
+    NewGame(NewGameFocus),
+    ContinueGame(ContinueGameFocus),
+    Settings(SettingsFocus),
+    Licenses(LicensesFocus),
+}
+
 pub struct GameWindow {
     pub os_theme: crate::game::OSColorTheme,
     pub game_state: crate::game::GameState,
@@ -75,6 +114,7 @@ pub struct GameWindow {
     pub current_background_audio: Vec<u8>, // Current background audio data to play
     pub menu_focused_button: usize, // Track which menu button is focused (0-4 for the 5 main buttons)
     pub menu_right_panel_focused: bool, // Track if focus is on the right panel
+    pub panel_focus: Option<PanelFocus>, // Track focus within right panel controls
     pub pick_list_expanded: bool, // Track if a pick list is currently expanded
 }
 
