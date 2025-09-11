@@ -118,6 +118,7 @@ pub enum GameMessage {
     Focus_NavigateLeft,
     Focus_NavigateRight,
     Focus_Activate, // Enter key or similar
+    Focus_TabInteract, // Tab key for element-specific interaction
 }
 
 // Focus system types
@@ -189,6 +190,10 @@ pub struct FocusState {
     pub current_focus: Option<FocusId>,
     pub focusable_elements: Vec<FocusId>,
     pub enabled: bool,
+    // Interactive state for complex widgets
+    pub text_input_focused: std::collections::HashMap<FocusId, bool>,
+    pub pick_list_selection_index: std::collections::HashMap<FocusId, usize>,
+    pub slider_values: std::collections::HashMap<FocusId, f32>,
 }
 
 impl Default for FocusState {
@@ -197,6 +202,9 @@ impl Default for FocusState {
             current_focus: None,
             focusable_elements: Vec::new(),
             enabled: true,
+            text_input_focused: std::collections::HashMap::new(),
+            pick_list_selection_index: std::collections::HashMap::new(),
+            slider_values: std::collections::HashMap::new(),
         }
     }
 }
@@ -329,5 +337,55 @@ impl FocusState {
     pub fn is_focused(&self, id: FocusId) -> bool {
         self.enabled && self.current_focus == Some(id)
     }
+    
+    pub fn is_text_input_focused(&self, id: FocusId) -> bool {
+        self.text_input_focused.get(&id).copied().unwrap_or(false)
+    }
+    
+    pub fn handle_tab_interact(&mut self) -> TabInteractionResult {
+        if let Some(current) = self.current_focus {
+            match current.0 {
+                // Text inputs - toggle focus state
+                "newgame_input" | "settings_input" => {
+                    let currently_focused = self.text_input_focused.get(&current).copied().unwrap_or(false);
+                    self.text_input_focused.insert(current, !currently_focused);
+                    TabInteractionResult::TextInputToggled(current, !currently_focused)
+                }
+                
+                // Pick lists - cycle through options
+                "continue_input" | "settings_picker" | "newgame_input" if current.1 == 1 => { // Template picker
+                    let current_index = self.pick_list_selection_index.get(&current).copied().unwrap_or(0);
+                    TabInteractionResult::PickListCycle(current, current_index)
+                }
+                
+                // Sliders - increment by 10%
+                "settings_slider" => {
+                    let current_val = self.slider_values.get(&current).copied().unwrap_or(0.5);
+                    let new_val = if current_val >= 0.95 { 0.1 } else { (current_val + 0.1).min(2.0) };
+                    self.slider_values.insert(current, new_val);
+                    TabInteractionResult::SliderChanged(current, new_val)
+                }
+                
+                // Toggles - flip state
+                "settings_toggle" => {
+                    TabInteractionResult::ToggleFlipped(current)
+                }
+                
+                // Buttons - activate
+                _ => TabInteractionResult::ButtonActivated(current)
+            }
+        } else {
+            TabInteractionResult::None
+        }
+    }
 }
 
+#[derive(Debug, Clone)]
+pub enum TabInteractionResult {
+    None,
+    TextInputToggled(FocusId, bool), // focus_id, is_now_focused
+    PickListCycle(FocusId, usize), // focus_id, current_selection_index
+    SliderChanged(FocusId, f32), // focus_id, new_value
+    ToggleFlipped(FocusId), // focus_id
+    ButtonActivated(FocusId), // focus_id
+}

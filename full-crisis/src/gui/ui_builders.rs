@@ -213,7 +213,10 @@ impl GameWindow {
             .on_input(GameMessage::Menu_NewGamePlayerNameAltered)
             .padding(10)
             .width(Length::Fill)
-            .style(crate::gui::focused_text_input_style(self.focus_state.is_focused(FocusId::new_game_input(0))));
+            .style(crate::gui::focused_text_input_style(
+                self.focus_state.is_focused(FocusId::new_game_input(0)),
+                self.focus_state.is_text_input_focused(FocusId::new_game_input(0))
+            ));
 
         let name_row = row![
                 Text::new(crate::translations::t(crate::translations::TranslationKey::PlayerName, user_language)).size(self.font_size_base()),
@@ -321,7 +324,10 @@ impl GameWindow {
             .on_input(GameMessage::Menu_SettingsGameCrisesFolderChanged)
             .padding(10)
             .width(Length::Fill)
-            .style(crate::gui::focused_text_input_style(self.focus_state.is_focused(FocusId::settings_input(0))));
+            .style(crate::gui::focused_text_input_style(
+                self.focus_state.is_focused(FocusId::settings_input(0)),
+                self.focus_state.is_text_input_focused(FocusId::settings_input(0))
+            ));
 
         // Create the save folder row with optional Open button
         #[cfg(not(target_arch = "wasm32"))]

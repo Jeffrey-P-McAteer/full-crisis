@@ -55,7 +55,7 @@ pub fn focused_button_style(is_focused: bool) -> impl Fn(&Theme, iced::widget::b
     }
 }
 
-pub fn focused_text_input_style(is_focused: bool) -> impl Fn(&Theme, iced::widget::text_input::Status) -> iced::widget::text_input::Style {
+pub fn focused_text_input_style(is_focused: bool, is_actively_focused: bool) -> impl Fn(&Theme, iced::widget::text_input::Status) -> iced::widget::text_input::Style {
     move |theme: &Theme, status: iced::widget::text_input::Status| {
         let palette = theme.extended_palette();
         let mut style = match status {
@@ -103,9 +103,18 @@ pub fn focused_text_input_style(is_focused: bool) -> impl Fn(&Theme, iced::widge
         
         // Add focus outline
         if is_focused {
-            style.border = iced::border::rounded(4)
-                .color(iced::Color::from_rgb(1.0, 1.0, 1.0))
-                .width(3);
+            if is_actively_focused {
+                // Active input focus - bright blue with thicker border
+                style.border = iced::border::rounded(4)
+                    .color(iced::Color::from_rgb(0.2, 0.6, 1.0))
+                    .width(4);
+                style.background = palette.primary.weak.color.into();
+            } else {
+                // Navigation focus - white outline
+                style.border = iced::border::rounded(4)
+                    .color(iced::Color::from_rgb(1.0, 1.0, 1.0))
+                    .width(3);
+            }
         }
         
         style

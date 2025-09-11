@@ -125,6 +125,9 @@ impl GameWindow {
                         iced::keyboard::Key::Named(iced::keyboard::key::Named::Enter) => {
                             Some(GameMessage::Focus_Activate)
                         }
+                        iced::keyboard::Key::Named(iced::keyboard::key::Named::Tab) => {
+                            Some(GameMessage::Focus_TabInteract)
+                        }
                         _ => None
                     }
                 } else {

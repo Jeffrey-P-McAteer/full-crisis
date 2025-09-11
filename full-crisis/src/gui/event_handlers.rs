@@ -247,6 +247,9 @@ impl GameWindow {
             GameMessage::Focus_Activate => {
                 self.handle_focus_activation()
             }
+            GameMessage::Focus_TabInteract => {
+                self.handle_tab_interaction()
+            }
             GameMessage::Nop => {
                 eprintln!("Recieved a GameMessage::Nop");
                 Task::none()
@@ -821,6 +824,97 @@ impl GameWindow {
         }
         
         self.focus_state.set_focusable_elements(elements);
+    }
+    
+    fn handle_tab_interaction(&mut self) -> Task<GameMessage> {
+        use crate::gui::types::TabInteractionResult;
+        
+        match self.focus_state.handle_tab_interact() {
+            TabInteractionResult::TextInputToggled(focus_id, is_focused) => {
+                // Text input focus is handled by the focus state itself
+                Task::none()
+            }
+            
+            TabInteractionResult::PickListCycle(focus_id, current_index) => {
+                // Handle pick list cycling based on the specific pick list
+                match (focus_id.0, focus_id.1) {
+                    ("continue_input", 0) => {
+                        // Saved games picker - cycle through saved games
+                        let saved_games = crate::crisis::get_saved_crisis_names();
+                        if !saved_games.is_empty() {
+                            let next_index = (current_index + 1) % saved_games.len();
+                            self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
+                            if let Some(game_name) = saved_games.get(next_index) {
+                                return Task::done(GameMessage::Menu_ContinueGameChoiceAltered(game_name.clone()));
+                            }
+                        }
+                        Task::none()
+                    }
+                    ("newgame_input", 1) => {
+                        // Game template picker - cycle through available templates
+                        let crisis_names = crate::crisis::get_crisis_names();
+                        if !crisis_names.is_empty() {
+                            let next_index = (current_index + 1) % crisis_names.len();
+                            self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
+                            if let Some(template_name) = crisis_names.get(next_index) {
+                                return Task::done(GameMessage::Menu_NewGameTemplateChoiceAltered(template_name.clone()));
+                            }
+                        }
+                        Task::none()
+                    }
+                    ("settings_picker", 0) => {
+                        // Difficulty picker - cycle through difficulty levels
+                        use crate::gui::DifficultyLevel;
+                        let difficulties = &DifficultyLevel::ALL;
+                        let next_index = (current_index + 1) % difficulties.len();
+                        self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
+                        Task::done(GameMessage::Menu_SettingsDifficultyLevelChanged(difficulties[next_index]))
+                    }
+                    ("settings_picker", 1) => {
+                        // Language picker - cycle through available languages
+                        let languages = crate::language::get_available_languages();
+                        if !languages.is_empty() {
+                            let next_index = (current_index + 1) % languages.len();
+                            self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
+                            if let Some((lang_code, _)) = languages.get(next_index) {
+                                return Task::done(GameMessage::Menu_SettingsLanguageChanged(lang_code.clone()));
+                            }
+                        }
+                        Task::none()
+                    }
+                    _ => Task::none()
+                }
+            }
+            
+            TabInteractionResult::SliderChanged(focus_id, new_value) => {
+                // Handle slider value changes
+                match (focus_id.0, focus_id.1) {
+                    ("settings_slider", 0) => {
+                        // Font scale slider
+                        Task::done(GameMessage::Menu_SettingsFontScaleChanged(new_value))
+                    }
+                    _ => Task::none()
+                }
+            }
+            
+            TabInteractionResult::ToggleFlipped(focus_id) => {
+                // Handle toggle state changes
+                match (focus_id.0, focus_id.1) {
+                    ("settings_toggle", 0) => {
+                        // Autosave toggle
+                        Task::done(GameMessage::Menu_SettingsAutosaveToggled(!self.settings_autosave))
+                    }
+                    _ => Task::none()
+                }
+            }
+            
+            TabInteractionResult::ButtonActivated(focus_id) => {
+                // Same as Enter key activation
+                self.handle_focus_activation()
+            }
+            
+            TabInteractionResult::None => Task::none(),
+        }
     }
     
     fn update_focus_for_game_screen(&mut self, num_choices: usize) {
