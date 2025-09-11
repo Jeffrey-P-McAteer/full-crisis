@@ -177,6 +177,7 @@ pub fn delete_saved_game(display_name: &str) -> Result<(), String> {
     }
 }
 
+// WARNING: Long Function
 pub fn load_crisis(crisis_name: &str) -> Result<CrisisDefinition, Box<dyn std::error::Error>> {
     let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
     let crisis_path = format!("{}/crisis.toml", crisis_name.replace(" ", "_"));

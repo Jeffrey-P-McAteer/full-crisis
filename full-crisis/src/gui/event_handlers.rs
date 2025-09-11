@@ -95,6 +95,7 @@ impl DesktopAudioState {
 }
 
 impl GameWindow {
+    // WARNING: Long Function
     pub fn update(&mut self, message: GameMessage) -> Task<GameMessage> {
         #[cfg(not(target_arch = "wasm32"))]
         let start_time = std::time::Instant::now();
@@ -274,6 +275,7 @@ impl GameWindow {
         result
     }
 
+    // WARNING: Long Function
     fn handle_new_game_start(&mut self) -> Task<GameMessage> {
         let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
         if *verbosity > 0 {
@@ -330,6 +332,7 @@ impl GameWindow {
         Task::none()
     }
 
+    // WARNING: Long Function
     fn handle_continue_game_start(&mut self) -> Task<GameMessage> {
         let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
         

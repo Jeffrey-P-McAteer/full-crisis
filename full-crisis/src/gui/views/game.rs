@@ -27,6 +27,7 @@ impl GameWindow {
         }
     }
     
+    // WARNING: Long Function
     fn render_story_scene(&self, crisis: &crate::crisis::CrisisDefinition, story_state: &crate::crisis::GameState) -> Element<'_, GameMessage> {
         if let Some(current_scene) = crisis.scenes.get(&story_state.current_scene) {
             let mut error_messages = Vec::new();

@@ -305,6 +305,7 @@ impl GameWindow {
             .padding(10)
     }
 
+    // WARNING: Long Function
     pub fn build_settings_ui(&self) -> Container<'_, GameMessage> {
         let user_language = &self.settings_language;
         
