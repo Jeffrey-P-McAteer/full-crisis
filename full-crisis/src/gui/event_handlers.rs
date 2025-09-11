@@ -859,7 +859,7 @@ impl GameWindow {
                     }
                     ("newgame_input", 1) => {
                         // Game template picker - cycle through available templates
-                        let crisis_names = crate::crisis::get_crisis_names();
+                        let crisis_names = crate::crisis::get_crisis_names_localized(&self.settings_language);
                         if !crisis_names.is_empty() {
                             let next_index = if is_reverse {
                                 if current_index == 0 { crisis_names.len() - 1 } else { current_index - 1 }

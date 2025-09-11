@@ -365,10 +365,16 @@ impl FocusState {
                     TabInteractionResult::PickListCycle(current, current_index, reverse)
                 }
                 
-                // Sliders - increment by 10%
+                // Sliders - increment/decrement by 10%
                 "settings_slider" => {
                     let current_val = self.slider_values.get(&current).copied().unwrap_or(0.5);
-                    let new_val = if current_val >= 0.95 { 0.1 } else { (current_val + 0.1).min(2.0) };
+                    let new_val = if reverse {
+                        // Shift+Tab: decrement by 10%, rollover from minimum (0.1) to maximum (2.0)
+                        if current_val <= 0.15 { 2.0 } else { (current_val - 0.1).max(0.1) }
+                    } else {
+                        // Tab: increment by 10%, rollover from maximum (2.0) to minimum (0.1)
+                        if current_val >= 1.95 { 0.1 } else { (current_val + 0.1).min(2.0) }
+                    };
                     self.slider_values.insert(current, new_val);
                     TabInteractionResult::SliderChanged(current, new_val)
                 }
