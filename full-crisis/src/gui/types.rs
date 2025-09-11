@@ -125,24 +125,57 @@ pub enum GameMessage {
 pub struct FocusId(pub &'static str, pub usize); // (category, index)
 
 impl FocusId {
+    // Left panel - menu buttons
     pub const fn menu_button(index: usize) -> Self {
         Self("menu", index)
     }
     
-    pub const fn settings_button(index: usize) -> Self {
-        Self("settings", index)
+    // Right panel - new game elements
+    pub const fn new_game_input(index: usize) -> Self {
+        Self("newgame_input", index)
     }
     
+    pub const fn new_game_button(index: usize) -> Self {
+        Self("newgame_button", index)
+    }
+    
+    // Right panel - continue game elements  
+    pub const fn continue_game_input(index: usize) -> Self {
+        Self("continue_input", index)
+    }
+    
+    pub const fn continue_game_button(index: usize) -> Self {
+        Self("continue_button", index)
+    }
+    
+    // Right panel - settings elements
+    pub const fn settings_input(index: usize) -> Self {
+        Self("settings_input", index)
+    }
+    
+    pub const fn settings_button(index: usize) -> Self {
+        Self("settings_button", index)
+    }
+    
+    pub const fn settings_picker(index: usize) -> Self {
+        Self("settings_picker", index)
+    }
+    
+    pub const fn settings_toggle(index: usize) -> Self {
+        Self("settings_toggle", index)
+    }
+    
+    pub const fn settings_slider(index: usize) -> Self {
+        Self("settings_slider", index)
+    }
+    
+    // Game screen elements
     pub const fn game_choice(index: usize) -> Self {
         Self("choice", index)
     }
     
     pub const fn game_control(index: usize) -> Self {
         Self("control", index)
-    }
-    
-    pub const fn continue_game_button(index: usize) -> Self {
-        Self("continue", index)
     }
 }
 
@@ -222,24 +255,70 @@ impl FocusState {
     fn navigate_horizontal(&mut self, direction: i32) {
         if self.focusable_elements.is_empty() { return; }
         
-        let current_idx = if let Some(current) = self.current_focus {
-            self.focusable_elements.iter().position(|&id| id == current)
-                .unwrap_or(0)
+        let current_focus = if let Some(current) = self.current_focus {
+            current
         } else {
-            0
+            self.current_focus = Some(self.focusable_elements[0]);
+            return;
         };
         
-        let new_idx = if direction > 0 {
-            (current_idx + 1) % self.focusable_elements.len()
-        } else {
-            if current_idx == 0 {
-                self.focusable_elements.len() - 1
+        // Check if we're in left panel (menu buttons) or right panel (other controls)
+        let is_in_left_panel = current_focus.0 == "menu";
+        
+        if direction > 0 { // Moving right
+            if is_in_left_panel {
+                // Move from left panel to right panel - find first right panel element
+                let first_right_element = self.focusable_elements.iter()
+                    .find(|&element| element.0 != "menu");
+                if let Some(&element) = first_right_element {
+                    self.current_focus = Some(element);
+                }
             } else {
-                current_idx - 1
+                // Already in right panel, navigate within right panel
+                self.navigate_within_panel(direction);
             }
-        };
-        
-        self.current_focus = Some(self.focusable_elements[new_idx]);
+        } else { // Moving left  
+            if is_in_left_panel {
+                // Already in left panel, navigate within left panel
+                self.navigate_within_panel(direction);
+            } else {
+                // Move from right panel to left panel - find first left panel element
+                let first_left_element = self.focusable_elements.iter()
+                    .find(|&element| element.0 == "menu");
+                if let Some(&element) = first_left_element {
+                    self.current_focus = Some(element);
+                }
+            }
+        }
+    }
+    
+    fn navigate_within_panel(&mut self, direction: i32) {
+        if let Some(current) = self.current_focus {
+            let panel = current.0;
+            
+            // Get all elements in the same panel
+            let panel_elements: Vec<FocusId> = self.focusable_elements.iter()
+                .filter(|&element| element.0 == panel)
+                .copied()
+                .collect();
+            
+            if panel_elements.is_empty() { return; }
+            
+            let current_idx = panel_elements.iter().position(|&id| id == current)
+                .unwrap_or(0);
+            
+            let new_idx = if direction > 0 {
+                (current_idx + 1) % panel_elements.len()
+            } else {
+                if current_idx == 0 {
+                    panel_elements.len() - 1
+                } else {
+                    current_idx - 1
+                }
+            };
+            
+            self.current_focus = Some(panel_elements[new_idx]);
+        }
     }
     
     pub fn is_focused(&self, id: FocusId) -> bool {

@@ -690,18 +690,24 @@ impl GameWindow {
                 ("menu", 3) => Task::done(GameMessage::Menu_LicensesRequested),
                 ("menu", 4) => Task::done(GameMessage::QuitGameRequested),
                 
-                // New game buttons
-                ("newgame", 0) => Task::done(GameMessage::Menu_NewGameStartClicked),
+                // New game elements
+                ("newgame_button", 0) => Task::done(GameMessage::Menu_NewGameStartClicked),
+                // Note: text inputs and pick lists handle their own focus/activation
                 
-                // Continue game buttons  
-                ("continue", 0) => Task::done(GameMessage::Menu_ContinueGameStartClicked),
-                ("continue", 1) => {
+                // Continue game elements
+                ("continue_button", 0) => Task::done(GameMessage::Menu_ContinueGameStartClicked),
+                ("continue_button", 1) => {
                     if let Some(ref game_name) = self.continue_game_game_choice {
                         Task::done(GameMessage::Menu_ContinueGameDeleteRequested(game_name.clone()))
                     } else {
                         Task::none()
                     }
                 }
+                
+                // Settings elements
+                ("settings_button", 0) => Task::done(GameMessage::Menu_SettingsOpenCrisesFolder),
+                // Note: toggles can be activated with Enter key
+                ("settings_toggle", 0) => Task::done(GameMessage::Menu_SettingsAutosaveToggled(!self.settings_autosave)),
                 
                 // Game control buttons
                 ("control", 0) => Task::done(GameMessage::Game_SaveAndQuitRequested),
@@ -730,22 +736,61 @@ impl GameWindow {
     
     fn update_focus_for_new_game_screen(&mut self) {
         let elements = vec![
-            FocusId("newgame", 0), // Go button
+            // Left panel
+            FocusId::menu_button(0), // Continue Game  
+            FocusId::menu_button(1), // New Game
+            FocusId::menu_button(2), // Settings
+            FocusId::menu_button(3), // Licenses
+            FocusId::menu_button(4), // Quit Game
+            
+            // Right panel - new game elements
+            FocusId::new_game_input(0),  // Player name input
+            FocusId::new_game_input(1),  // Game template picker
+            FocusId::new_game_button(0), // Go button
         ];
         self.focus_state.set_focusable_elements(elements);
     }
     
     fn update_focus_for_continue_game_screen(&mut self) {
         let elements = vec![
-            FocusId("continue", 0), // Play button
-            FocusId("continue", 1), // Delete button
+            // Left panel
+            FocusId::menu_button(0), // Continue Game  
+            FocusId::menu_button(1), // New Game
+            FocusId::menu_button(2), // Settings
+            FocusId::menu_button(3), // Licenses
+            FocusId::menu_button(4), // Quit Game
+            
+            // Right panel - continue game elements
+            FocusId::continue_game_input(0),  // Saved games picker
+            FocusId::continue_game_button(0), // Play button
+            FocusId::continue_game_button(1), // Delete button
         ];
         self.focus_state.set_focusable_elements(elements);
     }
     
     fn update_focus_for_settings_screen(&mut self) {
-        // Settings screen doesn't have many focusable buttons, but we can add them later
-        let elements = vec![];
+        let mut elements = vec![
+            // Left panel
+            FocusId::menu_button(0), // Continue Game  
+            FocusId::menu_button(1), // New Game
+            FocusId::menu_button(2), // Settings
+            FocusId::menu_button(3), // Licenses
+            FocusId::menu_button(4), // Quit Game
+            
+            // Right panel - settings elements
+            FocusId::settings_input(0),   // Game crises folder
+            FocusId::settings_picker(0),  // Difficulty level
+            FocusId::settings_toggle(0),  // Autosave toggle
+            FocusId::settings_picker(1),  // Language picker
+            FocusId::settings_slider(0),  // Font scale slider
+        ];
+        
+        // Add Open Folder button on non-wasm32 platforms
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            elements.insert(6, FocusId::settings_button(0)); // Open folder button after folder input
+        }
+        
         self.focus_state.set_focusable_elements(elements);
     }
     
