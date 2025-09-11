@@ -119,6 +119,7 @@ pub enum GameMessage {
     Focus_NavigateRight,
     Focus_Activate, // Enter key or similar
     Focus_TabInteract, // Tab key for element-specific interaction
+    Focus_ShiftTabInteract, // Shift+Tab key for reverse interaction
 }
 
 // Focus system types
@@ -342,7 +343,7 @@ impl FocusState {
         self.text_input_focused.get(&id).copied().unwrap_or(false)
     }
     
-    pub fn handle_tab_interact(&mut self) -> TabInteractionResult {
+    pub fn handle_tab_interact(&mut self, reverse: bool) -> TabInteractionResult {
         if let Some(current) = self.current_focus {
             match current.0 {
                 // Text inputs - toggle focus state
@@ -353,9 +354,15 @@ impl FocusState {
                 }
                 
                 // Pick lists - cycle through options
-                "continue_input" | "settings_picker" | "newgame_input" if current.1 == 1 => { // Template picker
+                "continue_input" | "settings_picker" => {
                     let current_index = self.pick_list_selection_index.get(&current).copied().unwrap_or(0);
-                    TabInteractionResult::PickListCycle(current, current_index)
+                    TabInteractionResult::PickListCycle(current, current_index, reverse)
+                }
+                
+                // New game template picker (only index 1 is the pick_list)
+                "newgame_input" if current.1 == 1 => {
+                    let current_index = self.pick_list_selection_index.get(&current).copied().unwrap_or(0);
+                    TabInteractionResult::PickListCycle(current, current_index, reverse)
                 }
                 
                 // Sliders - increment by 10%
@@ -384,7 +391,7 @@ impl FocusState {
 pub enum TabInteractionResult {
     None,
     TextInputToggled(FocusId, bool), // focus_id, is_now_focused
-    PickListCycle(FocusId, usize), // focus_id, current_selection_index
+    PickListCycle(FocusId, usize, bool), // focus_id, current_selection_index, reverse
     SliderChanged(FocusId, f32), // focus_id, new_value
     ToggleFlipped(FocusId), // focus_id
     ButtonActivated(FocusId), // focus_id

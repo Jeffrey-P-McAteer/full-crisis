@@ -126,7 +126,11 @@ impl GameWindow {
                             Some(GameMessage::Focus_Activate)
                         }
                         iced::keyboard::Key::Named(iced::keyboard::key::Named::Tab) => {
-                            Some(GameMessage::Focus_TabInteract)
+                            if modifiers.shift() {
+                                Some(GameMessage::Focus_ShiftTabInteract)
+                            } else {
+                                Some(GameMessage::Focus_TabInteract)
+                            }
                         }
                         _ => None
                     }

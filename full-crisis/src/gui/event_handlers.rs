@@ -248,7 +248,10 @@ impl GameWindow {
                 self.handle_focus_activation()
             }
             GameMessage::Focus_TabInteract => {
-                self.handle_tab_interaction()
+                self.handle_tab_interaction(false)
+            }
+            GameMessage::Focus_ShiftTabInteract => {
+                self.handle_tab_interaction(true)
             }
             GameMessage::Nop => {
                 eprintln!("Recieved a GameMessage::Nop");
@@ -826,23 +829,27 @@ impl GameWindow {
         self.focus_state.set_focusable_elements(elements);
     }
     
-    fn handle_tab_interaction(&mut self) -> Task<GameMessage> {
+    fn handle_tab_interaction(&mut self, reverse: bool) -> Task<GameMessage> {
         use crate::gui::types::TabInteractionResult;
         
-        match self.focus_state.handle_tab_interact() {
+        match self.focus_state.handle_tab_interact(reverse) {
             TabInteractionResult::TextInputToggled(focus_id, is_focused) => {
                 // Text input focus is handled by the focus state itself
                 Task::none()
             }
             
-            TabInteractionResult::PickListCycle(focus_id, current_index) => {
+            TabInteractionResult::PickListCycle(focus_id, current_index, is_reverse) => {
                 // Handle pick list cycling based on the specific pick list
                 match (focus_id.0, focus_id.1) {
                     ("continue_input", 0) => {
                         // Saved games picker - cycle through saved games
                         let saved_games = crate::crisis::get_saved_crisis_names();
                         if !saved_games.is_empty() {
-                            let next_index = (current_index + 1) % saved_games.len();
+                            let next_index = if is_reverse {
+                                if current_index == 0 { saved_games.len() - 1 } else { current_index - 1 }
+                            } else {
+                                (current_index + 1) % saved_games.len()
+                            };
                             self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
                             if let Some(game_name) = saved_games.get(next_index) {
                                 return Task::done(GameMessage::Menu_ContinueGameChoiceAltered(game_name.clone()));
@@ -854,7 +861,11 @@ impl GameWindow {
                         // Game template picker - cycle through available templates
                         let crisis_names = crate::crisis::get_crisis_names();
                         if !crisis_names.is_empty() {
-                            let next_index = (current_index + 1) % crisis_names.len();
+                            let next_index = if is_reverse {
+                                if current_index == 0 { crisis_names.len() - 1 } else { current_index - 1 }
+                            } else {
+                                (current_index + 1) % crisis_names.len()
+                            };
                             self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
                             if let Some(template_name) = crisis_names.get(next_index) {
                                 return Task::done(GameMessage::Menu_NewGameTemplateChoiceAltered(template_name.clone()));
@@ -866,7 +877,11 @@ impl GameWindow {
                         // Difficulty picker - cycle through difficulty levels
                         use crate::gui::DifficultyLevel;
                         let difficulties = &DifficultyLevel::ALL;
-                        let next_index = (current_index + 1) % difficulties.len();
+                        let next_index = if is_reverse {
+                            if current_index == 0 { difficulties.len() - 1 } else { current_index - 1 }
+                        } else {
+                            (current_index + 1) % difficulties.len()
+                        };
                         self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
                         Task::done(GameMessage::Menu_SettingsDifficultyLevelChanged(difficulties[next_index]))
                     }
@@ -874,7 +889,11 @@ impl GameWindow {
                         // Language picker - cycle through available languages
                         let languages = crate::language::get_available_languages();
                         if !languages.is_empty() {
-                            let next_index = (current_index + 1) % languages.len();
+                            let next_index = if is_reverse {
+                                if current_index == 0 { languages.len() - 1 } else { current_index - 1 }
+                            } else {
+                                (current_index + 1) % languages.len()
+                            };
                             self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
                             if let Some((lang_code, _)) = languages.get(next_index) {
                                 return Task::done(GameMessage::Menu_SettingsLanguageChanged(lang_code.clone()));
