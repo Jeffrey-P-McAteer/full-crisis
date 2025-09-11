@@ -104,6 +104,7 @@ impl GameWindow {
                 if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                     *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::NewGame);
                 }
+                self.update_focus_for_new_game_screen();
                 Task::none()
             }
             GameMessage::Menu_NewGamePlayerNameAltered(name) => {
@@ -132,6 +133,7 @@ impl GameWindow {
                 if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                     *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::ContinueGame);
                 }
+                self.update_focus_for_continue_game_screen();
                 Task::none()
             }
             GameMessage::Menu_ContinueGameChoiceAltered(saved_game_name) => {
@@ -153,6 +155,7 @@ impl GameWindow {
                 if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                     *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::Settings);
                 }
+                self.update_focus_for_settings_screen();
                 Task::none()
             }
             GameMessage::Menu_LicensesRequested => {
@@ -225,6 +228,31 @@ impl GameWindow {
                 self.animation_frame_index = self.animation_frame_index.wrapping_add(1);
                 Task::none()
             }
+            GameMessage::Focus_NavigateUp => {
+                self.focus_state.navigate_up();
+                Task::none()
+            }
+            GameMessage::Focus_NavigateDown => {
+                self.focus_state.navigate_down();
+                Task::none()
+            }
+            GameMessage::Focus_NavigateLeft => {
+                self.focus_state.navigate_left();
+                Task::none()
+            }
+            GameMessage::Focus_NavigateRight => {
+                self.focus_state.navigate_right();
+                Task::none()
+            }
+            GameMessage::Focus_Activate => {
+                self.handle_focus_activation()
+            }
+            GameMessage::Focus_TabInteract => {
+                self.handle_tab_interaction(false)
+            }
+            GameMessage::Focus_ShiftTabInteract => {
+                self.handle_tab_interaction(true)
+            }
             GameMessage::Nop => {
                 eprintln!("Recieved a GameMessage::Nop");
                 Task::none()
@@ -277,12 +305,20 @@ impl GameWindow {
                     // Load background audio for the starting scene
                     self.load_scene_background_audio(&crisis, &crisis.story.starting_scene);
                     
+                    // Get number of choices before moving crisis
+                    let num_choices = crisis.scenes.get(&crisis.story.starting_scene)
+                        .map(|scene| scene.choices.len())
+                        .unwrap_or(0);
+                    
                     self.current_crisis = Some(crisis);
                     self.story_state = Some(story_state);
                     
                     if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                         *evt_loop_wguard = crate::game::ActiveEventLoop::ActiveGame(crate::game::GameView::StoryScene);
                     }
+                    
+                    // Set up focus for game screen
+                    self.update_focus_for_game_screen(num_choices);
                 }
                 Err(e) => {
                     if *verbosity > 0 {
@@ -305,12 +341,19 @@ impl GameWindow {
                             // Load background audio for the current scene
                             self.load_scene_background_audio(&crisis, &loaded_story_state.current_scene);
                             
+                            // Set up focus for game screen before moving values
+                            let num_choices = crisis.scenes.get(&loaded_story_state.current_scene)
+                                .map(|scene| scene.choices.len())
+                                .unwrap_or(0);
+                            
                             self.current_crisis = Some(crisis);
                             self.story_state = Some(loaded_story_state);
                             
                             if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                                 *evt_loop_wguard = crate::game::ActiveEventLoop::ActiveGame(crate::game::GameView::StoryScene);
                             }
+                            
+                            self.update_focus_for_game_screen(num_choices);
                         }
                         Err(e) => {
                             if *verbosity > 0 {
@@ -335,6 +378,10 @@ impl GameWindow {
         } else {
             self.continue_game_delete_confirmation = Some(game_name);
         }
+        
+        // Update focus to include/exclude confirmation dialog buttons
+        self.update_focus_for_continue_game_screen();
+        
         Task::none()
     }
 
@@ -357,6 +404,10 @@ impl GameWindow {
         }
         
         self.continue_game_delete_confirmation = None;
+        
+        // Update focus to remove confirmation dialog buttons
+        self.update_focus_for_continue_game_screen();
+        
         Task::none()
     }
 
@@ -405,6 +456,11 @@ impl GameWindow {
             // Load background audio for the new scene after updating the state
             if let Some(crisis) = self.current_crisis.clone() {
                 self.load_scene_background_audio(&crisis, &leads_to);
+                
+                // Update focus for the new scene's choices
+                if let Some(scene) = crisis.scenes.get(&leads_to) {
+                    self.update_focus_for_game_screen(scene.choices.len());
+                }
             }
         }
         Task::none()
@@ -471,6 +527,11 @@ impl GameWindow {
                     }
                     
                     self.choice_text_inputs.clear();
+                    
+                    // Update focus for the new scene's choices
+                    if let Some(scene) = crisis.scenes.get(&choice.leads_to) {
+                        self.update_focus_for_game_screen(scene.choices.len());
+                    }
                 }
             }
         }
@@ -533,6 +594,9 @@ impl GameWindow {
         self.animation_frame_index = 0;
         self.current_background_audio.clear(); // Stop any playing audio
         self.update_audio_playback(); // Update audio playback to stop audio
+        
+        // Update focus for main menu
+        self.update_focus_for_main_menu();
         
         // Start menu audio when returning to menu
         self.start_menu_audio();
@@ -628,5 +692,261 @@ impl GameWindow {
             Ok(_) => eprintln!("Opened crises folder: {}", folder_path),
             Err(e) => eprintln!("Failed to open crises folder '{}': {}", folder_path, e),
         }
+    }
+    
+    fn handle_focus_activation(&mut self) -> Task<GameMessage> {
+        if let Some(current_focus) = self.focus_state.current_focus {
+            match (current_focus.0, current_focus.1) {
+                // Menu buttons
+                ("menu", 0) => Task::done(GameMessage::Menu_ContinueGameRequested), 
+                ("menu", 1) => Task::done(GameMessage::Menu_NewGameRequested),
+                ("menu", 2) => Task::done(GameMessage::Menu_SettingsRequested),
+                ("menu", 3) => Task::done(GameMessage::Menu_LicensesRequested),
+                ("menu", 4) => Task::done(GameMessage::QuitGameRequested),
+                
+                // New game elements
+                ("newgame_button", 0) => Task::done(GameMessage::Menu_NewGameStartClicked),
+                // Note: text inputs and pick lists handle their own focus/activation
+                
+                // Continue game elements
+                ("continue_button", 0) => Task::done(GameMessage::Menu_ContinueGameStartClicked),
+                ("continue_button", 1) => {
+                    if let Some(ref game_name) = self.continue_game_game_choice {
+                        Task::done(GameMessage::Menu_ContinueGameDeleteRequested(game_name.clone()))
+                    } else {
+                        Task::none()
+                    }
+                }
+                
+                // Continue game confirmation dialog
+                ("continue_confirm", 0) => {
+                    // Confirm delete button
+                    if let Some(ref game_name) = self.continue_game_delete_confirmation {
+                        Task::done(GameMessage::Menu_ContinueGameDeleteConfirmed(game_name.clone()))
+                    } else {
+                        Task::none()
+                    }
+                }
+                ("continue_confirm", 1) => {
+                    // Cancel button - clear the confirmation
+                    Task::done(GameMessage::Menu_ContinueGameDeleteRequested("".to_string()))
+                }
+                
+                // Settings elements
+                ("settings_button", 0) => Task::done(GameMessage::Menu_SettingsOpenCrisesFolder),
+                // Note: toggles can be activated with Enter key
+                ("settings_toggle", 0) => Task::done(GameMessage::Menu_SettingsAutosaveToggled(!self.settings_autosave)),
+                
+                // Game control buttons
+                ("control", 0) => Task::done(GameMessage::Game_SaveAndQuitRequested),
+                ("control", 1) => Task::done(GameMessage::Game_QuitWithoutSaveRequested),
+                
+                // Game choice buttons
+                ("choice", index) => Task::done(GameMessage::Game_ChoiceSelected(index)),
+                
+                _ => Task::none(),
+            }
+        } else {
+            Task::none()
+        }
+    }
+    
+    fn update_focus_for_main_menu(&mut self) {
+        let menu_elements = vec![
+            FocusId::menu_button(0), // Continue Game  
+            FocusId::menu_button(1), // New Game
+            FocusId::menu_button(2), // Settings
+            FocusId::menu_button(3), // Licenses
+            FocusId::menu_button(4), // Quit Game
+        ];
+        self.focus_state.set_focusable_elements(menu_elements);
+    }
+    
+    fn update_focus_for_new_game_screen(&mut self) {
+        let elements = vec![
+            // Left panel
+            FocusId::menu_button(0), // Continue Game  
+            FocusId::menu_button(1), // New Game
+            FocusId::menu_button(2), // Settings
+            FocusId::menu_button(3), // Licenses
+            FocusId::menu_button(4), // Quit Game
+            
+            // Right panel - new game elements
+            FocusId::new_game_input(0),  // Player name input
+            FocusId::new_game_input(1),  // Game template picker
+            FocusId::new_game_button(0), // Go button
+        ];
+        self.focus_state.set_focusable_elements(elements);
+    }
+    
+    fn update_focus_for_continue_game_screen(&mut self) {
+        let mut elements = vec![
+            // Left panel
+            FocusId::menu_button(0), // Continue Game  
+            FocusId::menu_button(1), // New Game
+            FocusId::menu_button(2), // Settings
+            FocusId::menu_button(3), // Licenses
+            FocusId::menu_button(4), // Quit Game
+            
+            // Right panel - continue game elements
+            FocusId::continue_game_input(0),  // Saved games picker
+            FocusId::continue_game_button(0), // Play button
+            FocusId::continue_game_button(1), // Delete button
+        ];
+        
+        // Add confirmation dialog buttons if delete confirmation is active
+        if self.continue_game_delete_confirmation.is_some() {
+            elements.push(FocusId::continue_game_confirm(0)); // Confirm Delete button
+            elements.push(FocusId::continue_game_confirm(1)); // Cancel button
+        }
+        
+        self.focus_state.set_focusable_elements(elements);
+    }
+    
+    fn update_focus_for_settings_screen(&mut self) {
+        let mut elements = vec![
+            // Left panel
+            FocusId::menu_button(0), // Continue Game  
+            FocusId::menu_button(1), // New Game
+            FocusId::menu_button(2), // Settings
+            FocusId::menu_button(3), // Licenses
+            FocusId::menu_button(4), // Quit Game
+            
+            // Right panel - settings elements
+            FocusId::settings_input(0),   // Game crises folder
+            FocusId::settings_picker(0),  // Difficulty level
+            FocusId::settings_toggle(0),  // Autosave toggle
+            FocusId::settings_picker(1),  // Language picker
+            FocusId::settings_slider(0),  // Font scale slider
+        ];
+        
+        // Add Open Folder button on non-wasm32 platforms
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            elements.insert(6, FocusId::settings_button(0)); // Open folder button after folder input
+        }
+        
+        self.focus_state.set_focusable_elements(elements);
+    }
+    
+    fn handle_tab_interaction(&mut self, reverse: bool) -> Task<GameMessage> {
+        use crate::gui::types::TabInteractionResult;
+        
+        match self.focus_state.handle_tab_interact(reverse) {
+            TabInteractionResult::TextInputToggled(_focus_id, _is_focused) => {
+                // Text input focus is handled by the focus state itself
+                Task::none()
+            }
+            
+            TabInteractionResult::PickListCycle(focus_id, current_index, is_reverse) => {
+                // Handle pick list cycling based on the specific pick list
+                match (focus_id.0, focus_id.1) {
+                    ("continue_input", 0) => {
+                        // Saved games picker - cycle through saved games
+                        let saved_games = crate::crisis::get_saved_crisis_names();
+                        if !saved_games.is_empty() {
+                            let next_index = if is_reverse {
+                                if current_index == 0 { saved_games.len() - 1 } else { current_index - 1 }
+                            } else {
+                                (current_index + 1) % saved_games.len()
+                            };
+                            self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
+                            if let Some(game_name) = saved_games.get(next_index) {
+                                return Task::done(GameMessage::Menu_ContinueGameChoiceAltered(game_name.clone()));
+                            }
+                        }
+                        Task::none()
+                    }
+                    ("newgame_input", 1) => {
+                        // Game template picker - cycle through available templates
+                        let crisis_names = crate::crisis::get_crisis_names_localized(&self.settings_language);
+                        if !crisis_names.is_empty() {
+                            let next_index = if is_reverse {
+                                if current_index == 0 { crisis_names.len() - 1 } else { current_index - 1 }
+                            } else {
+                                (current_index + 1) % crisis_names.len()
+                            };
+                            self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
+                            if let Some(template_name) = crisis_names.get(next_index) {
+                                return Task::done(GameMessage::Menu_NewGameTemplateChoiceAltered(template_name.clone()));
+                            }
+                        }
+                        Task::none()
+                    }
+                    ("settings_picker", 0) => {
+                        // Difficulty picker - cycle through difficulty levels
+                        use crate::gui::DifficultyLevel;
+                        let difficulties = &DifficultyLevel::ALL;
+                        let next_index = if is_reverse {
+                            if current_index == 0 { difficulties.len() - 1 } else { current_index - 1 }
+                        } else {
+                            (current_index + 1) % difficulties.len()
+                        };
+                        self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
+                        Task::done(GameMessage::Menu_SettingsDifficultyLevelChanged(difficulties[next_index]))
+                    }
+                    ("settings_picker", 1) => {
+                        // Language picker - cycle through available languages
+                        let languages = crate::language::get_available_languages();
+                        if !languages.is_empty() {
+                            let next_index = if is_reverse {
+                                if current_index == 0 { languages.len() - 1 } else { current_index - 1 }
+                            } else {
+                                (current_index + 1) % languages.len()
+                            };
+                            self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
+                            if let Some((lang_code, _)) = languages.get(next_index) {
+                                return Task::done(GameMessage::Menu_SettingsLanguageChanged(lang_code.clone()));
+                            }
+                        }
+                        Task::none()
+                    }
+                    _ => Task::none()
+                }
+            }
+            
+            TabInteractionResult::SliderChanged(focus_id, new_value) => {
+                // Handle slider value changes
+                match (focus_id.0, focus_id.1) {
+                    ("settings_slider", 0) => {
+                        // Font scale slider
+                        Task::done(GameMessage::Menu_SettingsFontScaleChanged(new_value))
+                    }
+                    _ => Task::none()
+                }
+            }
+            
+            TabInteractionResult::ToggleFlipped(focus_id) => {
+                // Handle toggle state changes
+                match (focus_id.0, focus_id.1) {
+                    ("settings_toggle", 0) => {
+                        // Autosave toggle
+                        Task::done(GameMessage::Menu_SettingsAutosaveToggled(!self.settings_autosave))
+                    }
+                    _ => Task::none()
+                }
+            }
+            
+            TabInteractionResult::ButtonActivated(_focus_id) => {
+                // Same as Enter key activation
+                self.handle_focus_activation()
+            }
+            
+            TabInteractionResult::None => Task::none(),
+        }
+    }
+    
+    fn update_focus_for_game_screen(&mut self, num_choices: usize) {
+        let mut elements = vec![
+            FocusId("control", 0), // Save and quit
+            FocusId("control", 1), // Quit without save
+        ];
+        
+        // Add choice buttons
+        for i in 0..num_choices {
+            elements.push(FocusId("choice", i));
+        }
+        
+        self.focus_state.set_focusable_elements(elements);
     }
 }

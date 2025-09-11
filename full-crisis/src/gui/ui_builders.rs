@@ -55,7 +55,8 @@ impl GameWindow {
         )
         .placeholder(crate::translations::t(crate::translations::TranslationKey::SelectGame, user_language))
         .padding(10)
-        .width(Length::Fill);
+        .width(Length::Fill)
+        .style(crate::gui::focused_pick_list_style(self.focus_state.is_focused(FocusId::continue_game_input(0))));
 
         let game_type_row = row![
             Text::new(crate::translations::t(crate::translations::TranslationKey::SavedGame, user_language)).size(self.font_size_base()),
@@ -66,9 +67,11 @@ impl GameWindow {
 
         let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Play, user_language)).size(self.font_size_base()))
             .on_press(GameMessage::Menu_ContinueGameStartClicked)
-            .padding(10);
+            .padding(10)
+            .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId::continue_game_button(0))));
 
         let delete_button = if self.continue_game_game_choice.is_some() {
+            let is_focused = self.focus_state.is_focused(FocusId::continue_game_button(1));
             button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_ContinueGameDeleteRequested(
                     self.continue_game_game_choice.clone().unwrap_or_default()
@@ -76,7 +79,7 @@ impl GameWindow {
                 .padding(10)
                 .style(move |theme: &Theme, status| {
                     let palette = theme.extended_palette();
-                    iced::widget::button::Style {
+                    let mut style = iced::widget::button::Style {
                         background: Some(match status {
                             iced::widget::button::Status::Active => palette.danger.base.color.into(),
                             iced::widget::button::Status::Hovered => palette.danger.strong.color.into(),
@@ -85,7 +88,13 @@ impl GameWindow {
                         text_color: palette.danger.base.text,
                         border: iced::border::rounded(4),
                         ..iced::widget::button::Style::default()
+                    };
+                    if is_focused {
+                        style.border = iced::border::rounded(4)
+                            .color(iced::Color::from_rgb(0.0, 0.5, 1.0))
+                            .width(3);
                     }
+                    style
                 })
         } else {
             button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)).size(self.font_size_base()))
@@ -119,12 +128,13 @@ impl GameWindow {
                 .size(self.font_size_base())
                 .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
             
+            let is_confirm_focused = self.focus_state.is_focused(FocusId::continue_game_confirm(0));
             let confirm_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::ConfirmDelete, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_ContinueGameDeleteConfirmed(game_name.clone()))
                 .padding(10)
                 .style(move |theme: &Theme, status| {
                     let palette = theme.extended_palette();
-                    iced::widget::button::Style {
+                    let mut style = iced::widget::button::Style {
                         background: Some(match status {
                             iced::widget::button::Status::Active => palette.danger.base.color.into(),
                             iced::widget::button::Status::Hovered => palette.danger.strong.color.into(),
@@ -133,12 +143,22 @@ impl GameWindow {
                         text_color: palette.danger.base.text,
                         border: iced::border::rounded(4),
                         ..iced::widget::button::Style::default()
+                    };
+                    
+                    // Add focus outline
+                    if is_confirm_focused {
+                        style.border = iced::border::rounded(4)
+                            .color(iced::Color::from_rgb(1.0, 1.0, 1.0))
+                            .width(3);
                     }
+                    
+                    style
                 });
             
             let cancel_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Cancel, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_ContinueGameDeleteRequested("".to_string())) // Cancel by clearing
-                .padding(10);
+                .padding(10)
+                .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId::continue_game_confirm(1))));
             
             let confirmation_buttons = row![confirm_button, cancel_button]
                 .spacing(10)
@@ -192,7 +212,11 @@ impl GameWindow {
         )
             .on_input(GameMessage::Menu_NewGamePlayerNameAltered)
             .padding(10)
-            .width(Length::Fill);
+            .width(Length::Fill)
+            .style(crate::gui::focused_text_input_style(
+                self.focus_state.is_focused(FocusId::new_game_input(0)),
+                self.focus_state.is_text_input_focused(FocusId::new_game_input(0))
+            ));
 
         let name_row = row![
                 Text::new(crate::translations::t(crate::translations::TranslationKey::PlayerName, user_language)).size(self.font_size_base()),
@@ -220,7 +244,8 @@ impl GameWindow {
         )
         .placeholder(crate::translations::t(crate::translations::TranslationKey::SelectGameType, user_language))
         .padding(10)
-        .width(Length::Fill);
+        .width(Length::Fill)
+        .style(crate::gui::focused_pick_list_style(self.focus_state.is_focused(FocusId::new_game_input(1))));
 
         let game_type_row = row![
             Text::new(crate::translations::t(crate::translations::TranslationKey::GameType, user_language)).size(self.font_size_base()),
@@ -231,7 +256,8 @@ impl GameWindow {
 
         let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Go, user_language)).size(self.font_size_base()))
             .on_press(GameMessage::Menu_NewGameStartClicked)
-            .padding(10);
+            .padding(10)
+            .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId::new_game_button(0))));
 
         let mut layout = iced::widget::Column::new()
             .spacing(20)
@@ -297,14 +323,19 @@ impl GameWindow {
         )
             .on_input(GameMessage::Menu_SettingsGameCrisesFolderChanged)
             .padding(10)
-            .width(Length::Fill);
+            .width(Length::Fill)
+            .style(crate::gui::focused_text_input_style(
+                self.focus_state.is_focused(FocusId::settings_input(0)),
+                self.focus_state.is_text_input_focused(FocusId::settings_input(0))
+            ));
 
         // Create the save folder row with optional Open button
         #[cfg(not(target_arch = "wasm32"))]
         let save_folder_row = {
             let open_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::OpenFolder, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_SettingsOpenCrisesFolder)
-                .padding([10, 15]);
+                .padding([10, 15])
+                .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId::settings_button(0))));
 
             row![
                 Text::new(save_folder_label).size(self.font_size_base()),
@@ -348,7 +379,8 @@ impl GameWindow {
         )
         .placeholder(&difficulty_placeholder)
         .padding(10)
-        .width(Length::Fill);
+        .width(Length::Fill)
+        .style(crate::gui::focused_pick_list_style(self.focus_state.is_focused(FocusId::settings_picker(0))));
 
         let difficulty_row = row![
             Text::new(difficulty_label).size(self.font_size_base()),
@@ -359,7 +391,8 @@ impl GameWindow {
 
         let autosave_toggle = toggler(self.settings_autosave)
             .on_toggle(GameMessage::Menu_SettingsAutosaveToggled)
-            .width(Length::Shrink);
+            .width(Length::Shrink)
+            .style(crate::gui::focused_toggler_style(self.focus_state.is_focused(FocusId::settings_toggle(0))));
 
         let autosave_row = row![
             Text::new(autosave_label).size(self.font_size_base()),
@@ -385,7 +418,8 @@ impl GameWindow {
         )
         .placeholder(&language_placeholder)
         .padding(10)
-        .width(Length::Fill);
+        .width(Length::Fill)
+        .style(crate::gui::focused_pick_list_style(self.focus_state.is_focused(FocusId::settings_picker(1))));
 
         let language_row = row![
             Text::new(language_label).size(self.font_size_base()),
@@ -398,7 +432,8 @@ impl GameWindow {
         let font_scale_label = crate::translations::t(crate::translations::TranslationKey::FontScale, user_language);
         let font_scale_slider = slider(0.1..=2.0, self.settings_font_scale, GameMessage::Menu_SettingsFontScaleChanged)
             .step(0.1)
-            .width(Length::Fill);
+            .width(Length::Fill)
+            .style(crate::gui::focused_slider_style(self.focus_state.is_focused(FocusId::settings_slider(0))));
 
         let font_scale_value_text = Text::new(format!("{:.1}x", self.settings_font_scale)).size(self.font_size_base());
 

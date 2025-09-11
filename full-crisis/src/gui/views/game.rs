@@ -61,7 +61,7 @@ impl GameWindow {
         current_scene: &crate::crisis::CrisisScene, 
         story_state: &crate::crisis::GameState,
         error_messages: &mut Vec<String>
-    ) -> Option<iced::widget::Stack<GameMessage, Theme, iced::Renderer>> {
+    ) -> Option<iced::widget::Stack<'_, GameMessage, Theme, iced::Renderer>> {
         if let Some(ref bg_path) = current_scene.background_image {
             if let Some(bg_file) = crate::crisis::PlayableCrises::get(bg_path) {
                 let bg_handle = iced::widget::image::Handle::from_bytes(bg_file.data.as_ref().to_vec());
@@ -106,7 +106,7 @@ impl GameWindow {
         current_scene: &crate::crisis::CrisisScene,
         story_state: &crate::crisis::GameState,
         error_messages: &mut Vec<String>
-    ) -> iced::widget::Column<GameMessage, Theme, iced::Renderer> {
+    ) -> iced::widget::Column<'_, GameMessage, Theme, iced::Renderer> {
         let top_data = self.create_top_data_section(crisis, story_state);
         let bottom_row = self.create_bottom_game_section(crisis, current_scene, story_state, error_messages);
         
@@ -122,7 +122,7 @@ impl GameWindow {
         }
     }
 
-    fn create_top_data_section(&self, crisis: &crate::crisis::CrisisDefinition, story_state: &crate::crisis::GameState) -> Container<GameMessage, Theme, iced::Renderer> {
+    fn create_top_data_section(&self, crisis: &crate::crisis::CrisisDefinition, story_state: &crate::crisis::GameState) -> Container<'_, GameMessage, Theme, iced::Renderer> {
         let title = crate::crisis::get_localized_text(&crisis.name, &story_state.language);
         let mut vars = std::collections::HashMap::new();
         vars.insert("character_name".to_string(), story_state.character_name.clone());
@@ -165,14 +165,15 @@ impl GameWindow {
         container(top_row).width(Length::Fill).padding(20)
     }
 
-    fn create_control_buttons(&self, story_state: &crate::crisis::GameState) -> iced::widget::Row<GameMessage, Theme, iced::Renderer> {
+    fn create_control_buttons(&self, story_state: &crate::crisis::GameState) -> iced::widget::Row<'_, GameMessage, Theme, iced::Renderer> {
         let save_button = button(
                 text(crate::translations::t(crate::translations::TranslationKey::SaveAndQuit, &story_state.language)).size(self.font_size_base())
                     .align_x(Center)
             )
             .on_press(GameMessage::Game_SaveAndQuitRequested)
             .padding(8)
-            .width(Length::Fixed(140.0));
+            .width(Length::Fixed(140.0))
+            .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId("control", 0))));
             
         let quit_button = button(
                 text(crate::translations::t(crate::translations::TranslationKey::Quit, &story_state.language)).size(self.font_size_base())
@@ -180,7 +181,8 @@ impl GameWindow {
             )
             .on_press(GameMessage::Game_QuitWithoutSaveRequested)
             .padding(8)
-            .width(Length::Fixed(60.0));
+            .width(Length::Fixed(60.0))
+            .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId("control", 1))));
             
         row![save_button, quit_button].spacing(10)
     }
@@ -191,7 +193,7 @@ impl GameWindow {
         current_scene: &crate::crisis::CrisisScene,
         story_state: &crate::crisis::GameState,
         error_messages: &mut Vec<String>
-    ) -> iced::widget::Row<GameMessage, Theme, iced::Renderer> {
+    ) -> iced::widget::Row<'_, GameMessage, Theme, iced::Renderer> {
         let left_column = self.create_story_choices_column(current_scene, story_state);
         let right_column = self.create_character_column(current_scene, story_state, error_messages);
         
@@ -200,7 +202,7 @@ impl GameWindow {
             .height(Length::Fill)
     }
 
-    fn create_story_choices_column(&self, current_scene: &crate::crisis::CrisisScene, story_state: &crate::crisis::GameState) -> iced::widget::Column<GameMessage, Theme, iced::Renderer> {
+    fn create_story_choices_column(&self, current_scene: &crate::crisis::CrisisScene, story_state: &crate::crisis::GameState) -> iced::widget::Column<'_, GameMessage, Theme, iced::Renderer> {
         let scene_text = crate::crisis::get_scene_text_with_substitutions(current_scene, &story_state.language, &story_state.character_name, &story_state.text_inputs);
         let story_text_display = container(
             container(
@@ -235,7 +237,7 @@ impl GameWindow {
         .height(Length::Fill)
     }
 
-    fn create_choices_section(&self, current_scene: &crate::crisis::CrisisScene, story_state: &crate::crisis::GameState) -> iced::widget::Column<GameMessage, Theme, iced::Renderer> {
+    fn create_choices_section(&self, current_scene: &crate::crisis::CrisisScene, story_state: &crate::crisis::GameState) -> iced::widget::Column<'_, GameMessage, Theme, iced::Renderer> {
         let mut choices_column = column![].spacing(10);
         
         if current_scene.choices.is_empty() {
@@ -332,6 +334,7 @@ impl GameWindow {
                 .on_press(GameMessage::Game_ChoiceSelected(index))
                 .padding(10)
                 .width(Length::Fill)
+                .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId("choice", index))))
                 .into()
         } else {
             button(text(format!("{} {}", choice_text, 
@@ -357,7 +360,7 @@ impl GameWindow {
         }
     }
 
-    fn create_character_column(&self, current_scene: &crate::crisis::CrisisScene, story_state: &crate::crisis::GameState, error_messages: &mut Vec<String>) -> iced::widget::Column<GameMessage, Theme, iced::Renderer> {
+    fn create_character_column(&self, current_scene: &crate::crisis::CrisisScene, story_state: &crate::crisis::GameState, error_messages: &mut Vec<String>) -> iced::widget::Column<'_, GameMessage, Theme, iced::Renderer> {
         let character_display = if let Some(ref char_image) = current_scene.speaking_character_image {
             match char_image {
                 crate::crisis::SpeakingCharacterImage::Single(char_path) => {
@@ -410,7 +413,7 @@ impl GameWindow {
         .height(Length::Fill)
     }
 
-    fn create_error_display(&self, error_messages: &[String]) -> Container<GameMessage, Theme, iced::Renderer> {
+    fn create_error_display(&self, error_messages: &[String]) -> Container<'_, GameMessage, Theme, iced::Renderer> {
         let error_text = error_messages.join("; ");
         container(
             text(format!("Media Loading Errors: {}", error_text))
