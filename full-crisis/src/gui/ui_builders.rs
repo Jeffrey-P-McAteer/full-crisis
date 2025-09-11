@@ -66,9 +66,11 @@ impl GameWindow {
 
         let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Play, user_language)).size(self.font_size_base()))
             .on_press(GameMessage::Menu_ContinueGameStartClicked)
-            .padding(10);
+            .padding(10)
+            .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId("continue", 0))));
 
         let delete_button = if self.continue_game_game_choice.is_some() {
+            let is_focused = self.focus_state.is_focused(FocusId("continue", 1));
             button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_ContinueGameDeleteRequested(
                     self.continue_game_game_choice.clone().unwrap_or_default()
@@ -76,7 +78,7 @@ impl GameWindow {
                 .padding(10)
                 .style(move |theme: &Theme, status| {
                     let palette = theme.extended_palette();
-                    iced::widget::button::Style {
+                    let mut style = iced::widget::button::Style {
                         background: Some(match status {
                             iced::widget::button::Status::Active => palette.danger.base.color.into(),
                             iced::widget::button::Status::Hovered => palette.danger.strong.color.into(),
@@ -85,7 +87,13 @@ impl GameWindow {
                         text_color: palette.danger.base.text,
                         border: iced::border::rounded(4),
                         ..iced::widget::button::Style::default()
+                    };
+                    if is_focused {
+                        style.border = iced::border::rounded(4)
+                            .color(iced::Color::from_rgb(0.0, 0.5, 1.0))
+                            .width(3);
                     }
+                    style
                 })
         } else {
             button(Text::new(crate::translations::t(crate::translations::TranslationKey::Delete, user_language)).size(self.font_size_base()))
@@ -231,7 +239,8 @@ impl GameWindow {
 
         let go_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Go, user_language)).size(self.font_size_base()))
             .on_press(GameMessage::Menu_NewGameStartClicked)
-            .padding(10);
+            .padding(10)
+            .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId("newgame", 0))));
 
         let mut layout = iced::widget::Column::new()
             .spacing(20)

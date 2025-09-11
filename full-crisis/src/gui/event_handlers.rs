@@ -104,6 +104,7 @@ impl GameWindow {
                 if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                     *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::NewGame);
                 }
+                self.update_focus_for_new_game_screen();
                 Task::none()
             }
             GameMessage::Menu_NewGamePlayerNameAltered(name) => {
@@ -132,6 +133,7 @@ impl GameWindow {
                 if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                     *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::ContinueGame);
                 }
+                self.update_focus_for_continue_game_screen();
                 Task::none()
             }
             GameMessage::Menu_ContinueGameChoiceAltered(saved_game_name) => {
@@ -153,6 +155,7 @@ impl GameWindow {
                 if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                     *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::Settings);
                 }
+                self.update_focus_for_settings_screen();
                 Task::none()
             }
             GameMessage::Menu_LicensesRequested => {
@@ -225,6 +228,25 @@ impl GameWindow {
                 self.animation_frame_index = self.animation_frame_index.wrapping_add(1);
                 Task::none()
             }
+            GameMessage::Focus_NavigateUp => {
+                self.focus_state.navigate_up();
+                Task::none()
+            }
+            GameMessage::Focus_NavigateDown => {
+                self.focus_state.navigate_down();
+                Task::none()
+            }
+            GameMessage::Focus_NavigateLeft => {
+                self.focus_state.navigate_left();
+                Task::none()
+            }
+            GameMessage::Focus_NavigateRight => {
+                self.focus_state.navigate_right();
+                Task::none()
+            }
+            GameMessage::Focus_Activate => {
+                self.handle_focus_activation()
+            }
             GameMessage::Nop => {
                 eprintln!("Recieved a GameMessage::Nop");
                 Task::none()
@@ -277,12 +299,20 @@ impl GameWindow {
                     // Load background audio for the starting scene
                     self.load_scene_background_audio(&crisis, &crisis.story.starting_scene);
                     
+                    // Get number of choices before moving crisis
+                    let num_choices = crisis.scenes.get(&crisis.story.starting_scene)
+                        .map(|scene| scene.choices.len())
+                        .unwrap_or(0);
+                    
                     self.current_crisis = Some(crisis);
                     self.story_state = Some(story_state);
                     
                     if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                         *evt_loop_wguard = crate::game::ActiveEventLoop::ActiveGame(crate::game::GameView::StoryScene);
                     }
+                    
+                    // Set up focus for game screen
+                    self.update_focus_for_game_screen(num_choices);
                 }
                 Err(e) => {
                     if *verbosity > 0 {
@@ -305,12 +335,19 @@ impl GameWindow {
                             // Load background audio for the current scene
                             self.load_scene_background_audio(&crisis, &loaded_story_state.current_scene);
                             
+                            // Set up focus for game screen before moving values
+                            let num_choices = crisis.scenes.get(&loaded_story_state.current_scene)
+                                .map(|scene| scene.choices.len())
+                                .unwrap_or(0);
+                            
                             self.current_crisis = Some(crisis);
                             self.story_state = Some(loaded_story_state);
                             
                             if let Ok(mut evt_loop_wguard) = self.game_state.active_event_loop.write() {
                                 *evt_loop_wguard = crate::game::ActiveEventLoop::ActiveGame(crate::game::GameView::StoryScene);
                             }
+                            
+                            self.update_focus_for_game_screen(num_choices);
                         }
                         Err(e) => {
                             if *verbosity > 0 {
@@ -405,6 +442,11 @@ impl GameWindow {
             // Load background audio for the new scene after updating the state
             if let Some(crisis) = self.current_crisis.clone() {
                 self.load_scene_background_audio(&crisis, &leads_to);
+                
+                // Update focus for the new scene's choices
+                if let Some(scene) = crisis.scenes.get(&leads_to) {
+                    self.update_focus_for_game_screen(scene.choices.len());
+                }
             }
         }
         Task::none()
@@ -471,6 +513,11 @@ impl GameWindow {
                     }
                     
                     self.choice_text_inputs.clear();
+                    
+                    // Update focus for the new scene's choices
+                    if let Some(scene) = crisis.scenes.get(&choice.leads_to) {
+                        self.update_focus_for_game_screen(scene.choices.len());
+                    }
                 }
             }
         }
@@ -533,6 +580,9 @@ impl GameWindow {
         self.animation_frame_index = 0;
         self.current_background_audio.clear(); // Stop any playing audio
         self.update_audio_playback(); // Update audio playback to stop audio
+        
+        // Update focus for main menu
+        self.update_focus_for_main_menu();
         
         // Start menu audio when returning to menu
         self.start_menu_audio();
@@ -628,5 +678,88 @@ impl GameWindow {
             Ok(_) => eprintln!("Opened crises folder: {}", folder_path),
             Err(e) => eprintln!("Failed to open crises folder '{}': {}", folder_path, e),
         }
+    }
+    
+    fn handle_focus_activation(&mut self) -> Task<GameMessage> {
+        if let Some(current_focus) = self.focus_state.current_focus {
+            match (current_focus.0, current_focus.1) {
+                // Menu buttons
+                ("menu", 0) => Task::done(GameMessage::Menu_ContinueGameRequested), 
+                ("menu", 1) => Task::done(GameMessage::Menu_NewGameRequested),
+                ("menu", 2) => Task::done(GameMessage::Menu_SettingsRequested),
+                ("menu", 3) => Task::done(GameMessage::Menu_LicensesRequested),
+                ("menu", 4) => Task::done(GameMessage::QuitGameRequested),
+                
+                // New game buttons
+                ("newgame", 0) => Task::done(GameMessage::Menu_NewGameStartClicked),
+                
+                // Continue game buttons  
+                ("continue", 0) => Task::done(GameMessage::Menu_ContinueGameStartClicked),
+                ("continue", 1) => {
+                    if let Some(ref game_name) = self.continue_game_game_choice {
+                        Task::done(GameMessage::Menu_ContinueGameDeleteRequested(game_name.clone()))
+                    } else {
+                        Task::none()
+                    }
+                }
+                
+                // Game control buttons
+                ("control", 0) => Task::done(GameMessage::Game_SaveAndQuitRequested),
+                ("control", 1) => Task::done(GameMessage::Game_QuitWithoutSaveRequested),
+                
+                // Game choice buttons
+                ("choice", index) => Task::done(GameMessage::Game_ChoiceSelected(index)),
+                
+                _ => Task::none(),
+            }
+        } else {
+            Task::none()
+        }
+    }
+    
+    fn update_focus_for_main_menu(&mut self) {
+        let menu_elements = vec![
+            FocusId::menu_button(0), // Continue Game  
+            FocusId::menu_button(1), // New Game
+            FocusId::menu_button(2), // Settings
+            FocusId::menu_button(3), // Licenses
+            FocusId::menu_button(4), // Quit Game
+        ];
+        self.focus_state.set_focusable_elements(menu_elements);
+    }
+    
+    fn update_focus_for_new_game_screen(&mut self) {
+        let elements = vec![
+            FocusId("newgame", 0), // Go button
+        ];
+        self.focus_state.set_focusable_elements(elements);
+    }
+    
+    fn update_focus_for_continue_game_screen(&mut self) {
+        let elements = vec![
+            FocusId("continue", 0), // Play button
+            FocusId("continue", 1), // Delete button
+        ];
+        self.focus_state.set_focusable_elements(elements);
+    }
+    
+    fn update_focus_for_settings_screen(&mut self) {
+        // Settings screen doesn't have many focusable buttons, but we can add them later
+        let elements = vec![];
+        self.focus_state.set_focusable_elements(elements);
+    }
+    
+    fn update_focus_for_game_screen(&mut self, num_choices: usize) {
+        let mut elements = vec![
+            FocusId("control", 0), // Save and quit
+            FocusId("control", 1), // Quit without save
+        ];
+        
+        // Add choice buttons
+        for i in 0..num_choices {
+            elements.push(FocusId("choice", i));
+        }
+        
+        self.focus_state.set_focusable_elements(elements);
     }
 }

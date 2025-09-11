@@ -73,6 +73,7 @@ pub struct GameWindow {
     pub choice_text_inputs: std::collections::HashMap<usize, String>, // Track text input values by choice index
     pub animation_frame_index: usize, // Current frame index for character animation
     pub current_background_audio: Vec<u8>, // Current background audio data to play
+    pub focus_state: FocusState, // Focus tracking state
 }
 
 #[derive(Debug, Clone)]
@@ -110,5 +111,139 @@ pub enum GameMessage {
     Game_SaveAndQuitRequested,
     Game_QuitWithoutSaveRequested,
     Game_AnimationTick, // Timer message for character animation
+    
+    // Focus system messages
+    Focus_NavigateUp,
+    Focus_NavigateDown,
+    Focus_NavigateLeft,
+    Focus_NavigateRight,
+    Focus_Activate, // Enter key or similar
+}
+
+// Focus system types
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct FocusId(pub &'static str, pub usize); // (category, index)
+
+impl FocusId {
+    pub const fn menu_button(index: usize) -> Self {
+        Self("menu", index)
+    }
+    
+    pub const fn settings_button(index: usize) -> Self {
+        Self("settings", index)
+    }
+    
+    pub const fn game_choice(index: usize) -> Self {
+        Self("choice", index)
+    }
+    
+    pub const fn game_control(index: usize) -> Self {
+        Self("control", index)
+    }
+    
+    pub const fn continue_game_button(index: usize) -> Self {
+        Self("continue", index)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct FocusState {
+    pub current_focus: Option<FocusId>,
+    pub focusable_elements: Vec<FocusId>,
+    pub enabled: bool,
+}
+
+impl Default for FocusState {
+    fn default() -> Self {
+        Self {
+            current_focus: None,
+            focusable_elements: Vec::new(),
+            enabled: true,
+        }
+    }
+}
+
+impl FocusState {
+    pub fn new() -> Self {
+        Self::default()
+    }
+    
+    pub fn set_focusable_elements(&mut self, elements: Vec<FocusId>) {
+        self.focusable_elements = elements.clone();
+        if self.current_focus.is_none() && !elements.is_empty() {
+            self.current_focus = Some(elements[0]);
+        }
+        if let Some(current) = self.current_focus {
+            if !elements.contains(&current) {
+                self.current_focus = elements.first().copied();
+            }
+        }
+    }
+    
+    pub fn navigate_up(&mut self) {
+        self.navigate_vertical(-1);
+    }
+    
+    pub fn navigate_down(&mut self) {
+        self.navigate_vertical(1);
+    }
+    
+    pub fn navigate_left(&mut self) {
+        self.navigate_horizontal(-1);
+    }
+    
+    pub fn navigate_right(&mut self) {
+        self.navigate_horizontal(1);
+    }
+    
+    fn navigate_vertical(&mut self, direction: i32) {
+        if self.focusable_elements.is_empty() { return; }
+        
+        let current_idx = if let Some(current) = self.current_focus {
+            self.focusable_elements.iter().position(|&id| id == current)
+                .unwrap_or(0)
+        } else {
+            0
+        };
+        
+        let new_idx = if direction > 0 {
+            (current_idx + 1) % self.focusable_elements.len()
+        } else {
+            if current_idx == 0 {
+                self.focusable_elements.len() - 1
+            } else {
+                current_idx - 1
+            }
+        };
+        
+        self.current_focus = Some(self.focusable_elements[new_idx]);
+    }
+    
+    fn navigate_horizontal(&mut self, direction: i32) {
+        if self.focusable_elements.is_empty() { return; }
+        
+        let current_idx = if let Some(current) = self.current_focus {
+            self.focusable_elements.iter().position(|&id| id == current)
+                .unwrap_or(0)
+        } else {
+            0
+        };
+        
+        let new_idx = if direction > 0 {
+            (current_idx + 1) % self.focusable_elements.len()
+        } else {
+            if current_idx == 0 {
+                self.focusable_elements.len() - 1
+            } else {
+                current_idx - 1
+            }
+        };
+        
+        self.current_focus = Some(self.focusable_elements[new_idx]);
+    }
+    
+    pub fn is_focused(&self, id: FocusId) -> bool {
+        self.enabled && self.current_focus == Some(id)
+    }
 }
 

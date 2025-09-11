@@ -172,7 +172,8 @@ impl GameWindow {
             )
             .on_press(GameMessage::Game_SaveAndQuitRequested)
             .padding(8)
-            .width(Length::Fixed(140.0));
+            .width(Length::Fixed(140.0))
+            .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId("control", 0))));
             
         let quit_button = button(
                 text(crate::translations::t(crate::translations::TranslationKey::Quit, &story_state.language)).size(self.font_size_base())
@@ -180,7 +181,8 @@ impl GameWindow {
             )
             .on_press(GameMessage::Game_QuitWithoutSaveRequested)
             .padding(8)
-            .width(Length::Fixed(60.0));
+            .width(Length::Fixed(60.0))
+            .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId("control", 1))));
             
         row![save_button, quit_button].spacing(10)
     }
@@ -332,6 +334,7 @@ impl GameWindow {
                 .on_press(GameMessage::Game_ChoiceSelected(index))
                 .padding(10)
                 .width(Length::Fill)
+                .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId("choice", index))))
                 .into()
         } else {
             button(text(format!("{} {}", choice_text, 

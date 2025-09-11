@@ -8,6 +8,7 @@ const SPLASH_PNG_BYTES: &[u8] = include_bytes!("../../../../icon/full-crisis-spl
 
 impl GameWindow {
     pub fn view_menu_screen(&self) -> Element<'_, GameMessage> {
+        
         let splash_handle = iced::widget::image::Handle::from_bytes(SPLASH_PNG_BYTES);
         let splash_img = Image::<iced::widget::image::Handle>::new(splash_handle)
             .width(Length::Fill)
@@ -21,22 +22,36 @@ impl GameWindow {
         let app_version = env!("CARGO_PKG_VERSION");
         let user_language = &self.settings_language;
         
+        // Setup focus elements for the menu (not used directly here since we need immutable access)
+        let _menu_elements = vec![
+            FocusId::menu_button(0), // Continue Game  
+            FocusId::menu_button(1), // New Game
+            FocusId::menu_button(2), // Settings
+            FocusId::menu_button(3), // Licenses
+            FocusId::menu_button(4), // Quit Game
+        ];
+        
         let buttons = column![
             button(text(crate::translations::t(crate::translations::TranslationKey::ContinueGame, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_ContinueGameRequested)
-                .width(Length::Fill),
+                .width(Length::Fill)
+                .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId::menu_button(0)))),
             button(text(crate::translations::t(crate::translations::TranslationKey::NewGame, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_NewGameRequested)
-                .width(Length::Fill),
+                .width(Length::Fill)
+                .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId::menu_button(1)))),
             button(text(crate::translations::t(crate::translations::TranslationKey::Settings, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_SettingsRequested)
-                .width(Length::Fill),
+                .width(Length::Fill)
+                .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId::menu_button(2)))),
             button(text(crate::translations::t(crate::translations::TranslationKey::Licenses, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_LicensesRequested)
-                .width(Length::Fill),
+                .width(Length::Fill)
+                .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId::menu_button(3)))),
             button(text(crate::translations::t(crate::translations::TranslationKey::QuitGame, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::QuitGameRequested)
-                .width(Length::Fill),
+                .width(Length::Fill)
+                .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId::menu_button(4)))),
             text(format!("Version {}", app_version)).size(self.font_size_small())
                 .width(Length::Fill),
         ]

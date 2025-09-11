@@ -19,26 +19,38 @@ impl GameWindow {
     
     pub fn new() -> (Self, Task<GameMessage>) {
         let loaded_settings = Self::load_settings();
+        let mut window = Self {
+            os_theme: crate::OS_COLOR_THEME.get().unwrap_or(&crate::game::OSColorTheme::Light).clone(),
+            game_state: crate::game::GameState::new(),
+            new_game_player_name: loaded_settings.last_username,
+            new_game_game_template: None,
+            new_game_selected_description: None,
+            continue_game_game_choice: None,
+            continue_game_delete_confirmation: None,
+            settings_game_crises_folder: loaded_settings.game_crises_folder,
+            settings_difficulty_level: loaded_settings.difficulty_level,
+            settings_autosave: loaded_settings.autosave,
+            settings_language: loaded_settings.language,
+            settings_font_scale: loaded_settings.font_scale,
+            current_crisis: None,
+            story_state: None,
+            choice_text_inputs: std::collections::HashMap::new(),
+            animation_frame_index: 0,
+            current_background_audio: Vec::new(),
+            focus_state: FocusState::new(),
+        };
+        
+        // Initialize focus for main menu
+        window.focus_state.set_focusable_elements(vec![
+            FocusId::menu_button(0), // Continue Game  
+            FocusId::menu_button(1), // New Game
+            FocusId::menu_button(2), // Settings
+            FocusId::menu_button(3), // Licenses
+            FocusId::menu_button(4), // Quit Game
+        ]);
+        
         (
-            Self {
-                os_theme: crate::OS_COLOR_THEME.get().unwrap_or(&crate::game::OSColorTheme::Light).clone(),
-                game_state: crate::game::GameState::new(),
-                new_game_player_name: loaded_settings.last_username,
-                new_game_game_template: None,
-                new_game_selected_description: None,
-                continue_game_game_choice: None,
-                continue_game_delete_confirmation: None,
-                settings_game_crises_folder: loaded_settings.game_crises_folder,
-                settings_difficulty_level: loaded_settings.difficulty_level,
-                settings_autosave: loaded_settings.autosave,
-                settings_language: loaded_settings.language,
-                settings_font_scale: loaded_settings.font_scale,
-                current_crisis: None,
-                story_state: None,
-                choice_text_inputs: std::collections::HashMap::new(),
-                animation_frame_index: 0,
-                current_background_audio: Vec::new(),
-            },
+            window,
             Task::batch([
                 widget::focus_next(),
             ]),
@@ -89,13 +101,47 @@ impl GameWindow {
     }
 
     pub fn subscription(&self) -> iced::Subscription<GameMessage> {
+        let mut subscriptions = vec![];
+        
+        // Keyboard events for focus navigation
+        subscriptions.push(
+            iced::event::listen_with(|event, _status, _window| {
+                if let iced::Event::Keyboard(iced::keyboard::Event::KeyPressed { 
+                    key, modifiers, ..
+                }) = event {
+                    match key.as_ref() {
+                        iced::keyboard::Key::Named(iced::keyboard::key::Named::ArrowUp) => {
+                            Some(GameMessage::Focus_NavigateUp)
+                        }
+                        iced::keyboard::Key::Named(iced::keyboard::key::Named::ArrowDown) => {
+                            Some(GameMessage::Focus_NavigateDown)
+                        }
+                        iced::keyboard::Key::Named(iced::keyboard::key::Named::ArrowLeft) => {
+                            Some(GameMessage::Focus_NavigateLeft)
+                        }
+                        iced::keyboard::Key::Named(iced::keyboard::key::Named::ArrowRight) => {
+                            Some(GameMessage::Focus_NavigateRight)
+                        }
+                        iced::keyboard::Key::Named(iced::keyboard::key::Named::Enter) => {
+                            Some(GameMessage::Focus_Activate)
+                        }
+                        _ => None
+                    }
+                } else {
+                    None
+                }
+            })
+        );
+        
         if self.current_crisis.is_some() && self.story_state.is_some() {
             // Only run animation timer when in active game
-            iced::time::every(std::time::Duration::from_millis(500))
-                .map(|_| GameMessage::Game_AnimationTick)
-        } else {
-            iced::Subscription::none()
+            subscriptions.push(
+                iced::time::every(std::time::Duration::from_millis(500))
+                    .map(|_| GameMessage::Game_AnimationTick)
+            );
         }
+        
+        iced::Subscription::batch(subscriptions)
     }
     
     #[cfg(not(target_arch = "wasm32"))]
