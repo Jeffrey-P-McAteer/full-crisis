@@ -833,7 +833,7 @@ impl GameWindow {
         use crate::gui::types::TabInteractionResult;
         
         match self.focus_state.handle_tab_interact(reverse) {
-            TabInteractionResult::TextInputToggled(focus_id, is_focused) => {
+            TabInteractionResult::TextInputToggled(_focus_id, _is_focused) => {
                 // Text input focus is handled by the focus state itself
                 Task::none()
             }
@@ -927,7 +927,7 @@ impl GameWindow {
                 }
             }
             
-            TabInteractionResult::ButtonActivated(focus_id) => {
+            TabInteractionResult::ButtonActivated(_focus_id) => {
                 // Same as Enter key activation
                 self.handle_focus_activation()
             }
