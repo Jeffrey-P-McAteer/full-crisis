@@ -148,6 +148,11 @@ impl FocusId {
         Self("continue_button", index)
     }
     
+    // Continue game confirmation dialog
+    pub const fn continue_game_confirm(index: usize) -> Self {
+        Self("continue_confirm", index)
+    }
+    
     // Right panel - settings elements
     pub const fn settings_input(index: usize) -> Self {
         Self("settings_input", index)

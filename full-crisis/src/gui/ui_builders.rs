@@ -128,12 +128,13 @@ impl GameWindow {
                 .size(self.font_size_base())
                 .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
             
+            let is_confirm_focused = self.focus_state.is_focused(FocusId::continue_game_confirm(0));
             let confirm_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::ConfirmDelete, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_ContinueGameDeleteConfirmed(game_name.clone()))
                 .padding(10)
                 .style(move |theme: &Theme, status| {
                     let palette = theme.extended_palette();
-                    iced::widget::button::Style {
+                    let mut style = iced::widget::button::Style {
                         background: Some(match status {
                             iced::widget::button::Status::Active => palette.danger.base.color.into(),
                             iced::widget::button::Status::Hovered => palette.danger.strong.color.into(),
@@ -142,12 +143,22 @@ impl GameWindow {
                         text_color: palette.danger.base.text,
                         border: iced::border::rounded(4),
                         ..iced::widget::button::Style::default()
+                    };
+                    
+                    // Add focus outline
+                    if is_confirm_focused {
+                        style.border = iced::border::rounded(4)
+                            .color(iced::Color::from_rgb(1.0, 1.0, 1.0))
+                            .width(3);
                     }
+                    
+                    style
                 });
             
             let cancel_button = button(Text::new(crate::translations::t(crate::translations::TranslationKey::Cancel, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_ContinueGameDeleteRequested("".to_string())) // Cancel by clearing
-                .padding(10);
+                .padding(10)
+                .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId::continue_game_confirm(1))));
             
             let confirmation_buttons = row![confirm_button, cancel_button]
                 .spacing(10)

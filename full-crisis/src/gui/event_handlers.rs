@@ -372,6 +372,10 @@ impl GameWindow {
         } else {
             self.continue_game_delete_confirmation = Some(game_name);
         }
+        
+        // Update focus to include/exclude confirmation dialog buttons
+        self.update_focus_for_continue_game_screen();
+        
         Task::none()
     }
 
@@ -394,6 +398,10 @@ impl GameWindow {
         }
         
         self.continue_game_delete_confirmation = None;
+        
+        // Update focus to remove confirmation dialog buttons
+        self.update_focus_for_continue_game_screen();
+        
         Task::none()
     }
 
@@ -704,6 +712,20 @@ impl GameWindow {
                     }
                 }
                 
+                // Continue game confirmation dialog
+                ("continue_confirm", 0) => {
+                    // Confirm delete button
+                    if let Some(ref game_name) = self.continue_game_delete_confirmation {
+                        Task::done(GameMessage::Menu_ContinueGameDeleteConfirmed(game_name.clone()))
+                    } else {
+                        Task::none()
+                    }
+                }
+                ("continue_confirm", 1) => {
+                    // Cancel button - clear the confirmation
+                    Task::done(GameMessage::Menu_ContinueGameDeleteRequested("".to_string()))
+                }
+                
                 // Settings elements
                 ("settings_button", 0) => Task::done(GameMessage::Menu_SettingsOpenCrisesFolder),
                 // Note: toggles can be activated with Enter key
@@ -752,7 +774,7 @@ impl GameWindow {
     }
     
     fn update_focus_for_continue_game_screen(&mut self) {
-        let elements = vec![
+        let mut elements = vec![
             // Left panel
             FocusId::menu_button(0), // Continue Game  
             FocusId::menu_button(1), // New Game
@@ -765,6 +787,13 @@ impl GameWindow {
             FocusId::continue_game_button(0), // Play button
             FocusId::continue_game_button(1), // Delete button
         ];
+        
+        // Add confirmation dialog buttons if delete confirmation is active
+        if self.continue_game_delete_confirmation.is_some() {
+            elements.push(FocusId::continue_game_confirm(0)); // Confirm Delete button
+            elements.push(FocusId::continue_game_confirm(1)); // Cancel button
+        }
+        
         self.focus_state.set_focusable_elements(elements);
     }
     
