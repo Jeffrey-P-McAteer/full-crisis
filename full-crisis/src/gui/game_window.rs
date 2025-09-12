@@ -148,9 +148,9 @@ impl GameWindow {
             );
         }
         
-        // Controller input polling - poll every 50ms for responsive input
+        // Controller input polling - poll every 100ms for UI navigation
         subscriptions.push(
-            iced::time::every(std::time::Duration::from_millis(50))
+            iced::time::every(std::time::Duration::from_millis(100))
                 .map(|_| GameMessage::Controller_PollInput)
         );
         

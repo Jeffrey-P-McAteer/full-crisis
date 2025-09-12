@@ -6,7 +6,7 @@
 use crate::gui::types::GameMessage;
 
 /// Standard controller input events that can be generated on any platform
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ControllerInput {
     /// D-pad or left stick up
     Up,
@@ -54,15 +54,65 @@ pub trait ControllerManager: Send {
     fn update(&mut self);
 }
 
+/// Input timing constants to match keyboard behavior
+const INITIAL_REPEAT_DELAY_MS: u64 = 400;  // 400ms before first repeat (slightly faster than typical keyboard)
+const REPEAT_INTERVAL_MS: u64 = 100;       // 100ms between repeats (faster for UI navigation)
+
+/// Tracks timing state for input debouncing
+#[derive(Debug, Clone)]
+struct InputTimingState {
+    last_input_time: std::time::Instant,
+    initial_delay_passed: bool,
+}
+
+impl InputTimingState {
+    fn new() -> Self {
+        Self {
+            last_input_time: std::time::Instant::now(),
+            initial_delay_passed: false,
+        }
+    }
+    
+    /// Check if enough time has passed to allow a repeat input
+    fn should_allow_input(&mut self, is_first_press: bool) -> bool {
+        let now = std::time::Instant::now();
+        
+        if is_first_press {
+            // First press is always allowed
+            self.last_input_time = now;
+            self.initial_delay_passed = false;
+            return true;
+        }
+        
+        // For held inputs, check timing
+        if !self.initial_delay_passed {
+            if now.duration_since(self.last_input_time).as_millis() >= INITIAL_REPEAT_DELAY_MS as u128 {
+                self.initial_delay_passed = true;
+                self.last_input_time = now;
+                return true;
+            }
+        } else {
+            if now.duration_since(self.last_input_time).as_millis() >= REPEAT_INTERVAL_MS as u128 {
+                self.last_input_time = now;
+                return true;
+            }
+        }
+        
+        false
+    }
+}
+
 /// Convert controller input to appropriate GameMessage
 pub fn controller_input_to_game_message(input: ControllerInput) -> GameMessage {
     match input {
         ControllerInput::Up => GameMessage::Focus_NavigateUp,
         ControllerInput::Down => GameMessage::Focus_NavigateDown,
-        ControllerInput::Left => GameMessage::Focus_ShiftTabInteract, // Shift+Tab equivalent
-        ControllerInput::Right => GameMessage::Focus_TabInteract,     // Tab equivalent
+        ControllerInput::Left => GameMessage::Focus_NavigateLeft,     // Left panel navigation
+        ControllerInput::Right => GameMessage::Focus_NavigateRight,   // Right panel navigation
         ControllerInput::ActionPrimary => GameMessage::Focus_Activate, // Enter key equivalent
         ControllerInput::ActionSecondary => GameMessage::QuitGameRequested, // Back/escape functionality
+        ControllerInput::LeftShoulder => GameMessage::Focus_ShiftTabInteract, // Shift+Tab equivalent (L1/LB)
+        ControllerInput::RightShoulder => GameMessage::Focus_TabInteract,     // Tab equivalent (R1/RB)
         ControllerInput::Start => GameMessage::Menu_SettingsRequested, // Menu access
         _ => GameMessage::Nop, // Other inputs not mapped yet
     }
@@ -83,7 +133,7 @@ pub fn create_controller_manager() -> Box<dyn ControllerManager> {
 /// Native desktop controller implementation using gilrs
 #[cfg(not(target_arch = "wasm32"))]
 pub mod native {
-    use super::{ControllerInput, ControllerManager};
+    use super::{ControllerInput, ControllerManager, InputTimingState};
     use gilrs::{Gilrs, Event, EventType, Button, Axis};
     
     pub struct NativeControllerManager {
@@ -96,6 +146,8 @@ pub mod native {
         // Track trigger states for digital conversion
         left_trigger_pressed: bool,
         right_trigger_pressed: bool,
+        // Input timing management for keyboard-like behavior
+        input_timing: std::collections::HashMap<ControllerInput, InputTimingState>,
     }
     
     impl NativeControllerManager {
@@ -114,6 +166,7 @@ pub mod native {
                 left_stick_y_pressed_down: false,
                 left_trigger_pressed: false,
                 right_trigger_pressed: false,
+                input_timing: std::collections::HashMap::new(),
             }
         }
         
@@ -143,13 +196,38 @@ pub mod native {
             
             match axis {
                 Axis::LeftStickX => {
-                    if value < -DEADZONE && !self.left_stick_x_pressed_left {
-                        self.left_stick_x_pressed_left = true;
-                        Some(ControllerInput::Left)
-                    } else if value > DEADZONE && !self.left_stick_x_pressed_right {
-                        self.left_stick_x_pressed_right = true;
-                        Some(ControllerInput::Right)
+                    if value < -DEADZONE {
+                        // Moving left
+                        if !self.left_stick_x_pressed_left {
+                            self.left_stick_x_pressed_left = true;
+                            self.left_stick_x_pressed_right = false;
+                            // Remove right timing state
+                            self.input_timing.remove(&ControllerInput::Right);
+                            Some(ControllerInput::Left)
+                        } else {
+                            // Already pressed, let timing system handle repeats
+                            None
+                        }
+                    } else if value > DEADZONE {
+                        // Moving right  
+                        if !self.left_stick_x_pressed_right {
+                            self.left_stick_x_pressed_right = true;
+                            self.left_stick_x_pressed_left = false;
+                            // Remove left timing state
+                            self.input_timing.remove(&ControllerInput::Left);
+                            Some(ControllerInput::Right)
+                        } else {
+                            // Already pressed, let timing system handle repeats
+                            None
+                        }
                     } else if value.abs() < RELEASE_DEADZONE {
+                        // Released
+                        if self.left_stick_x_pressed_left {
+                            self.input_timing.remove(&ControllerInput::Left);
+                        }
+                        if self.left_stick_x_pressed_right {
+                            self.input_timing.remove(&ControllerInput::Right);
+                        }
                         self.left_stick_x_pressed_left = false;
                         self.left_stick_x_pressed_right = false;
                         None
@@ -159,13 +237,36 @@ pub mod native {
                 }
                 Axis::LeftStickY => {
                     // Note: Y axis is usually inverted (negative = up)
-                    if value < -DEADZONE && !self.left_stick_y_pressed_up {
-                        self.left_stick_y_pressed_up = true;
-                        Some(ControllerInput::Up)
-                    } else if value > DEADZONE && !self.left_stick_y_pressed_down {
-                        self.left_stick_y_pressed_down = true;
-                        Some(ControllerInput::Down)
+                    if value < -DEADZONE {
+                        // Moving up
+                        if !self.left_stick_y_pressed_up {
+                            self.left_stick_y_pressed_up = true;
+                            self.left_stick_y_pressed_down = false;
+                            // Remove down timing state
+                            self.input_timing.remove(&ControllerInput::Down);
+                            Some(ControllerInput::Up)
+                        } else {
+                            None
+                        }
+                    } else if value > DEADZONE {
+                        // Moving down
+                        if !self.left_stick_y_pressed_down {
+                            self.left_stick_y_pressed_down = true;
+                            self.left_stick_y_pressed_up = false;
+                            // Remove up timing state
+                            self.input_timing.remove(&ControllerInput::Up);
+                            Some(ControllerInput::Down)
+                        } else {
+                            None
+                        }
                     } else if value.abs() < RELEASE_DEADZONE {
+                        // Released
+                        if self.left_stick_y_pressed_up {
+                            self.input_timing.remove(&ControllerInput::Up);
+                        }
+                        if self.left_stick_y_pressed_down {
+                            self.input_timing.remove(&ControllerInput::Down);
+                        }
                         self.left_stick_y_pressed_up = false;
                         self.left_stick_y_pressed_down = false;
                         None
@@ -178,6 +279,9 @@ pub mod native {
                         self.left_trigger_pressed = true;
                         Some(ControllerInput::LeftTrigger)
                     } else if value < 0.3 {
+                        if self.left_trigger_pressed {
+                            self.input_timing.remove(&ControllerInput::LeftTrigger);
+                        }
                         self.left_trigger_pressed = false;
                         None
                     } else {
@@ -189,6 +293,9 @@ pub mod native {
                         self.right_trigger_pressed = true;
                         Some(ControllerInput::RightTrigger)
                     } else if value < 0.3 {
+                        if self.right_trigger_pressed {
+                            self.input_timing.remove(&ControllerInput::RightTrigger);
+                        }
                         self.right_trigger_pressed = false;
                         None
                     } else {
@@ -202,20 +309,48 @@ pub mod native {
     
     impl ControllerManager for NativeControllerManager {
         fn poll_events(&mut self) -> Option<ControllerInput> {
-            // Process one event at a time to avoid overwhelming the message queue
-            if let Some(Event { event, .. }) = self.gilrs.next_event() {
+            // First, process any new events to update our state
+            while let Some(Event { event, .. }) = self.gilrs.next_event() {
                 match event {
                     EventType::ButtonPressed(button, _) => {
-                        Self::button_to_input(button)
+                        if let Some(input) = Self::button_to_input(button) {
+                            // For button presses, always register as first press
+                            let timing = self.input_timing.entry(input).or_insert_with(InputTimingState::new);
+                            if timing.should_allow_input(true) {
+                                return Some(input);
+                            }
+                        }
+                    }
+                    EventType::ButtonReleased(button, _) => {
+                        if let Some(input) = Self::button_to_input(button) {
+                            // Remove timing state when button is released
+                            self.input_timing.remove(&input);
+                        }
                     }
                     EventType::AxisChanged(axis, value, _) => {
-                        self.handle_axis_input(axis, value)
+                        if let Some(input) = self.handle_axis_input(axis, value) {
+                            // Check if this is the first time this axis direction was pressed
+                            let is_first_press = !self.input_timing.contains_key(&input);
+                            let timing = self.input_timing.entry(input).or_insert_with(InputTimingState::new);
+                            if timing.should_allow_input(is_first_press) {
+                                return Some(input);
+                            }
+                        }
                     }
-                    _ => None,
+                    _ => {}
                 }
-            } else {
-                None
             }
+            
+            // Check for held inputs that should repeat
+            let mut inputs_to_repeat = Vec::new();
+            for (&input, timing) in &mut self.input_timing {
+                if timing.should_allow_input(false) {
+                    inputs_to_repeat.push(input);
+                }
+            }
+            
+            // Return the first repeatable input (if any)
+            inputs_to_repeat.first().copied()
         }
         
         fn has_connected_controllers(&self) -> bool {
@@ -235,7 +370,7 @@ pub mod native {
 /// Web controller implementation using the Gamepad API
 #[cfg(target_arch = "wasm32")]
 pub mod web {
-    use super::{ControllerInput, ControllerManager};
+    use super::{ControllerInput, ControllerManager, InputTimingState};
     use wasm_bindgen::prelude::*;
     use web_sys::{window, Gamepad};
     
@@ -245,6 +380,8 @@ pub mod web {
         // Track axis states for digital conversion
         prev_axis_states: Vec<Vec<f32>>,
         axis_pressed_states: Vec<Vec<bool>>, // Track which axes are currently "pressed"
+        // Input timing management for keyboard-like behavior
+        input_timing: std::collections::HashMap<ControllerInput, InputTimingState>,
     }
     
     impl WebControllerManager {
@@ -253,6 +390,7 @@ pub mod web {
                 prev_button_states: Vec::new(),
                 prev_axis_states: Vec::new(),
                 axis_pressed_states: Vec::new(),
+                input_timing: std::collections::HashMap::new(),
             }
         }
         
@@ -321,12 +459,19 @@ pub mod web {
                 0 => { // Left stick X
                     if value < -DEADZONE && !was_pressed {
                         self.axis_pressed_states[gamepad_index][axis_index] = true;
+                        // Clear any previous opposing direction timing
+                        self.input_timing.remove(&ControllerInput::Right);
                         Some(ControllerInput::Left)
                     } else if value > DEADZONE && !was_pressed {
                         self.axis_pressed_states[gamepad_index][axis_index] = true;
+                        // Clear any previous opposing direction timing
+                        self.input_timing.remove(&ControllerInput::Left);
                         Some(ControllerInput::Right)
                     } else if value.abs() < DEADZONE {
                         self.axis_pressed_states[gamepad_index][axis_index] = false;
+                        // Clear timing state for both directions when axis is released
+                        self.input_timing.remove(&ControllerInput::Left);
+                        self.input_timing.remove(&ControllerInput::Right);
                         None
                     } else {
                         None
@@ -335,12 +480,19 @@ pub mod web {
                 1 => { // Left stick Y (inverted)
                     if value < -DEADZONE && !was_pressed {
                         self.axis_pressed_states[gamepad_index][axis_index] = true;
+                        // Clear any previous opposing direction timing
+                        self.input_timing.remove(&ControllerInput::Down);
                         Some(ControllerInput::Up)
                     } else if value > DEADZONE && !was_pressed {
                         self.axis_pressed_states[gamepad_index][axis_index] = true;
+                        // Clear any previous opposing direction timing
+                        self.input_timing.remove(&ControllerInput::Up);
                         Some(ControllerInput::Down)
                     } else if value.abs() < DEADZONE {
                         self.axis_pressed_states[gamepad_index][axis_index] = false;
+                        // Clear timing state for both directions when axis is released
+                        self.input_timing.remove(&ControllerInput::Up);
+                        self.input_timing.remove(&ControllerInput::Down);
                         None
                     } else {
                         None
@@ -383,7 +535,7 @@ pub mod web {
                     self.prev_axis_states[gamepad_index].resize(axis_count, 0.0);
                 }
                 
-                // Check for button press events (transition from not-pressed to pressed)
+                // Check for button press/release events
                 for button_index in 0..button_count {
                     let button_obj = buttons.get(button_index as u32);
                     if let Ok(button) = button_obj.dyn_into::<web_sys::GamepadButton>() {
@@ -394,11 +546,17 @@ pub mod web {
                             // Button was just pressed
                             self.prev_button_states[gamepad_index][button_index] = true;
                             if let Some(input) = Self::button_index_to_input(button_index) {
-                                return Some(input);
+                                let timing = self.input_timing.entry(input).or_insert_with(InputTimingState::new);
+                                if timing.should_allow_input(true) {
+                                    return Some(input);
+                                }
                             }
                         } else if !is_pressed && was_pressed {
                             // Button was just released
                             self.prev_button_states[gamepad_index][button_index] = false;
+                            if let Some(input) = Self::button_index_to_input(button_index) {
+                                self.input_timing.remove(&input);
+                            }
                         }
                     }
                 }
@@ -412,13 +570,26 @@ pub mod web {
                     if (value - prev_value).abs() > 0.1 { // Threshold to avoid tiny changes
                         self.prev_axis_states[gamepad_index][axis_index] = value;
                         if let Some(input) = self.handle_axis_input(gamepad_index, axis_index, value) {
-                            return Some(input);
+                            let is_first_press = !self.input_timing.contains_key(&input);
+                            let timing = self.input_timing.entry(input).or_insert_with(InputTimingState::new);
+                            if timing.should_allow_input(is_first_press) {
+                                return Some(input);
+                            }
                         }
                     }
                 }
             }
             
-            None
+            // Check for held inputs that should repeat (similar to native implementation)
+            let mut inputs_to_repeat = Vec::new();
+            for (&input, timing) in &mut self.input_timing {
+                if timing.should_allow_input(false) {
+                    inputs_to_repeat.push(input);
+                }
+            }
+            
+            // Return the first repeatable input (if any)
+            inputs_to_repeat.first().copied()
         }
         
         fn has_connected_controllers(&self) -> bool {
