@@ -47,11 +47,12 @@ features = ["tabs"]
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = { version = "0.2" }
 getrandom = { version = "0.2", features = ["js"] }
-web-sys = { version = "0.3", features = ["console", "Navigator", "Window", "Location"] }
+web-sys = { version = "0.3", features = ["console", "Navigator", "Window", "Location", "Gamepad", "GamepadButton"] }
 
 # Override for desktop to use system locale detection
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 directories = { version = "5.0" }
 sys-locale = "0.3"
 rodio = { version = "0.21", features = ["minimp3", "wav"] }
+gilrs = "0.11"
 

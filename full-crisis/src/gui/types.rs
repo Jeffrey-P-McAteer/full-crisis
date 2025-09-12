@@ -121,6 +121,9 @@ pub enum GameMessage {
     Focus_Activate, // Enter key or similar
     Focus_TabInteract, // Tab key for element-specific interaction
     Focus_ShiftTabInteract, // Shift+Tab key for reverse interaction
+    
+    // Controller system messages
+    Controller_PollInput, // Timer message to poll controller input
 }
 
 // Focus system types

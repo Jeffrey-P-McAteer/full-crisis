@@ -256,7 +256,10 @@ impl GameWindow {
             GameMessage::Nop => {
                 eprintln!("Recieved a GameMessage::Nop");
                 Task::none()
-            },
+            }
+            GameMessage::Controller_PollInput => {
+                self.handle_controller_input()
+            }
             _ => Task::none(),
         };
         
@@ -990,6 +993,25 @@ impl GameWindow {
         // Load background audio
         self.load_scene_background_audio(&crisis, &story_state.current_scene);
         
+        Task::none()
+    }
+    
+    /// Handle controller input by polling the global controller manager
+    fn handle_controller_input(&mut self) -> Task<GameMessage> {
+        if let Some(controller_manager) = crate::CONTROLLER_MANAGER.get() {
+            if let Ok(mut manager) = controller_manager.lock() {
+                manager.update();
+                if let Some(controller_input) = manager.poll_events() {
+                    // Convert controller input to GameMessage
+                    let game_message = crate::input::controller_input_to_game_message(controller_input);
+                    
+                    // Only generate events for non-Nop messages
+                    if !matches!(game_message, GameMessage::Nop) {
+                        return Task::done(game_message);
+                    }
+                }
+            }
+        }
         Task::none()
     }
 }

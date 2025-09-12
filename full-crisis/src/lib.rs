@@ -33,6 +33,8 @@ pub mod language;
 pub mod translations;
 /// Audio management and embedded audio assets
 pub mod main_audio;
+/// Game controller input abstraction for cross-platform support
+pub mod input;
 
 
 #[cfg(target_arch = "wasm32")]
@@ -51,6 +53,7 @@ pub static GAME: OnceCell<game::GameState> = OnceCell::new();
 pub static OS_COLOR_THEME: OnceCell<game::OSColorTheme> = OnceCell::new();
 pub static VERBOSITY: OnceCell<u8> = OnceCell::new();
 pub static AUDIO_MANAGER: OnceCell<std::sync::Mutex<main_audio::AudioManager>> = OnceCell::new();
+pub static CONTROLLER_MANAGER: OnceCell<std::sync::Mutex<Box<dyn input::ControllerManager + Send>>> = OnceCell::new();
 
 // Re-export WASM audio callback setter
 #[cfg(target_arch = "wasm32")]
@@ -68,6 +71,12 @@ pub fn init_global_vars() {
     if let Err(e) = AUDIO_MANAGER.set(std::sync::Mutex::new(audio_manager)) {
       eprintln!("Failed to initialize audio manager: {:?}", e);
     }
+  }
+
+  // Initialize controller manager
+  let controller_manager = input::create_controller_manager();
+  if let Err(_e) = CONTROLLER_MANAGER.set(std::sync::Mutex::new(controller_manager)) {
+    eprintln!("Failed to initialize controller manager");
   }
 
   // Cannot assign to OS_COLOR_THEME in any reasonable manner
