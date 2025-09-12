@@ -7,6 +7,8 @@ pub mod event_handlers;
 pub mod game_window;
 pub mod views;
 pub mod styles;
+pub mod helpers;
+pub mod builders;
 
 use types::*;
 

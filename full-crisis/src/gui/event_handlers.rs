@@ -95,7 +95,6 @@ impl DesktopAudioState {
 }
 
 impl GameWindow {
-    // WARNING: Long Function
     pub fn update(&mut self, message: GameMessage) -> Task<GameMessage> {
         #[cfg(not(target_arch = "wasm32"))]
         let start_time = std::time::Instant::now();
