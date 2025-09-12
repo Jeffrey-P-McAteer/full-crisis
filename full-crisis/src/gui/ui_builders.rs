@@ -1,4 +1,5 @@
 use crate::gui::types::*;
+use crate::gui::helpers::TranslationUtils;
 use iced::widget::{
     Button, Container, Text, button, center_x, column, pick_list, row, text, text_input, toggler, slider, scrollable,
 };
@@ -26,20 +27,20 @@ impl GameWindow {
                     }
                     _ => {
                         Container::<GameMessage, Theme, iced::Renderer>::new(text(
-                            crate::translations::t(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
+                            TranslationUtils::translate(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
                         ).size(self.font_size_base()))
                     }
                 }
             }
             else {
                 Container::<GameMessage, Theme, iced::Renderer>::new(text(
-                    crate::translations::t(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
+                    TranslationUtils::translate(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
                 ).size(self.font_size_base()))
             }
         }
         else {
             Container::<GameMessage, Theme, iced::Renderer>::new(text(
-                crate::translations::t(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
+                TranslationUtils::translate(crate::translations::TranslationKey::SelectFromLeftMenu, "eng")
             ))
         }
     }
@@ -53,13 +54,13 @@ impl GameWindow {
             self.continue_game_game_choice.clone(),
             GameMessage::Menu_ContinueGameChoiceAltered,
         )
-        .placeholder(crate::translations::t(crate::translations::TranslationKey::SelectGame, user_language))
+        .placeholder(TranslationUtils::translate(crate::translations::TranslationKey::SelectGame, user_language))
         .padding(10)
         .width(Length::Fill)
         .style(crate::gui::focused_pick_list_style(self.focus_state.is_focused(FocusId::continue_game_input(0))));
 
         let game_type_row = row![
-            Text::new(crate::translations::t(crate::translations::TranslationKey::SavedGame, user_language)).size(self.font_size_base()),
+            Text::new(TranslationUtils::translate(crate::translations::TranslationKey::SavedGame, user_language)).size(self.font_size_base()),
             game_type_picker,
         ]
             .spacing(10)

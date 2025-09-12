@@ -274,7 +274,6 @@ impl GameWindow {
         result
     }
 
-    // WARNING: Long Function
     fn handle_new_game_start(&mut self) -> Task<GameMessage> {
         let verbosity = crate::VERBOSITY.get().unwrap_or(&0);
         if *verbosity > 0 {
@@ -950,5 +949,47 @@ impl GameWindow {
         }
         
         self.focus_state.set_focusable_elements(elements);
+    }
+    
+    // Helper methods to break down large functions
+    
+    fn validate_new_game_inputs(&self) -> bool {
+        self.new_game_game_template.is_some()
+    }
+    
+    fn get_character_name_for_new_game(&self, crisis: &crate::crisis::CrisisDefinition) -> String {
+        if self.new_game_player_name.is_empty() {
+            crate::crisis::get_random_character_name(crisis, None, &self.settings_language)
+        } else {
+            self.new_game_player_name.clone()
+        }
+    }
+    
+    fn initialize_game_state(&self, crisis: &crate::crisis::CrisisDefinition, template_name: &str, character_name: String) -> crate::crisis::GameState {
+        let user_language = self.settings_language.clone();
+        let mut story_state = crate::crisis::GameState::new(
+            crisis.metadata.id.clone(),
+            user_language.clone(),
+            template_name.to_string(),
+        );
+        story_state.current_scene = crisis.story.starting_scene.clone();
+        story_state.character_name = character_name;
+        story_state
+    }
+    
+    fn setup_game_session(&mut self, crisis: crate::crisis::CrisisDefinition, story_state: crate::crisis::GameState) -> Task<GameMessage> {
+        self.current_crisis = Some(crisis.clone());
+        self.story_state = Some(story_state.clone());
+        self.choice_text_inputs.clear();
+        self.animation_frame_index = 0;
+
+        if let Ok(mut rguard) = self.game_state.active_event_loop.write() {
+            *rguard = crate::game::ActiveEventLoop::ActiveGame(crate::game::GameView::StoryScene);
+        }
+
+        // Load background audio
+        self.load_scene_background_audio(&crisis, &story_state.current_scene);
+        
+        Task::none()
     }
 }

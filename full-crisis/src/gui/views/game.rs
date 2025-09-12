@@ -1,4 +1,5 @@
 use crate::gui::types::*;
+use crate::gui::helpers::TranslationUtils;
 use iced::widget::{
     Container, Image, button, column, container, row, text, Space, text_input
 };
@@ -11,8 +12,8 @@ impl GameWindow {
         } else {
             container(
                 column![
-                    text(crate::translations::t(crate::translations::TranslationKey::LoadingCrisis, &self.settings_language)).size(self.font_size_large()),
-                    button(text(crate::translations::t(crate::translations::TranslationKey::ReturnToMenu, &self.settings_language)).size(self.font_size_base()))
+                    text(TranslationUtils::translate(crate::translations::TranslationKey::LoadingCrisis, &self.settings_language)).size(self.font_size_large()),
+                    button(text(TranslationUtils::translate(crate::translations::TranslationKey::ReturnToMenu, &self.settings_language)).size(self.font_size_base()))
                         .on_press(GameMessage::Game_RestartRequested)
                         .padding(10)
                 ]
@@ -168,7 +169,7 @@ impl GameWindow {
 
     fn create_control_buttons(&self, story_state: &crate::crisis::GameState) -> iced::widget::Row<'_, GameMessage, Theme, iced::Renderer> {
         let save_button = button(
-                text(crate::translations::t(crate::translations::TranslationKey::SaveAndQuit, &story_state.language)).size(self.font_size_base())
+                text(TranslationUtils::translate(crate::translations::TranslationKey::SaveAndQuit, &story_state.language)).size(self.font_size_base())
                     .align_x(Center)
             )
             .on_press(GameMessage::Game_SaveAndQuitRequested)
@@ -177,7 +178,7 @@ impl GameWindow {
             .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId("control", 0))));
             
         let quit_button = button(
-                text(crate::translations::t(crate::translations::TranslationKey::Quit, &story_state.language)).size(self.font_size_base())
+                text(TranslationUtils::translate(crate::translations::TranslationKey::Quit, &story_state.language)).size(self.font_size_base())
                     .align_x(Center)
             )
             .on_press(GameMessage::Game_QuitWithoutSaveRequested)
@@ -244,8 +245,8 @@ impl GameWindow {
         if current_scene.choices.is_empty() {
             choices_column = choices_column.push(
                 column![
-                    text(crate::translations::t(crate::translations::TranslationKey::End, &story_state.language)).size(self.font_size_large()),
-                    button(text(crate::translations::t(crate::translations::TranslationKey::ReturnToMenu, &story_state.language)).size(self.font_size_base()))
+                    text(TranslationUtils::translate(crate::translations::TranslationKey::End, &story_state.language)).size(self.font_size_large()),
+                    button(text(TranslationUtils::translate(crate::translations::TranslationKey::ReturnToMenu, &story_state.language)).size(self.font_size_base()))
                         .on_press(GameMessage::Game_RestartRequested)
                         .padding(10)
                         .width(Length::Fill)
@@ -254,7 +255,7 @@ impl GameWindow {
             );
         } else {
             choices_column = choices_column.push(
-                text(crate::translations::t(crate::translations::TranslationKey::WhatDoYouChoose, &story_state.language))
+                text(TranslationUtils::translate(crate::translations::TranslationKey::WhatDoYouChoose, &story_state.language))
                     .size(self.font_size_base())
             );
             
@@ -339,7 +340,7 @@ impl GameWindow {
                 .into()
         } else {
             button(text(format!("{} {}", choice_text, 
-                crate::translations::t(crate::translations::TranslationKey::RequirementsNotMet, &story_state.language))))
+                TranslationUtils::translate(crate::translations::TranslationKey::RequirementsNotMet, &story_state.language))))
                 .padding(10)
                 .width(Length::Fill)
                 .style(self.create_disabled_button_style())
@@ -453,11 +454,11 @@ impl GameWindow {
         container(
             column![
                 text(format!("{} '{}' {}", 
-                    crate::translations::t(crate::translations::TranslationKey::SceneNotFound, &story_state.language).replace("!", ""),
+                    TranslationUtils::translate(crate::translations::TranslationKey::SceneNotFound, &story_state.language).replace("!", ""),
                     story_state.current_scene,
                     "!"
                 )).size(self.font_size_large()),
-                button(text(crate::translations::t(crate::translations::TranslationKey::ReturnToMenu, &story_state.language)))
+                button(text(TranslationUtils::translate(crate::translations::TranslationKey::ReturnToMenu, &story_state.language)))
                     .on_press(GameMessage::Game_RestartRequested)
                     .padding(10)
             ]

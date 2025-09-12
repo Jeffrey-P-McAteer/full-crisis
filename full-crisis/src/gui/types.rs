@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use crate::gui::helpers::TranslationUtils;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum DifficultyLevel {
@@ -10,9 +11,9 @@ pub enum DifficultyLevel {
 impl DifficultyLevel {
     pub fn to_translated_string(&self, language: &str) -> String {
         match self {
-            DifficultyLevel::Easy => crate::translations::t(crate::translations::TranslationKey::Easy, language),
-            DifficultyLevel::Medium => crate::translations::t(crate::translations::TranslationKey::Medium, language),
-            DifficultyLevel::Hard => crate::translations::t(crate::translations::TranslationKey::Hard, language),
+            DifficultyLevel::Easy => TranslationUtils::translate(crate::translations::TranslationKey::Easy, language),
+            DifficultyLevel::Medium => TranslationUtils::translate(crate::translations::TranslationKey::Medium, language),
+            DifficultyLevel::Hard => TranslationUtils::translate(crate::translations::TranslationKey::Hard, language),
         }
     }
 }

@@ -1,4 +1,5 @@
 use crate::gui::types::*;
+use crate::gui::helpers::TranslationUtils;
 use iced::widget::{
     Container, Image, button, column, container, row, text, Space, Column, Row
 };
@@ -32,11 +33,11 @@ impl GameWindow {
         ];
         
         let buttons = column![
-            button(text(crate::translations::t(crate::translations::TranslationKey::ContinueGame, user_language)).size(self.font_size_base()))
+            button(text(TranslationUtils::translate(crate::translations::TranslationKey::ContinueGame, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_ContinueGameRequested)
                 .width(Length::Fill)
                 .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId::menu_button(0)))),
-            button(text(crate::translations::t(crate::translations::TranslationKey::NewGame, user_language)).size(self.font_size_base()))
+            button(text(TranslationUtils::translate(crate::translations::TranslationKey::NewGame, user_language)).size(self.font_size_base()))
                 .on_press(GameMessage::Menu_NewGameRequested)
                 .width(Length::Fill)
                 .style(crate::gui::focused_button_style(self.focus_state.is_focused(FocusId::menu_button(1)))),
