@@ -105,12 +105,14 @@ impl GameWindow {
         
         // Keyboard events for focus navigation
         subscriptions.push(
-            iced::event::listen_with(|event, _status, _window| {
+            iced::event::listen_with(|event, status, _window| {
                 if let iced::Event::Keyboard(iced::keyboard::Event::KeyPressed { 
                     key, modifiers, ..
                 }) = event {
+                    // Process all keyboard events (ignore status for now to debug)
                     match key.as_ref() {
                         iced::keyboard::Key::Named(iced::keyboard::key::Named::ArrowUp) => {
+                            eprintln!("DEBUG: ArrowUp pressed");
                             Some(GameMessage::Focus_NavigateUp)
                         }
                         iced::keyboard::Key::Named(iced::keyboard::key::Named::ArrowDown) => {
@@ -126,6 +128,7 @@ impl GameWindow {
                             Some(GameMessage::Focus_Activate)
                         }
                         iced::keyboard::Key::Named(iced::keyboard::key::Named::Tab) => {
+                            eprintln!("DEBUG: Tab pressed, shift: {}", modifiers.shift());
                             if modifiers.shift() {
                                 Some(GameMessage::Focus_ShiftTabInteract)
                             } else {

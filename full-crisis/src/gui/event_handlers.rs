@@ -248,9 +248,11 @@ impl GameWindow {
                 self.handle_focus_activation()
             }
             GameMessage::Focus_TabInteract => {
+                eprintln!("DEBUG: Focus_TabInteract received");
                 self.handle_tab_interaction(false)
             }
             GameMessage::Focus_ShiftTabInteract => {
+                eprintln!("DEBUG: Focus_ShiftTabInteract received");
                 self.handle_tab_interaction(true)
             }
             GameMessage::Nop => {
