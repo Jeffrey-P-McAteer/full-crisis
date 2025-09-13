@@ -865,11 +865,35 @@ impl GameWindow {
                         // Game template picker - cycle through available templates
                         let crisis_names = crate::crisis::get_crisis_names_localized(&self.settings_language);
                         if !crisis_names.is_empty() {
+                            // Initialize current_index if not set - this happens on first user interaction
+                            let current_index = if !self.focus_state.pick_list_selection_index.contains_key(&focus_id) {
+                                // Find current template's index in the crisis_names list, or default to 0
+                                if let Some(ref template_name) = self.new_game_game_template {
+                                    let mut found_index = 0;
+                                    for (index, display_name) in crisis_names.iter().enumerate() {
+                                        let found_template = crate::crisis::get_template_name_from_display_name(display_name);
+                                        if found_template == *template_name {
+                                            found_index = index;
+                                            break;
+                                        }
+                                    }
+                                    found_index
+                                } else {
+                                    // No template selected, start at index 0
+                                    0
+                                }
+                            } else {
+                                // Use existing index, but validate it's still in bounds
+                                let stored_index = current_index;
+                                if stored_index >= crisis_names.len() { 0 } else { stored_index }
+                            };
+                            
                             let next_index = if is_reverse {
                                 if current_index == 0 { crisis_names.len() - 1 } else { current_index - 1 }
                             } else {
                                 (current_index + 1) % crisis_names.len()
                             };
+                            
                             self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
                             if let Some(template_name) = crisis_names.get(next_index) {
                                 return Task::done(GameMessage::Menu_NewGameTemplateChoiceAltered(template_name.clone()));
