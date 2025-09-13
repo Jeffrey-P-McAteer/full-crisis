@@ -109,8 +109,10 @@ impl GameWindow {
                 if let iced::Event::Keyboard(iced::keyboard::Event::KeyPressed { 
                     key, modifiers, ..
                 }) = event {
+                    // Process all keyboard events (ignore status for now to debug)
                     match key.as_ref() {
                         iced::keyboard::Key::Named(iced::keyboard::key::Named::ArrowUp) => {
+                            eprintln!("DEBUG: ArrowUp pressed");
                             Some(GameMessage::Focus_NavigateUp)
                         }
                         iced::keyboard::Key::Named(iced::keyboard::key::Named::ArrowDown) => {
@@ -126,6 +128,7 @@ impl GameWindow {
                             Some(GameMessage::Focus_Activate)
                         }
                         iced::keyboard::Key::Named(iced::keyboard::key::Named::Tab) => {
+                            eprintln!("DEBUG: Tab pressed, shift: {}", modifiers.shift());
                             if modifiers.shift() {
                                 Some(GameMessage::Focus_ShiftTabInteract)
                             } else {
@@ -147,6 +150,12 @@ impl GameWindow {
                     .map(|_| GameMessage::Game_AnimationTick)
             );
         }
+        
+        // Controller input polling - poll every 100ms for UI navigation
+        subscriptions.push(
+            iced::time::every(std::time::Duration::from_millis(100))
+                .map(|_| GameMessage::Controller_PollInput)
+        );
         
         iced::Subscription::batch(subscriptions)
     }

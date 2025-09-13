@@ -24,7 +24,7 @@ impl AudioUtils {
         #[cfg(target_arch = "wasm32")]
         {
             if !_audio_data.is_empty() {
-                crate::web_helpers::play_audio_from_bytes(_audio_data.to_vec());
+                crate::gui::event_handlers::web_play_background_audio(_audio_data);
             }
         }
         

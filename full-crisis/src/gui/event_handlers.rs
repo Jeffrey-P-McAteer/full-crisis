@@ -248,15 +248,20 @@ impl GameWindow {
                 self.handle_focus_activation()
             }
             GameMessage::Focus_TabInteract => {
+                eprintln!("DEBUG: Focus_TabInteract received");
                 self.handle_tab_interaction(false)
             }
             GameMessage::Focus_ShiftTabInteract => {
+                eprintln!("DEBUG: Focus_ShiftTabInteract received");
                 self.handle_tab_interaction(true)
             }
             GameMessage::Nop => {
                 eprintln!("Recieved a GameMessage::Nop");
                 Task::none()
-            },
+            }
+            GameMessage::Controller_PollInput => {
+                self.handle_controller_input()
+            }
             _ => Task::none(),
         };
         
@@ -778,6 +783,32 @@ impl GameWindow {
             FocusId::new_game_button(0), // Go button
         ];
         self.focus_state.set_focusable_elements(elements);
+        
+        // Set focus to the first right panel element (player name input) for better UX
+        self.focus_state.current_focus = Some(FocusId::new_game_input(0));
+        
+        // Initialize pick list selection index for game template picker
+        let game_template_focus_id = FocusId::new_game_input(1);
+        if !self.focus_state.pick_list_selection_index.contains_key(&game_template_focus_id) {
+            let crisis_names = crate::crisis::get_crisis_names_localized(&self.settings_language);
+            if !crisis_names.is_empty() {
+                // Find current template's index in the crisis_names list, or default to 0
+                let initial_index = if let Some(ref template_name) = self.new_game_game_template {
+                    let mut found_index = 0;
+                    for (index, display_name) in crisis_names.iter().enumerate() {
+                        let found_template = crate::crisis::get_template_name_from_display_name(display_name);
+                        if found_template == *template_name {
+                            found_index = index;
+                            break;
+                        }
+                    }
+                    found_index
+                } else {
+                    0
+                };
+                self.focus_state.pick_list_selection_index.insert(game_template_focus_id, initial_index);
+            }
+        }
     }
     
     fn update_focus_for_continue_game_screen(&mut self) {
@@ -862,11 +893,35 @@ impl GameWindow {
                         // Game template picker - cycle through available templates
                         let crisis_names = crate::crisis::get_crisis_names_localized(&self.settings_language);
                         if !crisis_names.is_empty() {
+                            // Initialize current_index if not set - this happens on first user interaction
+                            let current_index = if !self.focus_state.pick_list_selection_index.contains_key(&focus_id) {
+                                // Find current template's index in the crisis_names list, or default to 0
+                                if let Some(ref template_name) = self.new_game_game_template {
+                                    let mut found_index = 0;
+                                    for (index, display_name) in crisis_names.iter().enumerate() {
+                                        let found_template = crate::crisis::get_template_name_from_display_name(display_name);
+                                        if found_template == *template_name {
+                                            found_index = index;
+                                            break;
+                                        }
+                                    }
+                                    found_index
+                                } else {
+                                    // No template selected, start at index 0
+                                    0
+                                }
+                            } else {
+                                // Use existing index, but validate it's still in bounds
+                                let stored_index = current_index;
+                                if stored_index >= crisis_names.len() { 0 } else { stored_index }
+                            };
+                            
                             let next_index = if is_reverse {
                                 if current_index == 0 { crisis_names.len() - 1 } else { current_index - 1 }
                             } else {
                                 (current_index + 1) % crisis_names.len()
                             };
+                            
                             self.focus_state.pick_list_selection_index.insert(focus_id, next_index);
                             if let Some(template_name) = crisis_names.get(next_index) {
                                 return Task::done(GameMessage::Menu_NewGameTemplateChoiceAltered(template_name.clone()));
@@ -990,6 +1045,25 @@ impl GameWindow {
         // Load background audio
         self.load_scene_background_audio(&crisis, &story_state.current_scene);
         
+        Task::none()
+    }
+    
+    /// Handle controller input by polling the global controller manager
+    fn handle_controller_input(&mut self) -> Task<GameMessage> {
+        if let Some(controller_manager) = crate::CONTROLLER_MANAGER.get() {
+            if let Ok(mut manager) = controller_manager.lock() {
+                manager.update();
+                if let Some(controller_input) = manager.poll_events() {
+                    // Convert controller input to GameMessage
+                    let game_message = crate::input::controller_input_to_game_message(controller_input);
+                    
+                    // Only generate events for non-Nop messages
+                    if !matches!(game_message, GameMessage::Nop) {
+                        return Task::done(game_message);
+                    }
+                }
+            }
+        }
         Task::none()
     }
 }
