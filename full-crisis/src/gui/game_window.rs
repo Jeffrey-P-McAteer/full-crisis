@@ -105,7 +105,7 @@ impl GameWindow {
         
         // Keyboard events for focus navigation
         subscriptions.push(
-            iced::event::listen_with(|event, status, _window| {
+            iced::event::listen_with(|event, _status, _window| {
                 if let iced::Event::Keyboard(iced::keyboard::Event::KeyPressed { 
                     key, modifiers, ..
                 }) = event {

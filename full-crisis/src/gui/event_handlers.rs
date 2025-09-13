@@ -783,6 +783,32 @@ impl GameWindow {
             FocusId::new_game_button(0), // Go button
         ];
         self.focus_state.set_focusable_elements(elements);
+        
+        // Set focus to the first right panel element (player name input) for better UX
+        self.focus_state.current_focus = Some(FocusId::new_game_input(0));
+        
+        // Initialize pick list selection index for game template picker
+        let game_template_focus_id = FocusId::new_game_input(1);
+        if !self.focus_state.pick_list_selection_index.contains_key(&game_template_focus_id) {
+            let crisis_names = crate::crisis::get_crisis_names_localized(&self.settings_language);
+            if !crisis_names.is_empty() {
+                // Find current template's index in the crisis_names list, or default to 0
+                let initial_index = if let Some(ref template_name) = self.new_game_game_template {
+                    let mut found_index = 0;
+                    for (index, display_name) in crisis_names.iter().enumerate() {
+                        let found_template = crate::crisis::get_template_name_from_display_name(display_name);
+                        if found_template == *template_name {
+                            found_index = index;
+                            break;
+                        }
+                    }
+                    found_index
+                } else {
+                    0
+                };
+                self.focus_state.pick_list_selection_index.insert(game_template_focus_id, initial_index);
+            }
+        }
     }
     
     fn update_focus_for_continue_game_screen(&mut self) {

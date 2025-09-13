@@ -350,7 +350,13 @@ impl FocusState {
     pub fn handle_tab_interact(&mut self, reverse: bool) -> TabInteractionResult {
         if let Some(current) = self.current_focus {
             match current.0 {
-                // Text inputs - toggle focus state
+                // New game template picker (only index 1 is the pick_list) - handle this FIRST
+                "newgame_input" if current.1 == 1 => {
+                    let current_index = self.pick_list_selection_index.get(&current).copied().unwrap_or(0);
+                    TabInteractionResult::PickListCycle(current, current_index, reverse)
+                }
+                
+                // Text inputs - toggle focus state (including newgame_input index 0)
                 "newgame_input" | "settings_input" => {
                     let currently_focused = self.text_input_focused.get(&current).copied().unwrap_or(false);
                     self.text_input_focused.insert(current, !currently_focused);
@@ -359,12 +365,6 @@ impl FocusState {
                 
                 // Pick lists - cycle through options
                 "continue_input" | "settings_picker" => {
-                    let current_index = self.pick_list_selection_index.get(&current).copied().unwrap_or(0);
-                    TabInteractionResult::PickListCycle(current, current_index, reverse)
-                }
-                
-                // New game template picker (only index 1 is the pick_list)
-                "newgame_input" if current.1 == 1 => {
                     let current_index = self.pick_list_selection_index.get(&current).copied().unwrap_or(0);
                     TabInteractionResult::PickListCycle(current, current_index, reverse)
                 }
