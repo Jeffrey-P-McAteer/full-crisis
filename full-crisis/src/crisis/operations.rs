@@ -31,6 +31,8 @@ pub fn get_crisis_names_localized(language: &str) -> Vec<String> {
     if names.is_empty() {
         names.push("No crises available".to_string());
     }
+
+    names.sort_unstable();
     
     names
 }
