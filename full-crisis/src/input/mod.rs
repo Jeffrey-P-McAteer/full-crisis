@@ -61,21 +61,21 @@ const REPEAT_INTERVAL_MS: u64 = 100;       // 100ms between repeats (faster for 
 /// Tracks timing state for input debouncing
 #[derive(Debug, Clone)]
 struct InputTimingState {
-    last_input_time: std::time::Instant,
+    last_input_time: crate::time::PlatformInstant,
     initial_delay_passed: bool,
 }
 
 impl InputTimingState {
     fn new() -> Self {
         Self {
-            last_input_time: std::time::Instant::now(),
+            last_input_time: crate::time::now(),
             initial_delay_passed: false,
         }
     }
     
     /// Check if enough time has passed to allow a repeat input
     fn should_allow_input(&mut self, is_first_press: bool) -> bool {
-        let now = std::time::Instant::now();
+        let now = crate::time::now();
         
         if is_first_press {
             // First press is always allowed

@@ -47,6 +47,17 @@ use wasm32_storage as internal_storage;
 #[cfg(not(target_arch = "wasm32"))]
 use native_storage as internal_storage;
 
+// Platform-specific time implementations
+#[cfg(target_arch = "wasm32")]
+mod wasm32_time;
+#[cfg(not(target_arch = "wasm32"))]
+mod native_time;
+
+#[cfg(target_arch = "wasm32")]
+use wasm32_time as internal_time;
+#[cfg(not(target_arch = "wasm32"))]
+use native_time as internal_time;
+
 
 
 pub static GAME: OnceCell<game::GameState> = OnceCell::new();
@@ -91,6 +102,28 @@ pub mod storage {
     
     pub fn set_attr(name: &str, value: &str) {
         super::internal_storage::set_attr(name, value)
+    }
+}
+
+/// Public time functions for cross-platform time management
+pub mod time {
+    use std::time::Duration;
+    
+    pub use super::internal_time::PlatformInstant;
+    
+    /// Get the current instant
+    pub fn now() -> PlatformInstant {
+        PlatformInstant::now()
+    }
+    
+    /// Create a duration from milliseconds
+    pub fn duration_from_millis(millis: u64) -> Duration {
+        Duration::from_millis(millis)
+    }
+    
+    /// Create a duration from seconds
+    pub fn duration_from_secs(secs: u64) -> Duration {
+        Duration::from_secs(secs)
     }
 }
 
