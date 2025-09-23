@@ -105,11 +105,13 @@ impl GameWindow {
                     *evt_loop_wguard = crate::game::ActiveEventLoop::WelcomeScreen(crate::game::WelcomeScreenView::NewGame);
                 }
                 self.update_focus_for_new_game_screen();
+                self.view_needs_redraw.mark_menu_dirty();
                 Task::none()
             }
             GameMessage::Menu_NewGamePlayerNameAltered(name) => {
                 self.new_game_player_name = name;
                 self.save_settings();
+                self.view_needs_redraw.mark_menu_dirty();
                 Task::none()
             }
             GameMessage::Menu_NewGameTemplateChoiceAltered(game_template) => {
@@ -226,22 +228,27 @@ impl GameWindow {
             }
             GameMessage::Game_AnimationTick => {
                 self.animation_frame_index = self.animation_frame_index.wrapping_add(1);
+                self.view_needs_redraw.mark_animation_dirty();
                 Task::none()
             }
             GameMessage::Focus_NavigateUp => {
                 self.focus_state.navigate_up();
+                self.view_needs_redraw.mark_focus_dirty();
                 Task::none()
             }
             GameMessage::Focus_NavigateDown => {
                 self.focus_state.navigate_down();
+                self.view_needs_redraw.mark_focus_dirty();
                 Task::none()
             }
             GameMessage::Focus_NavigateLeft => {
                 self.focus_state.navigate_left();
+                self.view_needs_redraw.mark_focus_dirty();
                 Task::none()
             }
             GameMessage::Focus_NavigateRight => {
                 self.focus_state.navigate_right();
+                self.view_needs_redraw.mark_focus_dirty();
                 Task::none()
             }
             GameMessage::Focus_Activate => {
@@ -261,6 +268,9 @@ impl GameWindow {
             }
             GameMessage::Controller_PollInput => {
                 self.handle_controller_input()
+            }
+            GameMessage::FrameRate_Tick => {
+                self.handle_frame_rate_tick()
             }
             _ => Task::none(),
         };
@@ -455,6 +465,12 @@ impl GameWindow {
                                 &story_state.language
                             );
                         }
+                        
+                        // Mark views as dirty after scene change
+                        self.view_needs_redraw.mark_game_dirty();
+                        if self.has_character_animation() {
+                            self.view_needs_redraw.mark_animation_dirty();
+                        }
                     }
                 }
             }
@@ -530,6 +546,12 @@ impl GameWindow {
                             Some(char_type), 
                             &story_state.language
                         );
+                    }
+                    
+                    // Mark views as dirty after scene change
+                    self.view_needs_redraw.mark_game_dirty();
+                    if self.has_character_animation() {
+                        self.view_needs_redraw.mark_animation_dirty();
                     }
                     
                     self.choice_text_inputs.clear();
@@ -1045,6 +1067,12 @@ impl GameWindow {
         // Load background audio
         self.load_scene_background_audio(&crisis, &story_state.current_scene);
         
+        // Mark game and animation as dirty for new session
+        self.view_needs_redraw.mark_game_dirty();
+        if self.has_character_animation() {
+            self.view_needs_redraw.mark_animation_dirty();
+        }
+        
         Task::none()
     }
     
@@ -1063,6 +1091,16 @@ impl GameWindow {
                     }
                 }
             }
+        }
+        Task::none()
+    }
+    
+    /// Handle frame rate tick for optimized rendering
+    fn handle_frame_rate_tick(&mut self) -> Task<GameMessage> {
+        // Check if we should render and if anything needs redrawing
+        if self.frame_rate_limiter.should_render() && self.view_needs_redraw.is_any_dirty() {
+            // Force a redraw by marking it dirty
+            self.view_needs_redraw.force_redraw();
         }
         Task::none()
     }

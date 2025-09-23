@@ -38,6 +38,11 @@ impl GameWindow {
             animation_frame_index: 0,
             current_background_audio: Vec::new(),
             focus_state: FocusState::new(),
+            
+            // Initialize performance optimization fields
+            frame_rate_limiter: FrameRateLimiter::default(),
+            view_needs_redraw: ViewDirtyFlags::default(),
+            cached_views: ViewCache::default(),
         };
         
         // Initialize focus for main menu
@@ -143,17 +148,23 @@ impl GameWindow {
             })
         );
         
-        if self.current_crisis.is_some() && self.story_state.is_some() {
-            // Only run animation timer when in active game
+        // Frame rate limiter - run at 60fps to check if we should render at 30fps
+        subscriptions.push(
+            iced::time::every(std::time::Duration::from_millis(16)) // ~60fps check
+                .map(|_| GameMessage::FrameRate_Tick)
+        );
+        
+        // Only run animation timer when in active game AND character animations are present
+        if self.current_crisis.is_some() && self.story_state.is_some() && self.has_character_animation() {
             subscriptions.push(
-                iced::time::every(std::time::Duration::from_millis(500))
+                iced::time::every(std::time::Duration::from_millis(800)) // Slightly slower but still smooth
                     .map(|_| GameMessage::Game_AnimationTick)
             );
         }
         
-        // Controller input polling - poll every 100ms for UI navigation
+        // Controller input polling - reduced frequency to 250ms
         subscriptions.push(
-            iced::time::every(std::time::Duration::from_millis(100))
+            iced::time::every(std::time::Duration::from_millis(250))
                 .map(|_| GameMessage::Controller_PollInput)
         );
         
@@ -218,5 +229,24 @@ impl GameWindow {
                 manager.stop_background_music();
             }
         }
+    }
+    
+    /// Check if the current scene has character animations that need to be updated
+    pub fn has_character_animation(&self) -> bool {
+        if let (Some(crisis), Some(story_state)) = (&self.current_crisis, &self.story_state) {
+            if let Some(current_scene) = crisis.scenes.get(&story_state.current_scene) {
+                if let Some(ref char_image) = current_scene.speaking_character_image {
+                    match char_image {
+                        crate::crisis::SpeakingCharacterImage::Animation(image_paths) => {
+                            return !image_paths.is_empty();
+                        }
+                        crate::crisis::SpeakingCharacterImage::Single(_) => {
+                            return false; // Single images don't need animation
+                        }
+                    }
+                }
+            }
+        }
+        false
     }
 }

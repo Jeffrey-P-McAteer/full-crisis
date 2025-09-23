@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 use crate::gui::helpers::TranslationUtils;
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum DifficultyLevel {
@@ -75,6 +76,11 @@ pub struct GameWindow {
     pub animation_frame_index: usize, // Current frame index for character animation
     pub current_background_audio: Vec<u8>, // Current background audio data to play
     pub focus_state: FocusState, // Focus tracking state
+    
+    // Performance optimization fields
+    pub frame_rate_limiter: FrameRateLimiter,
+    pub view_needs_redraw: ViewDirtyFlags,
+    pub cached_views: ViewCache,
 }
 
 #[derive(Debug, Clone)]
@@ -124,6 +130,9 @@ pub enum GameMessage {
     
     // Controller system messages
     Controller_PollInput, // Timer message to poll controller input
+    
+    // Performance system messages
+    FrameRate_Tick, // Timer message for frame rate limiting
 }
 
 // Focus system types
@@ -405,5 +414,155 @@ pub enum TabInteractionResult {
     SliderChanged(FocusId, f32), // focus_id, new_value
     ToggleFlipped(FocusId), // focus_id
     ButtonActivated(FocusId), // focus_id
+}
+
+// Performance optimization structures
+
+pub struct FrameRateLimiter {
+    pub target_fps: f32,
+    pub last_frame_time: std::time::Instant,
+    pub frame_duration_ns: u64,
+}
+
+impl FrameRateLimiter {
+    pub fn new(target_fps: f32) -> Self {
+        let frame_duration_ns = (1_000_000_000.0 / target_fps) as u64;
+        Self {
+            target_fps,
+            last_frame_time: std::time::Instant::now(),
+            frame_duration_ns,
+        }
+    }
+    
+    pub fn should_render(&mut self) -> bool {
+        let now = std::time::Instant::now();
+        let elapsed = now.duration_since(self.last_frame_time);
+        
+        if elapsed.as_nanos() as u64 >= self.frame_duration_ns {
+            self.last_frame_time = now;
+            true
+        } else {
+            false
+        }
+    }
+    
+    pub fn set_target_fps(&mut self, fps: f32) {
+        self.target_fps = fps;
+        self.frame_duration_ns = (1_000_000_000.0 / fps) as u64;
+    }
+}
+
+impl Default for FrameRateLimiter {
+    fn default() -> Self {
+        Self::new(30.0) // Default to 30 FPS
+    }
+}
+
+pub struct ViewDirtyFlags {
+    pub menu_dirty: AtomicBool,
+    pub game_dirty: AtomicBool,
+    pub settings_dirty: AtomicBool,
+    pub animation_dirty: AtomicBool,
+    pub focus_dirty: AtomicBool,
+    pub force_redraw: AtomicBool,
+}
+
+impl ViewDirtyFlags {
+    pub fn new() -> Self {
+        Self {
+            menu_dirty: AtomicBool::new(true), // Start dirty to force initial render
+            game_dirty: AtomicBool::new(true),
+            settings_dirty: AtomicBool::new(true),
+            animation_dirty: AtomicBool::new(false),
+            focus_dirty: AtomicBool::new(false),
+            force_redraw: AtomicBool::new(false),
+        }
+    }
+    
+    pub fn mark_menu_dirty(&self) {
+        self.menu_dirty.store(true, Ordering::Relaxed);
+    }
+    
+    pub fn mark_game_dirty(&self) {
+        self.game_dirty.store(true, Ordering::Relaxed);
+    }
+    
+    pub fn mark_settings_dirty(&self) {
+        self.settings_dirty.store(true, Ordering::Relaxed);
+    }
+    
+    pub fn mark_animation_dirty(&self) {
+        self.animation_dirty.store(true, Ordering::Relaxed);
+    }
+    
+    pub fn mark_focus_dirty(&self) {
+        self.focus_dirty.store(true, Ordering::Relaxed);
+    }
+    
+    pub fn force_redraw(&self) {
+        self.force_redraw.store(true, Ordering::Relaxed);
+    }
+    
+    pub fn is_any_dirty(&self) -> bool {
+        self.menu_dirty.load(Ordering::Relaxed) ||
+        self.game_dirty.load(Ordering::Relaxed) ||
+        self.settings_dirty.load(Ordering::Relaxed) ||
+        self.animation_dirty.load(Ordering::Relaxed) ||
+        self.focus_dirty.load(Ordering::Relaxed) ||
+        self.force_redraw.load(Ordering::Relaxed)
+    }
+    
+    pub fn clear_all(&self) {
+        self.menu_dirty.store(false, Ordering::Relaxed);
+        self.game_dirty.store(false, Ordering::Relaxed);
+        self.settings_dirty.store(false, Ordering::Relaxed);
+        self.animation_dirty.store(false, Ordering::Relaxed);
+        self.focus_dirty.store(false, Ordering::Relaxed);
+        self.force_redraw.store(false, Ordering::Relaxed);
+    }
+}
+
+impl Default for ViewDirtyFlags {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+pub struct ViewCache {
+    pub last_menu_state: Option<String>, // Simplified state hash for menu
+    pub last_game_state: Option<String>, // Simplified state hash for game
+    pub last_settings_state: Option<String>, // Simplified state hash for settings
+    pub image_handles: std::collections::HashMap<String, iced::widget::image::Handle>,
+}
+
+impl ViewCache {
+    pub fn new() -> Self {
+        Self {
+            last_menu_state: None,
+            last_game_state: None,
+            last_settings_state: None,
+            image_handles: std::collections::HashMap::new(),
+        }
+    }
+    
+    pub fn get_or_load_image(&mut self, path: &str, image_data: &[u8]) -> iced::widget::image::Handle {
+        if let Some(handle) = self.image_handles.get(path) {
+            handle.clone()
+        } else {
+            let handle = iced::widget::image::Handle::from_bytes(image_data.to_vec());
+            self.image_handles.insert(path.to_string(), handle.clone());
+            handle
+        }
+    }
+    
+    pub fn clear_image_cache(&mut self) {
+        self.image_handles.clear();
+    }
+}
+
+impl Default for ViewCache {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
