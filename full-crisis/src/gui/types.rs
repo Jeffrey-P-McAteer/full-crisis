@@ -420,7 +420,7 @@ pub enum TabInteractionResult {
 
 pub struct FrameRateLimiter {
     pub target_fps: f32,
-    pub last_frame_time: std::time::Instant,
+    pub last_frame_time: crate::time::PlatformInstant,
     pub frame_duration_ns: u64,
 }
 
@@ -429,13 +429,13 @@ impl FrameRateLimiter {
         let frame_duration_ns = (1_000_000_000.0 / target_fps) as u64;
         Self {
             target_fps,
-            last_frame_time: std::time::Instant::now(),
+            last_frame_time: crate::time::now(),
             frame_duration_ns,
         }
     }
     
     pub fn should_render(&mut self) -> bool {
-        let now = std::time::Instant::now();
+        let now = crate::time::now();
         let elapsed = now.duration_since(self.last_frame_time);
         
         if elapsed.as_nanos() as u64 >= self.frame_duration_ns {
