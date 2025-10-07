@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Full-Crisis</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main>
+      <br/>
+      <p>
+        Join historic disasters as emergency response personnel and hone your crisis-solving skills while saving the world!
+      </p>
+      <br/>
+      <p>
+        While you're there, tell the developer to get his butt in gear and make sure this project gets halfway done!
+      </p>
+      <br/>
+
+      <header>Download <img src="full-crisis-icon.transparent.128.png" style="border-radius:6pt;"/> </header>
+      <pre id="build-message">Version 0.1.3 built at 2025-10-07 09:15 by user on Azure-Sidekick 
+from commit e7b0caa1a649e37e6638cd4d00e0b5905c7f5048 with the message: 
+bugfixes</pre>
+      <a class="dl win mobile-light-bordered-text" href="full-crisis.x86_64-pc-windows-gnu.exe">Windows x64 <br/><span class="tiny-text">(49mb)</span></a>
+      <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.x86_64-apple-darwin.dmg">MacOS x64 <br/><span class="tiny-text">(14mb)</span></a>
+      <a class="dl mac mobile-light-bordered-text" href="Full-Crisis.aarch64-apple-darwin.dmg">MacOS ARM <br/><span class="tiny-text">(13mb)</span></a>
+      <a class="dl linux mobile-light-bordered-text" href="full-crisis.x86_64-unknown-linux-gnu">Linux x64 <br/><span class="tiny-text">(42mb)</span></a>
+      <a class="dl noapp mobile-light-bordered-text" href="wasm32/index.html">Play on the Web <br/><span class="tiny-text">(19mb)</span></a>
+
+      <header>Code</header>
+      <p>
+        See <a href="https://github.com/Jeffrey-P-McAteer/full-crisis">the code</a>!
+      </p>
+      <br/>
+      <br/>
+      <header>Metrics</header>
+      <a href="loc-graph.png"><img class="kpi-chart" src="loc-graph.png"></a>
+      <br/>
+      <br/>
+      <br/>
+      <header>Development RootCA</header>
+      <p>
+        During development windows x64 binaries will be signed using a self-signed certificate;
+        in order to trust this system you will have to manually install this certificate as a Root Certificate Authority
+        on your machine.
+        <br/>
+        <span class="warning">THIS IS AN INSECURE DECISION!</span>
+        <br/>
+        The development Root Certificate Authority may be <a href="rootca.crt">downloaded here</a>.
+      </p>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      </p>
+    </main>
+    <script>
+/* Half-AI-Authored utility which scales the build message so it remains on screen when viewed with a phone */
+const pre = document.getElementById('build-message');
+const wrapper = pre.parentElement;
+const container = wrapper.parentElement;
+
+function scalePre() {
+  // Reset scale to 1 to get actual natural width
+  pre.style.transform = "scale(1)";
+
+  // Measure full natural width of the <pre>
+  const contentWidth = pre.scrollWidth;
+  const containerWidth = container.clientWidth - 22;
+
+  // Calculate scale factor
+  const scale = Math.min(1, containerWidth / contentWidth);
+
+  // Apply scale
+  pre.style.transform = `scale(${scale})`;
+
+}
+
+window.addEventListener('load', scalePre);
+window.addEventListener('resize', scalePre);
+    </script>
+  </body>
+</html>
