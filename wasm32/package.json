@@ -1,0 +1,15 @@
+{
+  "name": "full-crisis-web",
+  "type": "module",
+  "version": "0.0.0",
+  "files": [
+    "full_crisis_web_bg.wasm",
+    "full_crisis_web.js",
+    "full_crisis_web.d.ts"
+  ],
+  "main": "full_crisis_web.js",
+  "types": "full_crisis_web.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
